@@ -143,7 +143,6 @@ N3CLIPS["05"] = { tin: 15.30, build: function () {
     }
 
     // format thumbnails beside "Carry it across every format" (web: 52 px, radius 13, at left 110 + 62 i, top STEP_TOP(3) + 9).
-    // Effects work in the image's own pixels (scaled to ~4 %), so blur/shadow amounts are divided by the layer scale.
     for (i = 0; i < 3; i++) {
         l = N3.image(g, TF[i], { name: "Thumb " + (i + 1), cx: 110 + 62 * i + 26, cy: C05_TOP(3) + 9 + 26, w: 52, h: 52, r: 13 });
         if (i === 2) {                                                                     // freeze the motion clip on the sunrise frame
@@ -153,11 +152,10 @@ N3CLIPS["05"] = { tin: 15.30, build: function () {
             for (k = tr.numKeys; k >= 1; k--) { tr.setValueAtTime(tr.keyTime(k), SUN030); }
             l.outPoint = S.T;
         }
-        sc = N3.xf(l, "ADBE Scale").value[0] / 100;
-        sh = N3.shadow(l, { color: "#78282D", opacity: 0.3, dist: 5 / sc, soft: Math.min(250, 12 / sc) });
+        sh = N3.shadow(l, { color: "#78282D", opacity: 0.3, dist: 5, soft: 12 });   // N3 scales footage effects to screen px
         N3.show(l, TH[i] - 0.05, null, 10, { din: 0, lin: 0.35, noBlur: true });
         b = N3.blur(l);
-        N3.eo(b, TH[i] - 0.05, TH[i] + 0.3, 12 / sc, 0);
+        N3.eo(b, TH[i] - 0.05, TH[i] + 0.3, 12, 0);
     }
     return S;
 } };

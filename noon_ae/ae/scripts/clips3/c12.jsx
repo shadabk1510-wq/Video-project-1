@@ -59,7 +59,7 @@ N3CLIPS["12"] = { tin: 119.05, build: function () {
     for (i = 0; i < 2; i++) {
         N3.text(g, "PROFESSIONAL", { name: "Ghost " + (i + 1), x: 4.5, top: i ? 190 : -370, fs: 180, wt: 800, ls: -0.05, lh: 180, color: "#FFFFFF", align: "center", opacity: 26 });
     }
-    N3.text(g, "High-level", { name: "High-level", x: -5.5, top: -150, fs: 22, wt: 600, ls: 0.5, caps: true, color: "#FFFFFF", align: "center" });
+    N3.text(g, "High-level", { name: "High-level", x: -6, top: -150, fs: 30, wt: 600, ls: 0.4, caps: true, color: "#FFFFFF", align: "center" });
     N3.text(g, "PROFESSIONAL", { name: "PROFESSIONAL", x: 4.5, cy: 0, fs: 180, wt: 800, ls: -0.05, lh: 180, color: "#FFFFFF", align: "center" });
     N3.text(g, "designers from everybody else.", { name: "Rest", x: 0, top: 395, fs: 40, wt: 600, color: "#FFFFFF", align: "center" });
 
@@ -107,7 +107,7 @@ N3CLIPS["12"] = { tin: 119.05, build: function () {
     c = P.ctx;
     N3.box(c, { name: "Window", x: 0, y: 0, w: 720, h: 480, fill: "#FFFFFF" });
     l = N3.image(c, "product_page.png", { name: "Page", x: 0, y: 44, w: 720, fit: "width" });
-    N3.blur(l).setValue(9);
+    N3.blur(l).setValue(9);   // CSS px; N3.blur converts footage blur to screen size
     t = N3.pos(l).value;
     N3.lin(N3.pos(l), [tB[1], tB[1] + 6], [t, [t[0], t[1] - 260, t[2]]]);
     N3.box(c, { name: "Bar", x: 0, y: 0, w: 720, h: 44, fill: "#FBF1F0" });
@@ -126,7 +126,7 @@ N3CLIPS["12"] = { tin: 119.05, build: function () {
     c = P.ctx;
     N3.box(c, { name: "Window", x: 0, y: 0, w: 380, h: 480, fill: "#FFFFFF" });
     l = N3.image(c, "bag.png", { name: "Bag", x: -60, y: -10, w: 500, h: 500 });
-    N3.blur(l).setValue(8);
+    N3.blur(l).setValue(8);   // CSS px; N3.blur converts footage blur to screen size
     N3.mask(P.layer, N3.rrShape(0, 0, 380, 480, 22));
     N3.shadow(P.layer, shadowWin);
     C12_join(P.layer, tB[2] - 0.25);

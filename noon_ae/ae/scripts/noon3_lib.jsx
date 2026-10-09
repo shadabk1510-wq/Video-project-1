@@ -173,14 +173,17 @@ N3.colorCtl = function (layer, name, hex) {
     f.property("ADBE Color Control-0001").setValue(N3.rgba(hex));
     return layer.property("ADBE Effect Parade").property(name).property("ADBE Color Control-0001");
 };
+N3.isFootage = function (layer) { return !!(layer.source && layer.source instanceof FootageItem); };
 N3.ctl = function (layer, name) { return layer.property("ADBE Effect Parade").property(name).property(1); };
 N3.blur = function (layer) {
     var p = layer.property("ADBE Effect Parade"), f = p.property("Blur");
     if (!f) {
         f = N3.fx(layer, "ADBE Gaussian Blur 2", "Blur");
         try { f.property("ADBE Gaussian Blur 2-0003").setValue(1); } catch (e) {}   // repeat edge pixels off
-        // keys are in CSS blur px (a standard deviation); AE Blurriness is ~2.5x that
-        AEL.expr(layer.property("ADBE Effect Parade").property("Blur").property("ADBE Gaussian Blur 2-0001"), "value * " + N3.BLUR_K);
+        // keys are in CSS blur px (a standard deviation); AE Blurriness is ~2.5x that. Footage effects work in the
+        // image's own pixels, so there the amount is also divided by the layer's scale.
+        AEL.expr(layer.property("ADBE Effect Parade").property("Blur").property("ADBE Gaussian Blur 2-0001"),
+            N3.isFootage(layer) ? "value * " + N3.BLUR_K + " * 100 / Math.max(0.01, Math.abs(transform.scale[0]))" : "value * " + N3.BLUR_K);
     }
     return p.property("Blur").property("ADBE Gaussian Blur 2-0001");
 };
@@ -195,7 +198,11 @@ N3.shadow = function (layer, o) {
     f.property("ADBE Drop Shadow-0003").setValue(180);
     f.property("ADBE Drop Shadow-0004").setValue(o.dist);
     f.property("ADBE Drop Shadow-0005").setValue(o.soft);
-    return f;
+    if (N3.isFootage(layer)) {   // footage effects are in image pixels: keep the shadow's on-screen size
+        AEL.expr(layer.property("ADBE Effect Parade").property(f.name).property("ADBE Drop Shadow-0004"), "value * 100 / Math.max(0.01, Math.abs(transform.scale[0]))");
+        AEL.expr(layer.property("ADBE Effect Parade").property(f.name).property("ADBE Drop Shadow-0005"), "Math.min(250, value * 100 / Math.max(0.01, Math.abs(transform.scale[0])))");
+    }
+    return layer.property("ADBE Effect Parade").property(f.name);
 };
 
 // ---------------------------------------------------------------- shape layers
