@@ -63,6 +63,8 @@ and which fonts/render templates exist.
   - **Idempotent and non-destructive**: only touch items the script created (name prefix +
     dedicated folder); abort if they already exist unless `CONFIG.rebuild` is true.
   - No `alert()` in live runs (modal dialogs block automation).
+  - Put `AEL.run(...)` (or the call to `main`) at the **end** of the file: it runs immediately, and
+    top-level `var` values declared below it are still `undefined` (functions are hoisted, values are not).
 - Motion craft and copy-paste recipes (kinetic type, shape reveals, masks, mattes, transitions,
   precomps, brand controls): `references/motion-recipes.md`.
 

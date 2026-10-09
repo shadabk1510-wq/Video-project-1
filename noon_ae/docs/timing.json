@@ -1,0 +1,250 @@
+{
+ "pre_roll": 2.0,
+ "fps": 23.976,
+ "source": "Parakeet TDT 0.6B v2 word timings, cross-checked against Premiere transcript (<0.2s)",
+ "scenes": [
+  {
+   "id": "SC01_ColdOpen",
+   "start": 0.0,
+   "end": 2.4
+  },
+  {
+   "id": "SC02_Tease",
+   "start": 2.4,
+   "end": 4.24
+  },
+  {
+   "id": "SC03_NewWay",
+   "start": 4.24,
+   "end": 7.1
+  },
+  {
+   "id": "SC04_Radar",
+   "start": 7.1,
+   "end": 9.98
+  },
+  {
+   "id": "SC05_Brand",
+   "start": 9.98,
+   "end": 15.3
+  },
+  {
+   "id": "SC06_SixSteps",
+   "start": 15.3,
+   "end": 39.0
+  },
+  {
+   "id": "SC07_Inputs",
+   "start": 39.0,
+   "end": 52.3
+  },
+  {
+   "id": "SC08_Powerhouse",
+   "start": 52.3,
+   "end": 63.0
+  }
+ ],
+ "captions": [
+  {
+   "id": "c_today",
+   "scene": "SC02",
+   "text": "Today, I'm going to walk you through",
+   "start": 2.56,
+   "out": 4.18,
+   "highlight": []
+  },
+  {
+   "id": "c_newway",
+   "scene": "SC03",
+   "text": "a new way to work as a designer in",
+   "start": 4.24,
+   "out": 7.02,
+   "highlight": [
+    "new",
+    "way"
+   ]
+  },
+  {
+   "id": "c_radar",
+   "scene": "SC04",
+   "text": "and I feel like this should be on everybody's radar.",
+   "start": 7.2,
+   "out": 9.86,
+   "highlight": [
+    "radar."
+   ]
+  },
+  {
+   "id": "c_brand",
+   "scene": "SC05",
+   "text": "So we're going to use this coffee brand",
+   "start": 10.08,
+   "out": 12.15,
+   "highlight": []
+  },
+  {
+   "id": "c_follow",
+   "scene": "SC05",
+   "text": "so you can follow along with the whole process on one project,",
+   "start": 12.32,
+   "out": 15.15,
+   "highlight": [
+    "whole",
+    "process"
+   ]
+  },
+  {
+   "id": "c_do",
+   "scene": "SC06",
+   "text": "and this is what we're going to do.",
+   "start": 15.44,
+   "out": 16.95,
+   "highlight": [
+    "do."
+   ]
+  },
+  {
+   "id": "s1",
+   "scene": "SC06",
+   "text": "We're going to turn project files into professional directions.",
+   "start": 17.04,
+   "out": 20.12,
+   "highlight": [
+    "professional",
+    "directions."
+   ]
+  },
+  {
+   "id": "s2",
+   "scene": "SC06",
+   "text": "We're going to give every design a clear purpose before we start anything.",
+   "start": 20.24,
+   "out": 23.82,
+   "highlight": [
+    "clear",
+    "purpose"
+   ]
+  },
+  {
+   "id": "s3",
+   "scene": "SC06",
+   "text": "We're going to create design rules that change an entire workflow.",
+   "start": 23.92,
+   "out": 27.48,
+   "highlight": [
+    "design",
+    "rules"
+   ]
+  },
+  {
+   "id": "s4",
+   "scene": "SC06",
+   "text": "We're going to carry a design across packaging, digital, and also motion too.",
+   "start": 27.6,
+   "out": 31.95,
+   "highlight": [
+    "packaging,",
+    "digital,",
+    "motion"
+   ]
+  },
+  {
+   "id": "s5",
+   "scene": "SC06",
+   "text": "We're going to check the work against the original goals",
+   "start": 32.08,
+   "out": 34.52,
+   "highlight": [
+    "original",
+    "goals"
+   ]
+  },
+  {
+   "id": "s6",
+   "scene": "SC06",
+   "text": "and we're going to hand over a system so somebody else can build on it really, really easily.",
+   "start": 34.64,
+   "out": 38.55,
+   "highlight": [
+    "system"
+   ]
+  },
+  {
+   "id": "c_for",
+   "scene": "SC07",
+   "text": "So for this coffee brand NOON,",
+   "start": 39.04,
+   "out": 40.85,
+   "highlight": [
+    "NOON,"
+   ]
+  },
+  {
+   "id": "c_got",
+   "scene": "SC07",
+   "text": "we've got a client brief, we've got audience research and notes from a discovery meeting.",
+   "start": 40.96,
+   "out": 45.8,
+   "highlight": [
+    "client",
+    "brief,",
+    "audience",
+    "research",
+    "notes",
+    "discovery",
+    "meeting."
+   ]
+  },
+  {
+   "id": "c_job",
+   "scene": "SC07",
+   "text": "And our first job is to bring that information together and work out what we're actually designing towards.",
+   "start": 45.92,
+   "out": 52.15,
+   "highlight": [
+    "designing",
+    "towards."
+   ]
+  },
+  {
+   "id": "c_stage",
+   "scene": "SC08",
+   "text": "And yes, for this first stage of the workflow,",
+   "start": 52.4,
+   "out": 54.7,
+   "highlight": [
+    "first",
+    "stage"
+   ]
+  },
+  {
+   "id": "c_neat",
+   "scene": "SC08",
+   "text": "I have a really neat way of doing just that.",
+   "start": 54.8,
+   "out": 57.25,
+   "highlight": [
+    "neat"
+   ]
+  },
+  {
+   "id": "c_slide",
+   "scene": "SC08",
+   "text": "And so let me slide into a new tag team of software",
+   "start": 57.36,
+   "out": 59.5,
+   "highlight": [
+    "tag",
+    "team"
+   ]
+  },
+  {
+   "id": "c_power",
+   "scene": "SC08",
+   "text": "that is going to act as a",
+   "start": 59.92,
+   "out": 62.6,
+   "highlight": []
+  }
+ ]
+}

@@ -1,0 +1,6 @@
+# client assets and renders stay out of git
+noon_ae/assets/
+noon_ae/renders/
+*.result.json
+_intake/
+NOON_StyleTest_package.zip
