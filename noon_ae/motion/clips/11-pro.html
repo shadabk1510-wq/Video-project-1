@@ -14,8 +14,8 @@
     <div id="grid"></div>
     <div class="ghost" id="g0" style="top:-370px">PROFESSIONAL</div>
     <div class="ghost" id="g1" style="top:190px">PROFESSIONAL</div>
-    <div class="row" id="sep" data-t="translateX(-50%)" style="left:0;top:-250px;transform:translateX(-50%);font-size:34px;font-weight:600;color:rgba(255,255,255,.88)">This part of the workflow separates</div>
-    <div class="row cap" id="hl" data-t="translateX(-50%)" style="left:0;top:-150px;transform:translateX(-50%);color:#fff;font-size:22px;letter-spacing:.5em">High-level</div>
+    <div class="row" id="sep" style="left:0;top:-36px;transform:translateX(-50%);gap:.26em;font-size:54px;font-weight:700;letter-spacing:-.03em;color:#fff;white-space:nowrap"></div>
+    <div class="row cap" id="hl" data-t="translateX(-50%)" style="left:0;top:-150px;transform:translateX(-50%);color:#fff;font-size:30px;font-weight:600;letter-spacing:.4em">High-level</div>
     <div class="row" id="pro" style="transform:translate(-50%,-50%);font-size:180px;font-weight:800;letter-spacing:-.05em;line-height:1;color:#fff"></div>
     <div class="row" id="rest" data-t="translateX(-50%)" style="left:0;top:395px;transform:translateX(-50%);font-size:40px;font-weight:600;color:#fff">designers from everybody else.</div>
   </div>
@@ -31,7 +31,9 @@ $('pro').innerHTML = 'PROFESSIONAL'.split('').map((c, i) => `<span id="p${i}" st
 const GX = [-560, 560], GY = [-170, 150];
 $('grid').innerHTML = GX.map(x => `<div class="gl" style="left:${x}px;top:-460px;width:1.5px;height:920px"></div>`).join('') + GY.map(y => `<div class="gl" style="left:-860px;top:${y}px;width:1720px;height:1.5px"></div>`).join('') +
   GX.flatMap(x => GY.map(y => `<div class="hd" style="left:${x}px;top:${y}px"></div>`)).join('');
-const tPro = 0.12, tSep = wt(352, T0) - 0.35, tHL = wt(353, T0), tWord = wt(354, T0) - 0.04, tRest = wt(355, T0);
+const SEPW = [['Here’s', 344], ['a', 345], ['part', 346], ['of', 347], ['this', 348], ['workflow', 349], ['that', 350], ['will', 351], ['separate', 352]];
+$('sep').innerHTML = SEPW.map((w, i) => `<span id="sw${i}" style="display:inline-block">${w[0]}</span>`).join('');
+const tPro = 0.12, tHL = wt(353, T0), tWord = wt(354, T0) - 0.04, tRest = wt(355, T0);
 M.scene({
   W: 1920, H: 1080, bg: '#F7CFCE', T: 6.15, intro: null,
   SH: {
@@ -41,7 +43,7 @@ M.scene({
   start: 'tray', SEQ: [[tPro, 'pro']],
   layers: [{el: 'Lpro', tin: tPro, tout: null, o: {din: 0.1, lin: 0.3}, update: (t) => {
     $('grid').style.opacity = M.eo((t - tPro - 0.2) / 0.8);
-    show($('sep'), t, tSep, tWord - 0.1, 14, {din: 0, lin: 0.4});
+    SEPW.forEach((w, i) => show($('sw' + i), t, wt(w[1], T0) - 0.06, tWord - 0.28, 26, {din: 0, lin: 0.35, lout: 0.25, blur: 8}));
     show($('hl'), t, tHL - 0.05, null, 12, {din: 0, lin: 0.35});
     for (let i = 0; i < 12; i++) show($('p' + i), t, tWord + i * 0.025, null, 60, {din: 0, lin: 0.45, blur: 16});
     [0, 1].forEach(i => { const a = M.eo((t - tWord - 0.25) / 0.9), e = $('g' + i).style; e.opacity = a; e.transform = `translateX(-50%) translateY(${((1 - a) * (i ? 70 : -70)).toFixed(2)}px)`; });
