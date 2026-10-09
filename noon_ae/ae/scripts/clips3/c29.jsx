@@ -12,7 +12,7 @@ N3CLIPS["29"] = { tin: 568.40, build: function () {
         P = K.pre(g, "Page " + (i + 1), 340, 480, X[i], 10); c = P.ctx;
         N3.box(c, { name: "Paper", cx: 0, cy: 0, w: 340, h: 480, r: 10, fill: i === 0 ? N3.COL.coral : "#FFFFFF" });
         if (i === 0) { K.logo(c, { name: "NOON", cx: 0, cy: -40, w: 220, color: "#FFFFFF" }); N3.text(c, "Brand guide", { name: "Cover title", x: 0, top: 30, fs: 28, wt: 600, color: "#FFFFFF", align: "center" });
-            N3.text(c, "High Sun · 2027", { name: "Cover sub", x: 0, top: 70, fs: 16, color: "#FFFFFF", align: "center", opacity: 85 }); }
+            N3.text(c, "High Sun \u00B7 2027", { name: "Cover sub", x: 0, top: 70, fs: 16, color: "#FFFFFF", align: "center", opacity: 85 }); }
         if (i === 1) { N3.text(c, "Rules", { name: "Rules title", x: -140, top: -210, fs: 28, wt: 700 });
             N3.ellipse(c, { name: "Ex sun", cx: -90, cy: -80, d: 90, fill: N3.COL.verm }); N3.box(c, { name: "Ex zones a", cx: 60, cy: -98, w: 110, h: 50, r: 8, fill: N3.COL.verm }); N3.box(c, { name: "Ex zones b", cx: 60, cy: -54, w: 110, h: 38, r: 8, fill: N3.COL.ivory });
             N3.box(c, { name: "Ex order 1", x: -140, y: 20, w: 150, h: 14, r: 7, fill: N3.COL.navy }); N3.box(c, { name: "Ex order 2", x: -140, y: 44, w: 110, h: 12, r: 6, fill: N3.COL.navy }); N3.box(c, { name: "Ex order 3", x: -140, y: 66, w: 80, h: 10, r: 5, fill: "#8796A8" });

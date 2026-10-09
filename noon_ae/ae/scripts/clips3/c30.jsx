@@ -11,7 +11,7 @@ N3CLIPS["30"] = { tin: 582.10, build: function () {
     (function () { var j, P; for (j = 0; j < 3; j++) { P = K.pre(g, "Page " + (j + 1), 340, 480, -460 + j * 460, 10); N3.box(P.ctx, { name: "Paper", cx: 0, cy: 0, w: 340, h: 480, r: 10, fill: j === 0 ? N3.COL.coral : "#FFFFFF" });
         if (j === 0) { K.logo(P.ctx, { name: "NOON", cx: 0, cy: -40, w: 220, color: "#FFFFFF" }); } N3.shadow(P.layer, N3.SHADOW.card); N3.xf(P.layer, "ADBE Rotate Z").setValue([-4, 0, 4][j]); } })();
     g = N3.group(S, "Dropbox window", { tin: tWin + 0.1, din: 0.05, lin: 0.35 });
-    K.window(g, "Dropbox recording", "dropbox_clip.mp4", 1280, 760, tWin + 0.2, "Dropbox · NOON Coffee Branding");
+    K.window(g, "Dropbox recording", "dropbox_clip.mp4", 1280, 760, tWin + 0.2, "Dropbox \u00B7 NOON Coffee Branding");
     for (i = 0; i < 4; i++) {
         c = K.tag(S.worldCtx, A[i], { name: "File " + (i + 1), x: XA[i], top: 360, fs: 18, padX: 16, padY: 9, bg: i === 0 ? N3.COL.coral : "#FFFFFF", color: i === 0 ? "#FFFFFF" : N3.COL.coral });
         K.pop(c.bg, tA[i]); N3.show(c.text, tA[i] + 0.05, null, 8, { din: 0, lin: 0.3 });

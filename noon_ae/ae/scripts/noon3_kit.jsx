@@ -437,7 +437,7 @@ K.play = function (l, tPlay, T) {
 };
 // Communication goals board. T = {eye, cards:[3], ticks:[3], notes, present} or null.
 K.goals = function (g, T) {
-    var i, x, l, c, who = ["ALEX · MARKETING", "MAYA · FOUNDER", "JO · SALES"], goal = ["Energy", "Composed information", "Clearly coffee"],
+    var i, x, l, c, who = ["ALEX \u00B7 MARKETING", "MAYA \u00B7 FOUNDER", "JO \u00B7 SALES"], goal = ["Energy", "Composed information", "Clearly coffee"],
         q = ["Does the work have the\nenergy Alex wanted?", "Does the information feel\ncomposed, as Maya asked?", "Is the coffee clearly\nidentified for Jo?"];
     K.at(N3.text(g, "Back to the brief", { name: "Goals eyebrow", x: -790, top: -400, fs: 15, wt: 600, ls: 0.14, caps: true, color: N3.COL.capRed }), K.T(T, "eye"), null, 10);
     K.at(N3.text(g, "Communication goals", { name: "Goals title", x: -790, top: -372, fs: 44, wt: 600, ls: -0.025 }), K.T(T, "eye"), null, 12);
@@ -456,11 +456,11 @@ var t;   // shared loop temp for K.goals (ES3 has no block scope)
 
 // The six-step workflow list (recap). Card 840 x 760, contents relative to the card top (anchor 't').
 K.STEPS = [["brief", "Turn project files into direction", "Brief, research and meeting notes"], ["target", "Give every design a clear purpose", "Before we start anything"],
-    ["rules", "Create design rules", "That change the whole workflow"], ["devices", "Carry it across every format", "Packaging · digital · motion"],
+    ["rules", "Create design rules", "That change the whole workflow"], ["devices", "Carry it across every format", "Packaging \u00B7 digital \u00B7 motion"],
     ["checklist", "Check against the original goals", "Review the work with the brief"], ["handover", "Hand over a system", "So anyone can build on it"]];
 K.recap = function (g, tIn, tStep) {
     var i, y, hi, l, ys = [];
-    K.at(N3.text(g, "The workflow · 2027", { name: "Recap eyebrow", x: -370, top: 42, fs: 15, wt: 600, ls: 0.14, caps: true, color: N3.COL.capRed }), tIn, null, 10);
+    K.at(N3.text(g, "The workflow \u00B7 2027", { name: "Recap eyebrow", x: -370, top: 42, fs: 15, wt: 600, ls: 0.14, caps: true, color: N3.COL.capRed }), tIn, null, 10);
     K.at(N3.text(g, "The whole process, in six steps", { name: "Recap title", x: -370, top: 68, fs: 34, wt: 600, ls: -0.025 }), tIn, null, 10);
     for (i = 0; i < 6; i++) { ys.push(160 + i * 94); }
     hi = N3.box(g, { name: "Active row", x: -396, y: ys[0] - 8, w: 792, h: 86, r: 22, fill: N3.COL.blush });

@@ -8,7 +8,7 @@ N3CLIPS["31"] = { tin: 597.40, build: function () {
             pro: { w: 1760, h: 940, r: 56, bg: "#EA6262", cam: 1.06 }, end: { w: 1760, h: 940, r: 40, bg: "#FFFFFF", cam: 1.0 } },
         start: "win", SEQ: [[tList, "list"], [tEnd, "pro"], [tCard, "end"]], cy: [[0.01, -50, N3.SP.INSTANT], [tList, 0, N3.SP.MORPH]] });
     g = N3.group(S, "Dropbox window", { tin: null, tout: tList, lout: 0.16 });
-    K.window(g, "Dropbox recording", "dropbox_clip.mp4", 1280, 760, -14.0, "Dropbox · NOON Coffee Branding");
+    K.window(g, "Dropbox recording", "dropbox_clip.mp4", 1280, 760, -14.0, "Dropbox \u00B7 NOON Coffee Branding");
     g = N3.group(S, "Recap list", { tin: tList + 0.1, tout: tEnd, anchor: "t", din: 0.05, lin: 0.35, lout: 0.18 });
     K.recap(g, tList + 0.2, [L(601.08), L(609.08), L(616.84), L(624.20), L(631.64), L(638.84)]);
     g = N3.group(S, "Follow explain build", { tin: tEnd + 0.05, tout: tCard, din: 0.05, lin: 0.35, lout: 0.18 });
