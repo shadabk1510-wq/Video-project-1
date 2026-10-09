@@ -22,7 +22,7 @@ var N3CLIPS = {};
 
 var CONFIG = {
     assets: "../../assets/_ae",                 // client assets (relative to this script)
-    reference: "../../motion/out/NOON_v3_preview.mp4",   // optional guide layer
+    reference: "../../motion/out/NOON_v3_preview_small.mp4",   // optional guide layer (the approved preview)
     vo: "vo2_full.wav", voStart: 2.0,
     only: null,                                 // e.g. ["02", "05"] to build just those clips
     save: "../NOON3.aep"

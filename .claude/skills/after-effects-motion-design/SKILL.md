@@ -103,6 +103,19 @@ rendered in headless Chromium with 4-subframe motion blur (`render.js`), stills 
 - Deliver the rendered preview **and** an AE import script that places the clips, VO and SFX cue markers.
 - Banned in this style: bouncy easing, slideshow cuts, template look, invented data.
 
+If the user needs it **editable in AE** (usually yes), port the approved clips to native JSX and verify the port here:
+- `scripts/ae_sim/model.mjs build.jsx out/model.json` runs the JSX against a strict model of the AE DOM (real match names,
+  value types, ease dimensions; throws on `setValue` on keyed props and on plain `layer.parent =`) and dumps the layer graph.
+- `scripts/ae_sim/render.mjs model.json --comp NAME --times a,b,c --out sheet.png [--bg]` (or `--video out.mp4`) draws frames
+  from it in Chromium: keys/eases, expressions, parenting, collapsed precomps, mattes, masks, shapes, text animators, text
+  on path, blur, shadows. Compare with the approved render at the same times until they match; it is a layout and timing
+  check, not a pixel match with AE.
+- Port springs as HOLD keys at the targets plus a spring expression (retime = drag keys); word timings as layer markers
+  driving an expression selector; reveals as plain eased keys. See `noon_ae/ae/scripts/noon3_lib.jsx` for a full library.
+- AE gotchas the model encodes: `layer.parent = p` rewrites the child's transform (use `setParentWithJump`); effects on
+  footage work in the image's own pixels (divide blur and shadow sizes by the layer scale); CSS `blur(px)` is a sigma, and
+  AE Blurriness is about 2.5× that.
+
 ## 4. Safety
 
 - Don't close, overwrite, or clean up the user's open project, delete items you didn't create,
