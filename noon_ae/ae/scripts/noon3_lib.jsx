@@ -722,3 +722,16 @@ N3.motionBlur = function (comp, seen) {
         if (l.source && l.source instanceof CompItem) { N3.motionBlur(l.source, seen); }
     }
 };
+
+// AE often ignores the font on the first text layer a script creates in a session (v1 and v3 both showed a serif first
+// caption). Touch every Inter weight on a throwaway layer before building, then remove it.
+N3.warmFonts = function () {
+    var c = app.project.items.addComp("_font warm-up", 100, 100, 1, 1, N3.FPS), l = c.layers.addText("Aa"), tp, d, k, i;
+    tp = l.property("ADBE Text Properties").property("ADBE Text Document");
+    for (k in N3.FONT) {
+        for (i = 0; i < 2; i++) { d = tp.value; d.font = N3.FONT[k]; d.fontSize = 20; tp.setValue(d); }
+        if (tp.value.font !== N3.FONT[k]) { AEL.warn("Font " + N3.FONT[k] + " is not installed (AE used " + tp.value.font + ")"); }
+    }
+    c.remove();
+};
+

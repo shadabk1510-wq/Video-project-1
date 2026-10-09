@@ -34,6 +34,7 @@ function main() {
     N3.ASSET_DIR = (new Folder(here + "/" + CONFIG.assets)).fsName;
     N3.folders = AEL.standardFolders();
     main = AEL.comp("NOON3_MAIN", { width: N3.W, height: N3.H, duration: 130, fps: N3.FPS, folder: N3.folders.main });
+    N3.warmFonts();
     N3.background(main);
     main.motionBlur = true;
     for (i = 0; i < ORDER.length; i++) {
