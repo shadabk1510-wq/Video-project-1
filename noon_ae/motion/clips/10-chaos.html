@@ -6,6 +6,7 @@
 .sk{position:absolute;left:-430px;height:11px;border-radius:6px;background:#F5E8E7}
 .ln{position:absolute;left:-430px;font-size:21px;line-height:30px;color:#3A2A2C;white-space:nowrap}
 .hlb{position:absolute;left:-436px;height:32px;border-radius:5px;mix-blend-mode:multiply}
+.who{position:absolute;left:330px}
 #sorted{position:absolute;left:0;top:220px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:#fff;border-radius:999px;padding:12px 24px 12px 14px;font-size:22px;font-weight:600;white-space:nowrap;box-shadow:0 18px 40px -16px rgba(150,50,58,.45)}
 </style>
 <div data-slot="world"><div id="sorted"><span id="sic" style="width:32px;height:32px;border-radius:50%;background:#EA6262;display:flex;align-items:center;justify-content:center"></span>One clear direction</div></div><!--/world-->
@@ -26,7 +27,8 @@ const LN = [['The main disagreement', 176], ['Maya wants the brand to feel quiet
   ['Sam: “The answer may not be choosing calm or loud. The system could hold calm', 462], ['information and one unmistakable moment of energy.”', 496]];
 $('docbody').innerHTML = LN.map((l, i) => `<div class="hlb" id="h${i}" style="top:${l[1] - 1}px;background:${i >= 6 ? 'rgba(234,98,98,.42)' : 'rgba(247,166,164,.62)'}"></div>`).join('') +
   LN.map((l, i) => `<div class="ln${i === 0 ? ' k' : ''}" id="L${i}" style="top:${l[1]}px;${i === 0 ? 'font-size:26px' : ''}">${l[0]}</div>`).join('') +
-  [820, 760, 640, 800, 520].map((w, i) => `<div class="sk" style="top:${572 + i * 32}px;width:${w}px"></div>`).join('');
+  [820, 760, 640, 800, 520].map((w, i) => `<div class="sk" style="top:${572 + i * 32}px;width:${w}px"></div>`).join('') +
+  [[1, 228, 'MAYA · FOUNDER'], [2, 276, 'ALEX · MARKETING'], [4, 358, 'JO · SALES'], [6, 462, 'SAM · CREATIVE']].map(c => `<div class="who chip" style="top:${c[1] - 4}px;background:${c[0] >= 6 ? '#EA6262' : '#FCE3E2'};color:${c[0] >= 6 ? '#fff' : '#C2575D'};font-size:13px">${c[2]}</div>`).join('');
 let sized = false;
 const NOTES = [['MAYA', 'Quiet &amp;<br>premium'], ['ALEX', 'More colour<br>&amp; energy'], ['JO', 'Clearly<br>coffee'], ['SAM', 'Calm info, one<br>moment of energy']];
 $('notes').innerHTML = NOTES.map((n, i) => `<div class="note" id="n${i}"><span class="chip">${n[0]}</span><div class="nt">${n[1]}</div></div>`).join('');

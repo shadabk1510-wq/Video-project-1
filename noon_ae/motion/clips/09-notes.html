@@ -50,8 +50,8 @@ const measure = () => { WID = LN.map((l, i) => $('L' + i).offsetWidth + 12); };
 const tDoc = 0.2;
 const L = i => [LN[i][2] - T0, LN[i][3] - T0];
 // camera: push in on the paragraph, pan down to Sam's note on "just below that", pull back at the end
-const camT = M.track(1.18, [[L(1)[0] - 0.6, 1.36, M.CAM], [101.75 - T0, 1.18, M.CAM]]);
-const fyT = M.track(0, [[L(1)[0] - 0.6, -60, M.CAM], [96.3 - T0, 60, M.CAM], [101.75 - T0, 0, M.CAM]]);
+const camT = M.track(1.18, [[L(1)[0] - 0.6, 1.36, M.CAM], [101.15 - T0, 1.18, M.CAM]]);
+const fyT = M.track(0, [[L(1)[0] - 0.6, -60, M.CAM], [96.3 - T0, 60, M.CAM], [101.15 - T0, 0, M.CAM]]);
 // pen tip path: draws along each stroke, lifts and arcs to the next one
 const DOC_TOP = -420;   // doc h 840 -> top edge at -420 (world)
 let penPath = null;
