@@ -245,3 +245,165 @@ K.packBoard = function (g, T, tout) {
     ch = K.tag(g, "Organised info \u2192 explains", { name: "Callout info", x: PX + 250, top: 180, fs: 15, bg: N3.COL.navy }); K.showChip(ch, K.T(T, "organised"), tout);
     l = N3.text(g, "A clear starting point", { name: "Starting point", x: PX, top: 360, fs: 22, wt: 600, color: N3.COL.soft, align: "center" }); K.at(l, K.T(T, "photo"), tout, 10);
 };
+
+// ======================================================================== chunk 3
+// The three-rules board (end of clip 18). T = {slots, n:[3]} clip-local, or null for the finished state.
+K.rulesBoard = function (g, T) {
+    var l, i, x, ts = T ? T.slots : null;
+    l = N3.text(g, "NOON design rules", { name: "Rules eyebrow", x: -720, top: -320, fs: 15, wt: 600, ls: 0.14, caps: true, color: N3.COL.capRed }); K.at(l, T ? ts + 0.2 : null, null, 12);
+    l = N3.text(g, "Three rules", { name: "Rules title", x: -720, top: -294, fs: 44, wt: 600, ls: -0.025 }); K.at(l, T ? T.n[2] - 0.1 : null, null, 12);
+    for (i = 0; i < 3; i++) {
+        x = -480 + i * 480;
+        l = N3.box(g, { name: "Rule slot " + (i + 1), cx: x, cy: 60, w: 440, h: 440, r: 28, fill: N3.COL.blush }); K.at(l, T ? ts + 0.3 + i * 0.1 : null, null, 24);
+        l = N3.text(g, String(i + 1), { name: "Rule number " + (i + 1), x: x, cy: 10, fs: 160, wt: 800, lh: 160, color: N3.COL.coral, align: "center" }); if (T) { K.pop(l, T.n[i]); }
+        l = N3.box(g, { name: "Rule line " + (i + 1) + "a", cx: x, cy: 150, w: 240, h: 12, r: 6, fill: "#F2D9D8" }); K.at(l, T ? T.n[i] + 0.2 : null, null, 8);
+        l = N3.box(g, { name: "Rule line " + (i + 1) + "b", cx: x - 30, cy: 180, w: 180, h: 12, r: 6, fill: "#F2D9D8" }); K.at(l, T ? T.n[i] + 0.3 : null, null, 8);
+    }
+};
+
+// Vector NOON pack (precomp 420 x 600, clipped). o: {scale, sunY (-120), sunD (380), sunAbove (sun over the ivory panel, under the type), weight}
+K.pack = function (ctx, name, x, y, o) {
+    var P, c, R = {}, sd, sy, mkSun;
+    o = o || {}; sd = o.sunD || 380; sy = o.sunY === undefined ? -120 : o.sunY;
+    P = K.pre(ctx, name, 420, 600, x, y); c = P.ctx; R.layer = P.layer; R.ctx = c;
+    N3.box(c, { name: "Pack base", cx: 0, cy: 0, w: 420, h: 600, r: 22, fill: "#FFFFFF", stroke: "#E2C9C8", sw: 3 });
+    mkSun = function () { R.sun = N3.ellipse(c, { name: "Sun", cx: 0, cy: sy, d: sd, fill: N3.COL.verm }); R.sunPos = [c.ox, c.oy + sy, 0]; };
+    if (!o.sunAbove) { mkSun(); }
+    R.panel = N3.box(c, { name: "Ivory info area", cx: 0, cy: 165, w: 420, h: 270, fill: N3.COL.ivory });
+    if (o.sunAbove) { mkSun(); }
+    R.type = [K.logo(c, { name: "Pack NOON", cx: 0, cy: 82, w: 230 }),
+        N3.text(c, "High Sun", { name: "Pack high sun", x: 0, top: 118, fs: 34, wt: 800, caps: true, color: N3.COL.navy, align: "center" }),
+        N3.text(c, "Whole bean coffee", { name: "Pack whole bean", x: 0, top: 166, fs: 16, wt: 600, ls: 0.14, caps: true, color: N3.COL.navy, align: "center" }),
+        N3.text(c, "Colombia \u00b7 Medium roast", { name: "Pack origin", x: 0, top: 206, fs: 15, color: N3.COL.navy, align: "center" }),
+        N3.text(c, "Caramel \u00b7 Cacao \u00b7 Orange", { name: "Pack notes", x: 0, top: 230, fs: 15, color: N3.COL.navy, align: "center" }),
+        N3.text(c, "250 g", { name: "Pack weight", x: 0, top: 262, fs: 14, wt: 600, color: N3.COL.navy, align: "center" })];
+    N3.mask(P.layer, N3.rrShape(0, 0, 420, 600, 22));
+    N3.shadow(P.layer, N3.SHADOW.card);
+    if (o.scale) { N3.xf(P.layer, "ADBE Scale").setValue([o.scale * 100, o.scale * 100]); }
+    return R;
+};
+// Social post (square s): sun enlarged beyond the frame, info in an ivory band.
+K.social = function (ctx, name, x, y, s) {
+    var P = K.pre(ctx, name, s, s, x, y), c = P.ctx;
+    N3.box(c, { name: "Sky", cx: 0, cy: 0, w: s, h: s, fill: "#AFCFE6" });
+    N3.ellipse(c, { name: "Sun", cx: s * 0.22, cy: -s * 0.3, d: s * 1.25, fill: N3.COL.verm });
+    N3.box(c, { name: "Ivory info area", cx: 0, cy: s * 0.33, w: s, h: s * 0.34, fill: N3.COL.ivory });
+    K.logo(c, { name: "NOON", cx: -s * 0.24, cy: s * 0.27, w: s * 0.36 });
+    N3.text(c, "High Sun", { name: "High sun", x: -s * 0.42, top: s * 0.335, fs: Math.round(s * 0.065), wt: 800, caps: true, color: N3.COL.navy });
+    N3.text(c, "Your next ritual.", { name: "Headline", x: -s * 0.42, top: s * 0.41, fs: Math.round(s * 0.045), color: N3.COL.navy });
+    N3.mask(P.layer, N3.rrShape(0, 0, s, s, 18));
+    N3.shadow(P.layer, N3.SHADOW.card);
+    return P;
+};
+// Product page (w x h): image side with the sun, ivory info column with the same order.
+K.web = function (ctx, name, x, y, w, h) {
+    var P = K.pre(ctx, name, w, h, x, y), c = P.ctx, x0 = w * 0.04;
+    N3.box(c, { name: "Page", cx: 0, cy: 0, w: w, h: h, fill: N3.COL.ivory });
+    N3.box(c, { name: "Image side", cx: -w * 0.25, cy: 0, w: w * 0.5, h: h, fill: "#AFCFE6" });
+    N3.ellipse(c, { name: "Sun", cx: -w * 0.25, cy: -h * 0.05, d: h * 0.62, fill: N3.COL.verm });
+    K.logo(c, { name: "NOON", cx: x0 + h * 0.21, cy: -h * 0.3, w: h * 0.42 });
+    N3.text(c, "High Sun", { name: "High sun", x: x0, top: -h * 0.2, fs: Math.round(h * 0.1), wt: 800, caps: true, color: N3.COL.navy });
+    N3.text(c, "Whole bean coffee", { name: "Whole bean", x: x0, top: -h * 0.06, fs: Math.round(h * 0.055), wt: 600, ls: 0.12, caps: true, color: N3.COL.navy });
+    N3.text(c, "Colombia \u00b7 Medium roast", { name: "Origin", x: x0, top: h * 0.04, fs: Math.round(h * 0.05), color: N3.COL.navy });
+    N3.text(c, "Caramel \u00b7 Cacao \u00b7 Orange", { name: "Notes", x: x0, top: h * 0.12, fs: Math.round(h * 0.05), color: N3.COL.navy });
+    N3.box(c, { name: "Buy button", x: x0, y: h * 0.26, w: w * 0.3, h: h * 0.13, r: h * 0.065, fill: N3.COL.coral });
+    N3.mask(P.layer, N3.rrShape(0, 0, w, h, 16));
+    N3.shadow(P.layer, N3.SHADOW.card);
+    return P;
+};
+// Rule header: big number + two-line statement (top-left of a 1700 x 940 board).
+K.ruleHead = function (g, n, text, tN, tText, tout) {
+    var l = N3.text(g, n, { name: "Rule no", x: -790, top: -400, fs: 110, wt: 800, lh: 110, color: N3.COL.coral }); K.at(l, tN, tout, 20);
+    l = N3.text(g, text, { name: "Rule text", x: -790, top: -270, fs: 44, wt: 600, lh: 54, ls: -0.025 }); K.at(l, tText, tout, 16);
+};
+K.chipAt = function (g, str, o, t, tout) { var c = K.tag(g, str, o); K.showChip(c, t, tout); return c; };
+// small sun tile (variations). k: 'size' | 'crop' | 'pos'
+K.sunTile = function (g, name, x, y, k) {
+    var P = K.pre(g, name, 220, 220, x, y), c = P.ctx;
+    N3.box(c, { name: "Tile", cx: 0, cy: 0, w: 220, h: 220, fill: N3.COL.blush });
+    if (k === "size") { N3.ellipse(c, { name: "Sun", cx: 0, cy: 0, d: 110, fill: N3.COL.verm }); }
+    if (k === "crop") { N3.ellipse(c, { name: "Sun", cx: 0, cy: 40, d: 300, fill: N3.COL.verm }); }
+    if (k === "pos") { N3.ellipse(c, { name: "Sun", cx: 70, cy: -70, d: 220, fill: N3.COL.verm }); }
+    N3.mask(P.layer, N3.rrShape(0, 0, 220, 220, 20));
+    return P.layer;
+};
+
+// Rule 1 board. T = {head, text, pack, size, crop, pos, circle, bag, social, recog} or null (finished).
+K.rule1 = function (g, T, tout) {
+    var p, l;
+    K.ruleHead(g, "01", "The sun creates the\nmain visual impact", K.T(T, "head"), K.T(T, "text"), tout);
+    p = K.pack(g, "Rule 1 pack", -520, 150, { scale: 0.62 }); K.at(p.layer, K.T(T, "pack"), tout, 30);
+    K.chipAt(g, "Bag: the full sun", { name: "Chip bag", x: -650, top: 350, fs: 15 }, K.T(T, "bag"), tout);
+    K.at(K.sunTile(g, "Tile size", 0, -170, "size"), K.T(T, "size"), tout, 24);
+    K.at(K.sunTile(g, "Tile crop", 260, -170, "crop"), K.T(T, "crop"), tout, 24);
+    K.at(K.sunTile(g, "Tile position", 520, -170, "pos"), K.T(T, "pos"), tout, 24);
+    K.at(N3.text(g, "Size", { name: "Label size", x: 0, top: -40, fs: 18, wt: 600, align: "center" }), K.T(T, "size"), tout, 8);
+    K.at(N3.text(g, "Crop", { name: "Label crop", x: 260, top: -40, fs: 18, wt: 600, align: "center" }), K.T(T, "crop"), tout, 8);
+    K.at(N3.text(g, "Position", { name: "Label position", x: 520, top: -40, fs: 18, wt: 600, align: "center" }), K.T(T, "pos"), tout, 8);
+    K.chipAt(g, "Always a circle", { name: "Chip circle", cx: 260, top: 6, fs: 15, bg: N3.COL.navy }, K.T(T, "circle"), tout);
+    l = K.social(g, "Rule 1 social", 260, 300, 300); K.at(l.layer, K.T(T, "social"), tout, 30);
+    K.chipAt(g, "Social: beyond the frame", { name: "Chip social", x: 430, top: 230, fs: 15 }, K.T(T, "social"), tout);
+    K.chipAt(g, "Varied, still recognisable", { name: "Chip recognisable", x: 430, top: 290, fs: 15, bg: N3.COL.navy }, K.T(T, "recog"), tout);
+};
+// Rule 2 board. T = {head, text, pack, down, hard, busy, up, zoneE, zoneI} or null. The sun sits over the panel layer so moving it
+// down covers the type (the demo); in the finished state it is back up.
+K.rule2 = function (g, T, tout) {
+    var p, l, sp, up, dn, c1, c2;
+    K.ruleHead(g, "02", "Product information sits\nin a clear ivory area", K.T(T, "head"), K.T(T, "text"), tout);
+    p = K.pack(g, "Rule 2 pack", 250, 30, { scale: 1.2, sunAbove: true, sunY: -160, sunD: 360 }); K.at(p.layer, K.T(T, "pack"), tout, 30);
+    if (T) {
+        up = p.sunPos; dn = [up[0], up[1] + 330, 0];
+        N3.spring(N3.pos(p.sun), up, [[T.down, dn, N3.SP.SLOW], [T.up, up, N3.SP.SLOW]]);
+        c1 = K.tag(g, "\u2715  Harder to read", { name: "Chip hard", x: 560, top: 60, fs: 16 }); K.showChip(c1, T.hard, T.up);
+        c2 = K.tag(g, "\u2715  Too busy", { name: "Chip busy", x: 560, top: 118, fs: 16 }); K.showChip(c2, T.busy, T.up);
+    }
+    l = N3.box(g, { name: "Zone energy", cx: 250, cy: -132, w: 524, h: 396, r: 24, stroke: N3.COL.coral, sw: 4 }); K.at(l, K.T(T, "zoneE"), tout, 0);
+    l = N3.box(g, { name: "Zone information", cx: 250, cy: 228, w: 524, h: 324, r: 24, stroke: N3.COL.navy, sw: 4 }); K.at(l, K.T(T, "zoneI"), tout, 0);
+    K.chipAt(g, "Energy", { name: "Chip energy", x: -230, top: -150, fs: 18 }, K.T(T, "zoneE"), tout);
+    K.chipAt(g, "Information", { name: "Chip information", x: -230, top: 210, fs: 18, bg: N3.COL.navy }, K.T(T, "zoneI"), tout);
+};
+// Rule 3 board. T = {head, text, pack, items:[6], formats, same} or null.
+K.rule3 = function (g, T, tout) {
+    var p, l, i, ys = [82, 135, 174, 214, 238, 269], s = 0.85, X = -330, Y = 110, soc, web;
+    K.ruleHead(g, "03", "Product information\nfollows the same order", K.T(T, "head"), K.T(T, "text"), tout);
+    p = K.pack(g, "Rule 3 pack", X, Y, { scale: s }); K.at(p.layer, K.T(T, "pack"), tout, 30);
+    for (i = 0; i < 6; i++) {
+        l = N3.ellipse(g, { name: "Order " + (i + 1), cx: X + 210 * s + 36, cy: Y + ys[i] * s, d: 26, fill: N3.COL.coral }); if (T) { K.pop(l, T.items[i]); }
+        l = N3.text(g, String(i + 1), { name: "Order no " + (i + 1), x: X + 210 * s + 36, cy: Y + ys[i] * s, fs: 14, wt: 800, color: "#FFFFFF", align: "center" }); if (T) { K.pop(l, T.items[i]); }
+    }
+    soc = K.social(g, "Rule 3 social", 320, -150, 280); K.at(soc.layer, K.T(T, "formats"), tout, 30);
+    web = K.web(g, "Rule 3 web", 400, 220, 560, 260); K.at(web.layer, K.T(T, "formats") === null ? null : K.T(T, "formats") + 0.25, tout, 30);
+    K.chipAt(g, "Same order, every format", { name: "Chip same order", x: 120, top: 380, fs: 16 }, K.T(T, "same"), tout);
+};
+
+// Review board (clips 24-25): rules column + three real designs with a tick grid. T = {in, rows:[4], stamps:[3]} or null; motion row
+// shown when T is null or T.rows[3] set.
+K.REV_X = [-200, 190, 580];
+K.REV_Y = [-70, 40, 150, 260];
+K.review = function (g, T, motion) {
+    var l, i, j, imgs = ["bag.png", "social1.png", "product_page.png"], names = ["Packaging", "Social post", "Product page"],
+        rules = ["1  Sun = the impact", "2  Info in the ivory area", "3  Same order", "M  Rises, then settles"], t;
+    K.at(N3.text(g, "Review", { name: "Review eyebrow", x: -840, top: -420, fs: 15, wt: 600, ls: 0.14, caps: true, color: N3.COL.capRed }), K.T(T, "in"), null, 12);
+    K.at(N3.text(g, "Against the brief and the rules", { name: "Review title", x: -840, top: -394, fs: 34, wt: 600, ls: -0.025 }), K.T(T, "in"), null, 12);
+    for (i = 0; i < 3; i++) {
+        l = N3.image(g, imgs[i], { name: "Design " + names[i], cx: K.REV_X[i], cy: -285, w: 220, h: 220, r: 18 }); K.at(l, T ? T["in"] + 0.15 + i * 0.12 : null, null, 30);
+        l = N3.text(g, names[i], { name: "Design name " + (i + 1), x: K.REV_X[i], top: -164, fs: 22, wt: 600, align: "center" }); K.at(l, T ? T["in"] + 0.25 + i * 0.12 : null, null, 10);
+    }
+    for (j = 0; j < 4; j++) {
+        if (j === 3 && !motion) { continue; }
+        t = T ? T.rows[j] : null;
+        l = N3.box(g, { name: "Rule row " + (j + 1), cx: 0, cy: K.REV_Y[j], w: 1680, h: 92, r: 20, fill: N3.COL.blush }); K.at(l, t === null ? null : t - 0.2, null, 0);
+        l = N3.text(g, rules[j], { name: "Rule row text " + (j + 1), x: -800, cy: K.REV_Y[j], fs: 24, wt: 600 }); K.at(l, t === null ? null : t - 0.15, null, 10);
+        for (i = 0; i < 3; i++) {
+            l = N3.icon(g, "circleCheck", { name: "Tick " + (j + 1) + "." + (i + 1), cx: K.REV_X[i], cy: K.REV_Y[j], size: 44, color: N3.COL.coral, sw: 2.4 });
+            if (t !== null) { K.pop(l, t + 0.3 + i * 0.18); }
+        }
+    }
+};
+K.stamps = function (g, T) {
+    var i, c;
+    for (i = 0; i < 3; i++) {
+        c = K.tag(g, "\u2713  Follows the rules", { name: "Stamp " + (i + 1), cx: K.REV_X[i], top: 336, fs: 21, padX: 18, padY: 9 });
+        if (T) { K.pop(c.bg, T[i]); N3.show(c.text, T[i] + 0.05, null, 8, { din: 0, lin: 0.3 }); }
+    }
+};
