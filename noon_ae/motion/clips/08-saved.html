@@ -80,7 +80,7 @@ M.scene({
   extra: (t, g) => {
     const v = M.vis(t, tSaved, tStage - 0.1, {din: 0, lin: 0.35, lout: 0.2}), s = $('toast').style;
     if (v.o < 0.002) { s.display = 'none'; } else { s.display = ''; s.opacity = v.o; s.transform = `translateX(-50%) translateY(${((1 - v.a) * 24).toFixed(2)}px) scale(${v.s})`; }
-    $('cursor').style.opacity = t > tStage ? 0 : 1;
+    $('cursor').style.opacity = (M.clamp((t - 0.25) / 0.3) * (1 - M.clamp((t - tStage + 0.25) / 0.25))).toFixed(3);   // fade in after the cut, out before the stage pill
   }
 });
 </script>
