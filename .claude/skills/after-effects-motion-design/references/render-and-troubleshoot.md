@@ -66,6 +66,8 @@ They complement this skill; keep this skill's safety rules when using them.
 | `SyntaxError` / "Expected: ;" on run | ES5+ syntax → `node scripts/check_jsx.mjs` and rewrite as ES3 |
 | "Unable to execute script at line N. X is undefined/not a function" | API missing in this AE version, or a typo'd matchName → check `app.version`, the docs, and branch |
 | "undefined is not an object" / X is undefined for a top-level `var` | the run call executes before later `var` assignments → move `AEL.run(...)` to the end of the file |
+| Render stops partway / later scenes empty, VO silent | a scene threw (e.g. `setValue` on a keyed property) and aborted the run → read `error`/`warnings` in the result file; wrap scenes in try/catch |
+| "can't use setValue on a property with keyframes" | set the static value before adding keys, or add a key instead |
 | "Object is invalid" | stale reference after `addProperty`/`remove` → re-fetch from the layer |
 | "Value array does not have N elements" on `setTemporalEaseAtKey` | wrong ease length → `AEL.key` (1 for spatial/colour/1D, 2 TwoD, 3 ThreeD) |
 | "property or method named 'X' is missing or does not exist" | display name used instead of matchName, or wrong group level |

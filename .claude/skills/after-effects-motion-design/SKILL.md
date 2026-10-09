@@ -63,6 +63,9 @@ and which fonts/render templates exist.
   - **Idempotent and non-destructive**: only touch items the script created (name prefix +
     dedicated folder); abort if they already exist unless `CONFIG.rebuild` is true.
   - No `alert()` in live runs (modal dialogs block automation).
+  - Never `setValue()` a property after keyframing it (AE throws): set static values first, or key it.
+  - Build each scene/section in its own try/catch and report failures as warnings, so one error
+    can't silently truncate the whole edit.
   - Put `AEL.run(...)` (or the call to `main`) at the **end** of the file: it runs immediately, and
     top-level `var` values declared below it are still `undefined` (functions are hoisted, values are not).
 - **House rules (from the user):**
@@ -79,6 +82,7 @@ and which fonts/render templates exist.
 
 ```bash
 node scripts/check_jsx.mjs ae/scripts/build_main.jsx ae/scripts/ae_lib.jsx   # ES3 parse + lint
+node scripts/mock_run.mjs ae/scripts/build_main.jsx                           # dry run vs mock AE DOM
 bash scripts/run_jsx.sh ae/scripts/build_main.jsx                             # live mode only
 ```
 

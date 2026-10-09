@@ -14,7 +14,7 @@
 ## Run it
 
 Same as before: new project → **File › Scripts › Run Script File…** → `noon_ae/ae/scripts/build_noon_v2.jsx`.
-Saves `noon_ae/ae/NOON_Test_v2.aep`, queues `NOON_MAIN` (130 s). Send back the render + `build_noon_v2.result.json`.
+Saves `noon_ae/ae/NOON_Test_v2.aep`, queues `NOON_MAIN` (130 s). Send back the render + `build_noon_v2.result.json` (it now lists any scene that failed, while the rest still builds).
 To add icons/radar later: drop the files in, set `rebuild: true` in CONFIG (removes only `NOON_*` / `GLOW *` comps) and run again.
 
 ### Files to download

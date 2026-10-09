@@ -106,12 +106,12 @@ UI.phone = function (comp, name, pos, screenH, contentItem) {
 
 // Browser window: app window + address pill; contentItem fitted to the content width, matted to the page area.
 UI.browser = function (comp, name, pos, w, h, contentItem, address) {
-    var win = UI.window(comp, name, pos, w, h, ""), url, ut, content, matte, ph = h - 54;
+    var win = UI.window(comp, name, pos, w, h, "High Sun \u2014 NOON"), url, ut, content, matte, ph = h - 54;
     url = NL.box(comp, name + " Address", w * 0.5, 30, 15, "#F3E2E1", [0, 0]);
     ut = UI.label(comp, name + " Address Text", address, 14, NL.COL.inkSoft, NL.FONT.reg);
     content = NL.media(comp, contentItem, name + " Page", [0, 0], w);
     matte = NL.box(comp, name + " Page Matte", w, ph, 0, NL.COL.white, [0, 0]);
-    UI.attach(win.ctrl, [[url, [0, -h / 2 + 27]], [ut, [0, -h / 2 + 27]], [content, [0, 0]], [matte, [0, 27]]]);
+    UI.attach(win.ctrl, [[url, [w * 0.12, -h / 2 + 27]], [ut, [w * 0.12, -h / 2 + 27]], [content, [0, 0]], [matte, [0, 27]]]);
     matte.moveBefore(content);
     AEL.trackMatte(content, matte, TrackMatteType.ALPHA);
     return { ctrl: win.ctrl, content: content, pageTop: -h / 2 + 54 };

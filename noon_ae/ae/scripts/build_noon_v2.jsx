@@ -32,23 +32,27 @@ function main() {
     main = AEL.comp(CONFIG.prefix + "MAIN", { width: CONFIG.width, height: CONFIG.height, duration: D.duration, fps: CONFIG.fps, folder: F.main, bg: C.blushMid, motionBlur: true });
     buildBackground(main);
 
+    var vo = main.layers.add(IT.vo);
+    vo.name = "VO";
+    vo.startTime = D.pre;
+
     var builders = { SC01: sc01, SC02: sc02, SC03: sc03, SC04: sc04, SC05: sc05, SC06: sc06, SC07: sc07, SC08: sc08,
         SC09: sc09, SC10: sc10, SC11: sc11, SC12: sc12, SC13: sc13, SC14: sc14 };
     for (i = 0; i < D.scenes.length; i++) {
         sc = D.scenes[i];
         comp = AEL.comp(CONFIG.prefix + sc.id, { width: CONFIG.width, height: CONFIG.height, duration: sc.end - sc.start, fps: CONFIG.fps, folder: F.sections, motionBlur: true });
-        builders[sc.id.substr(0, 4)](comp, sc.start);
-        addCaptions(comp, sc.id, sc.start);
+        // Each scene builds in its own try/catch: a failure is reported and the rest still builds.
+        try { builders[sc.id.substr(0, 4)](comp, sc.start); }
+        catch (e) { AEL.warn("SCENE " + sc.id + " incomplete: " + e.toString() + (e.line ? " (line " + e.line + ")" : "")); }
+        try { addCaptions(comp, sc.id, sc.start); }
+        catch (e2) { AEL.warn("CAPTIONS " + sc.id + " incomplete: " + e2.toString() + (e2.line ? " (line " + e2.line + ")" : "")); }
         layer = AEL.place(main, comp, sc.start, sc.end, sc.id);
         layer.moveToBeginning();
         AEL.compMarker(main, sc.start, sc.id, sc.end - sc.start);
     }
     AEL.compMarker(main, D.dropboxInsertAt, "INSERT existing Dropbox integration here (final edit)");
 
-    layer = main.layers.add(IT.vo);
-    layer.name = "VO";
-    layer.startTime = D.pre;
-    layer.moveToBeginning();
+    vo.moveToBeginning();
     addSfxMarkers(main);
 
     main.openInViewer();
@@ -123,7 +127,7 @@ function buildBackground(main) {
 // Emphasis theme comp (coral diagonal + handle grid), reused by several scenes.
 function emphasisComp(name, dur) {
     var ec = AEL.comp(CONFIG.prefix + "Emphasis_" + name, { width: CONFIG.width, height: CONFIG.height, duration: dur, fps: CONFIG.fps, folder: F.precomps });
-    NL.gradientSolid(ec, "Coral Gradient", [-100, 120], C.white, [1350, 900], C.coral, false);
+    NL.gradientSolid(ec, "Coral Gradient", [-520, -140], C.white, [1150, 820], C.coral, false);
     NL.grid(ec, "Handle Grid", [96, 356, 1577, 1837], [228, 855], C.white, 85, true);
     return ec;
 }
@@ -280,9 +284,8 @@ function sc04(c, t0) {
     rl = c.layers.add(radarComp(c.duration));
     rl.name = "Radar";
     AEL.xf(rl, "ADBE Position").setValue(p);
-    NL.pop(rl, 7.25 - t0, 0.55, 0.4);
-    AEL.xf(rl, "ADBE Scale").setValue([70, 70]);
     AEL.key(AEL.xf(rl, "ADBE Scale"), [7.25 - t0, 7.8 - t0], [[25, 25], [70, 70]], AEL.EASE.expoOut);
+    AEL.key(AEL.xf(rl, "ADBE Opacity"), [7.25 - t0, 7.5 - t0], [0, 100], AEL.EASE.expoOut);
     for (i = 0; i < 3; i++) {
         ring = NL.shape(c, "Radar Ping " + (i + 1), p);
         NL.ellipse(ring, NL.group(ring, "Ring"), 130);

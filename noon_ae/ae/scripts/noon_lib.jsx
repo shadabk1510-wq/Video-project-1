@@ -369,9 +369,9 @@ NL.caption = function (comp, words, cap, t0, maxChars) {
         txt += w;
         lineLen += w.length;
     }
-    layer = AEL.text(comp, txt, { font: NL.FONT.cap, size: size, color: color, tracking: -10, leading: Math.round(size * 1.18), name: "CAP " + cap.id });
+    layer = AEL.text(comp, txt, { font: NL.FONT.bold, size: size, color: color, tracking: -10, leading: Math.round(size * 1.18), name: "CAP " + cap.id });
     AEL.xf(layer, "ADBE Position").setValue([comp.width / 2, cap.y]);
-    if (color === NL.COL.white) { NL.shadow(layer, 60, 3, 24); }
+    if (color === NL.COL.white) { NL.shadow(layer, 115, 3, 28, "#C9474E"); }   // rose halo keeps white type legible on blush
     layer.motionBlur = true;
     first = T[0];
     layer.inPoint = Math.max(0, first - 0.15);
