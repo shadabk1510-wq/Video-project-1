@@ -236,7 +236,14 @@ AEL.text = function (comp, str, o) {
         (o.justify === "right" ? ParagraphJustification.RIGHT_JUSTIFY : ParagraphJustification.CENTER_JUSTIFY);
     prop.setValue(doc);
     got = prop.value.font;
-    if (o.font && got !== o.font) { AEL.warn("Font '" + o.font + "' not available; AE substituted '" + got + "'."); }
+    if (o.font && got !== o.font) {
+        // AE sometimes ignores the first font assignment of a session: re-apply once before warning.
+        doc = prop.value;
+        doc.font = o.font;
+        prop.setValue(doc);
+        got = prop.value.font;
+        if (got !== o.font) { AEL.warn("Font '" + o.font + "' not available; AE substituted '" + got + "'."); }
+    }
     layer.name = o.name || str.substr(0, 24);
     AEL.anchorCenter(layer);
     AEL.xf(layer, "ADBE Position").setValue(o.pos || [comp.width / 2, comp.height / 2]);

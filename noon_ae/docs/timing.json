@@ -1,7 +1,8 @@
 {
  "pre_roll": 2.0,
  "fps": 23.976,
- "source": "Parakeet TDT 0.6B v2 word timings, cross-checked against Premiere transcript (<0.2s)",
+ "vo": "vo2_full.wav (126.6 s)",
+ "dropbox_insert_at": 62.16,
  "scenes": [
   {
    "id": "SC01_ColdOpen",
@@ -41,7 +42,37 @@
   {
    "id": "SC08_Powerhouse",
    "start": 52.3,
-   "end": 63.0
+   "end": 63.3
+  },
+  {
+   "id": "SC09_BriefSaved",
+   "start": 63.3,
+   "end": 74.4
+  },
+  {
+   "id": "SC10_Plan",
+   "start": 74.4,
+   "end": 80.0
+  },
+  {
+   "id": "SC11_Notes",
+   "start": 80.0,
+   "end": 102.15
+  },
+  {
+   "id": "SC12_Chaos",
+   "start": 102.15,
+   "end": 112.9
+  },
+  {
+   "id": "SC13_Pro",
+   "start": 112.9,
+   "end": 119.05
+  },
+  {
+   "id": "SC14_Touchpoints",
+   "start": 119.05,
+   "end": 130.0
   }
  ],
  "captions": [
@@ -50,7 +81,7 @@
    "scene": "SC02",
    "text": "Today, I'm going to walk you through",
    "start": 2.56,
-   "out": 4.18,
+   "out": 3.94,
    "highlight": []
   },
   {
@@ -58,7 +89,7 @@
    "scene": "SC03",
    "text": "a new way to work as a designer in",
    "start": 4.24,
-   "out": 7.02,
+   "out": 6.8,
    "highlight": [
     "new",
     "way"
@@ -69,7 +100,7 @@
    "scene": "SC04",
    "text": "and I feel like this should be on everybody's radar.",
    "start": 7.2,
-   "out": 9.86,
+   "out": 9.68,
    "highlight": [
     "radar."
    ]
@@ -79,7 +110,7 @@
    "scene": "SC05",
    "text": "So we're going to use this coffee brand",
    "start": 10.08,
-   "out": 12.15,
+   "out": 12.18,
    "highlight": []
   },
   {
@@ -87,7 +118,7 @@
    "scene": "SC05",
    "text": "so you can follow along with the whole process on one project,",
    "start": 12.32,
-   "out": 15.15,
+   "out": 15.0,
    "highlight": [
     "whole",
     "process"
@@ -98,7 +129,7 @@
    "scene": "SC06",
    "text": "and this is what we're going to do.",
    "start": 15.44,
-   "out": 16.95,
+   "out": 16.85,
    "highlight": [
     "do."
    ]
@@ -108,7 +139,7 @@
    "scene": "SC06",
    "text": "We're going to turn project files into professional directions.",
    "start": 17.04,
-   "out": 20.12,
+   "out": 20.1,
    "highlight": [
     "professional",
     "directions."
@@ -119,7 +150,7 @@
    "scene": "SC06",
    "text": "We're going to give every design a clear purpose before we start anything.",
    "start": 20.24,
-   "out": 23.82,
+   "out": 23.78,
    "highlight": [
     "clear",
     "purpose"
@@ -130,7 +161,7 @@
    "scene": "SC06",
    "text": "We're going to create design rules that change an entire workflow.",
    "start": 23.92,
-   "out": 27.48,
+   "out": 27.46,
    "highlight": [
     "design",
     "rules"
@@ -141,7 +172,7 @@
    "scene": "SC06",
    "text": "We're going to carry a design across packaging, digital, and also motion too.",
    "start": 27.6,
-   "out": 31.95,
+   "out": 31.94,
    "highlight": [
     "packaging,",
     "digital,",
@@ -153,7 +184,7 @@
    "scene": "SC06",
    "text": "We're going to check the work against the original goals",
    "start": 32.08,
-   "out": 34.52,
+   "out": 34.5,
    "highlight": [
     "original",
     "goals"
@@ -174,7 +205,7 @@
    "scene": "SC07",
    "text": "So for this coffee brand NOON,",
    "start": 39.04,
-   "out": 40.85,
+   "out": 40.82,
    "highlight": [
     "NOON,"
    ]
@@ -184,7 +215,7 @@
    "scene": "SC07",
    "text": "we've got a client brief, we've got audience research and notes from a discovery meeting.",
    "start": 40.96,
-   "out": 45.8,
+   "out": 45.78,
    "highlight": [
     "client",
     "brief,",
@@ -211,7 +242,7 @@
    "scene": "SC08",
    "text": "And yes, for this first stage of the workflow,",
    "start": 52.4,
-   "out": 54.7,
+   "out": 54.66,
    "highlight": [
     "first",
     "stage"
@@ -222,7 +253,7 @@
    "scene": "SC08",
    "text": "I have a really neat way of doing just that.",
    "start": 54.8,
-   "out": 57.25,
+   "out": 57.22,
    "highlight": [
     "neat"
    ]
@@ -232,7 +263,7 @@
    "scene": "SC08",
    "text": "And so let me slide into a new tag team of software",
    "start": 57.36,
-   "out": 59.5,
+   "out": 59.78,
    "highlight": [
     "tag",
     "team"
@@ -243,8 +274,189 @@
    "scene": "SC08",
    "text": "that is going to act as a",
    "start": 59.92,
-   "out": 62.6,
+   "out": 62.9,
    "highlight": []
+  },
+  {
+   "id": "c_saved",
+   "scene": "SC09",
+   "text": "Okay, so we've got a clearer brief saved with the project.",
+   "start": 63.52,
+   "out": 67.7,
+   "highlight": [
+    "clearer",
+    "brief"
+   ]
+  },
+  {
+   "id": "c_done",
+   "scene": "SC09",
+   "text": "That's the first stage done, checked, complete.",
+   "start": 67.84,
+   "out": 71.06,
+   "highlight": [
+    "done,",
+    "checked,",
+    "complete."
+   ]
+  },
+  {
+   "id": "c_know",
+   "scene": "SC09",
+   "text": "And also, now we know what the design needs to communicate.",
+   "start": 71.2,
+   "out": 74.1,
+   "highlight": [
+    "design",
+    "needs",
+    "to",
+    "communicate."
+   ]
+  },
+  {
+   "id": "c_plan",
+   "scene": "SC10",
+   "text": "But we're going to plan how somebody can actually encounter the design work we're going to make.",
+   "start": 74.48,
+   "out": 79.7,
+   "highlight": [
+    "plan",
+    "encounter"
+   ]
+  },
+  {
+   "id": "c_notes",
+   "scene": "SC11",
+   "text": "And so, in the Discovery meeting notes, under the main disagreement,",
+   "start": 80.08,
+   "out": 84.5,
+   "highlight": [
+    "Discovery",
+    "meeting",
+    "notes,"
+   ]
+  },
+  {
+   "id": "c_maya",
+   "scene": "SC11",
+   "text": "Maya wants a quiet yet premium design.",
+   "start": 84.64,
+   "out": 88.18,
+   "highlight": [
+    "quiet",
+    "premium"
+   ]
+  },
+  {
+   "id": "c_alex",
+   "scene": "SC11",
+   "text": "Alex wants more colour and immediate energy,",
+   "start": 88.32,
+   "out": 91.06,
+   "highlight": [
+    "colour",
+    "immediate",
+    "energy,"
+   ]
+  },
+  {
+   "id": "c_jo",
+   "scene": "SC11",
+   "text": "and Jo wants people to understand that it is, well, coffee.",
+   "start": 91.2,
+   "out": 95.94,
+   "highlight": [
+    "coffee."
+   ]
+  },
+  {
+   "id": "c_sam",
+   "scene": "SC11",
+   "text": "And so, just below that, Sam suggests calm information with one unmistakable moment of energy.",
+   "start": 96.08,
+   "out": 101.85,
+   "highlight": [
+    "calm",
+    "information",
+    "unmistakable",
+    "moment",
+    "of",
+    "energy."
+   ]
+  },
+  {
+   "id": "c_think",
+   "scene": "SC12",
+   "text": "I think this gives us some interesting things to work on and to develop,",
+   "start": 102.24,
+   "out": 106.02,
+   "highlight": [
+    "interesting",
+    "things"
+   ]
+  },
+  {
+   "id": "c_chaos",
+   "scene": "SC12",
+   "text": "and it does sound a bit all over the place and chaotic,",
+   "start": 106.16,
+   "out": 109.54,
+   "highlight": [
+    "all",
+    "over",
+    "the",
+    "place",
+    "chaotic,"
+   ]
+  },
+  {
+   "id": "c_easy",
+   "scene": "SC12",
+   "text": "but don't worry, we're gonna get through this easily.",
+   "start": 109.68,
+   "out": 112.6,
+   "highlight": [
+    "easily."
+   ]
+  },
+  {
+   "id": "c_pro1",
+   "scene": "SC13",
+   "text": "And in doing so, here's a part of this workflow that will separate",
+   "start": 112.96,
+   "out": 117.06,
+   "highlight": [
+    "separate"
+   ]
+  },
+  {
+   "id": "c_pro2",
+   "scene": "SC13",
+   "text": "designers from everybody else.",
+   "start": 117.2,
+   "out": 118.75,
+   "highlight": []
+  },
+  {
+   "id": "c_before",
+   "scene": "SC14",
+   "text": "Before designing the assets, which we will do later,",
+   "start": 119.12,
+   "out": 122.34,
+   "highlight": []
+  },
+  {
+   "id": "c_map",
+   "scene": "SC14",
+   "text": "I'm going to map three different points where somebody will encounter the coffee brand NOON.",
+   "start": 122.48,
+   "out": 129.4,
+   "highlight": [
+    "map",
+    "three",
+    "different",
+    "points"
+   ]
   }
  ]
 }

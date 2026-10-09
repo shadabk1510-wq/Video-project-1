@@ -118,6 +118,18 @@ Snap cut points to frames and to VO segment boundaries (see production-workflow.
 - For client-editable templates, expose properties via Essential Graphics:
   `prop.addToMotionGraphicsTemplateAs(comp, "Headline")` (check the method exists in this AE version).
 
+## Glows (house rule)
+
+Glow = precomp containing the shape + Gaussian Blur on the precomp layer (never on the shape layer):
+```js
+var gc = app.project.items.addComp("GLOW Soft Light", 1900, 1900, 1, dur, fps);   // shape centred inside
+// ...circle shape layer in gc...
+var gl = comp.layers.add(gc);
+gl.property("ADBE Effect Parade").addProperty("ADBE Gaussian Blur 2").property("ADBE Gaussian Blur 2-0001").setValue(200);
+```
+Same for blurred screens: precomp the image/feed, blur the precomp layer.
+Use `add()/sub()/mul()` for array maths in expressions (safe in both expression engines).
+
 ## Useful expressions (inject as strings)
 
 ```js

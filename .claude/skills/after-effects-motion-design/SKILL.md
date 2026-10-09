@@ -65,6 +65,13 @@ and which fonts/render templates exist.
   - No `alert()` in live runs (modal dialogs block automation).
   - Put `AEL.run(...)` (or the call to `main`) at the **end** of the file: it runs immediately, and
     top-level `var` values declared below it are still `undefined` (functions are hoisted, values are not).
+- **House rules (from the user):**
+  - Glows: never blur a shape layer directly. Put the shape in its own precomp and apply the Gaussian
+    Blur to the precomp layer (any blur used as a glow or soft light). Blurred screens/images likewise
+    go in a precomp first, blur on the precomp layer.
+  - Icons come from the user's licensed source (e.g. Flaticon PNG/SVG) as drop-in files; tint with a
+    Fill effect. Shape icons are only a fallback. Stock footage (e.g. radar) is supplied by the user —
+    build a drop-in slot with a native fallback, never download stock yourself.
 - Motion craft and copy-paste recipes (kinetic type, shape reveals, masks, mattes, transitions,
   precomps, brand controls): `references/motion-recipes.md`.
 
