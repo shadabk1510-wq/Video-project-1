@@ -96,6 +96,7 @@ N3CLIPS["04"] = { tin: 9.98, build: function () {
     cy.setValueAtTime(0, -110);
     N3.spring(N3.slider(S.shape, "CY bag", -150), -150, [[tBag, 40, N3.SP.MORPH]]);
     AEL.layerMarker(S.shape, N3.r3(tBag), "bag: CY follows CY bag");
+    cy = N3.ctl(S.shape, "CY");                       // fetch again: adding the "CY bag" effect invalidated the old reference
     e = cy.expression;
     AEL.expr(cy, e.substr(0, e.length - 1) + "// from the marker \"bag\" on, the card follows the \"CY bag\" slider\n" +
         "(marker.numKeys > 0 && time >= marker.key(1).time) ? effect(\"CY bag\")(1) : v");

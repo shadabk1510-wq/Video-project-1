@@ -220,32 +220,37 @@ N3.addGroup = function (layer, name) {
     return g.propertyIndex;
 };
 N3.gc = function (layer, gi) { return N3.root(layer).property(gi).property("ADBE Vectors Group"); };
+// A reference to item idx of group gi that re-fetches itself on use: adding a sibling (Fill after Rect...) makes AE
+// invalidate references the script already holds ("Object is invalid").
+N3.live = function (layer, gi, idx) {
+    return { property: function (k) { return N3.gc(layer, gi).property(idx).property(k); }, ref: function () { return N3.gc(layer, gi).property(idx); } };
+};
 N3.gxf = function (layer, gi, mn) { return N3.root(layer).property(gi).property("ADBE Vector Transform Group").property(mn); };
 N3.addRect = function (layer, gi, w, h, r, pos) {
     var p = N3.gc(layer, gi).addProperty("ADBE Vector Shape - Rect"), i = p.propertyIndex, c = N3.gc(layer, gi).property(i);
     c.property("ADBE Vector Rect Size").setValue([w, h]);
     c.property("ADBE Vector Rect Roundness").setValue(r || 0);
     if (pos) { c.property("ADBE Vector Rect Position").setValue(pos); }
-    return c;
+    return N3.live(layer, gi, i);
 };
 N3.addEllipse = function (layer, gi, w, h, pos) {
     var p = N3.gc(layer, gi).addProperty("ADBE Vector Shape - Ellipse"), c = N3.gc(layer, gi).property(p.propertyIndex);
     c.property("ADBE Vector Ellipse Size").setValue([w, h]);
     if (pos) { c.property("ADBE Vector Ellipse Position").setValue(pos); }
-    return c;
+    return N3.live(layer, gi, p.propertyIndex);
 };
 N3.addPath = function (layer, gi, verts, inT, outT, closed) {
     var p = N3.gc(layer, gi).addProperty("ADBE Vector Shape - Group"), s = new Shape(), i, z = [];
     for (i = 0; i < verts.length; i++) { z.push([0, 0]); }
     s.vertices = verts; s.inTangents = inT || z; s.outTangents = outT || z; s.closed = !!closed;
     N3.gc(layer, gi).property(p.propertyIndex).property("ADBE Vector Shape").setValue(s);
-    return N3.gc(layer, gi).property(p.propertyIndex);
+    return N3.live(layer, gi, p.propertyIndex);
 };
 N3.addFill = function (layer, gi, hex, opacity) {
     var p = N3.gc(layer, gi).addProperty("ADBE Vector Graphic - Fill"), c = N3.gc(layer, gi).property(p.propertyIndex);
     c.property("ADBE Vector Fill Color").setValue(N3.rgba(hex));
     if (opacity !== undefined) { c.property("ADBE Vector Fill Opacity").setValue(opacity); }
-    return c;
+    return N3.live(layer, gi, p.propertyIndex);
 };
 N3.addStroke = function (layer, gi, hex, width, opacity, round) {
     var p = N3.gc(layer, gi).addProperty("ADBE Vector Graphic - Stroke"), c = N3.gc(layer, gi).property(p.propertyIndex);
@@ -256,11 +261,11 @@ N3.addStroke = function (layer, gi, hex, width, opacity, round) {
         c.property("ADBE Vector Stroke Line Cap").setValue(2);    // round
         c.property("ADBE Vector Stroke Line Join").setValue(2);   // round
     }
-    return c;
+    return N3.live(layer, gi, p.propertyIndex);
 };
 N3.addTrim = function (layer, gi) {
     var p = N3.gc(layer, gi).addProperty("ADBE Vector Filter - Trim");
-    return N3.gc(layer, gi).property(p.propertyIndex);
+    return N3.live(layer, gi, p.propertyIndex);
 };
 // Rounded-rect outline as a Shape (for masks).
 N3.rrShape = function (l, t, w, h, r) {

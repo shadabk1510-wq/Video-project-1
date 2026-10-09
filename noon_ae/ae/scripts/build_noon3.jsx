@@ -42,7 +42,9 @@ function main() {
         if (!N3CLIPS[id]) { failed.push(id + " (missing)"); continue; }
         if (CONFIG.only && !AEL.contains(CONFIG.only, id)) { continue; }
         try {
+            AEL.pendingExpr = [];
             S = N3CLIPS[id].build();
+            AEL.retryExpressions();                    // expressions that named layers created later in the clip
             N3.motionBlur(S.comp);
             l = main.layers.add(S.comp);
             l.motionBlur = true;
@@ -54,14 +56,18 @@ function main() {
             AEL.warn("clip " + id + " failed: " + e.toString() + (e.line ? " (line " + e.line + ")" : ""));
         }
     }
-    try {
-        vo = AEL.importFile(N3.ASSET_DIR + "/" + CONFIG.vo, N3.folders.audio);
-        l = main.layers.add(vo); l.startTime = CONFIG.voStart; l.name = "VO"; l.moveToEnd();
-    } catch (e2) { AEL.warn("VO: " + e2); }
-    try {
-        ref = AEL.importFile((new File(here + "/" + CONFIG.reference)).fsName, N3.folders.reference);
-        l = main.layers.add(ref); l.name = "REFERENCE render (guide, off)"; l.guideLayer = true; l.enabled = false; l.audioEnabled = false; l.moveToBeginning();
-    } catch (e3) { AEL.log("no reference render: " + e3); }
+    if ((new File(N3.ASSET_DIR + "/" + CONFIG.vo)).exists) {
+        try {
+            vo = AEL.importFile(N3.ASSET_DIR + "/" + CONFIG.vo, N3.folders.audio);
+            l = main.layers.add(vo); l.startTime = CONFIG.voStart; l.name = "VO"; l.moveToEnd();
+        } catch (e2) { AEL.warn("VO could not be placed: " + String(e2.message || e2)); }
+    } else { AEL.warn("VO not found: put " + CONFIG.vo + " in the assets folder and add it at " + CONFIG.voStart + " s"); }
+    if ((new File(here + "/" + CONFIG.reference)).exists) {
+        try {
+            ref = AEL.importFile((new File(here + "/" + CONFIG.reference)).fsName, N3.folders.reference);
+            l = main.layers.add(ref); l.name = "REFERENCE render (guide, off)"; l.guideLayer = true; l.enabled = false; l.audioEnabled = false; l.moveToBeginning();
+        } catch (e3) { AEL.log("reference render not placed: " + String(e3.message || e3)); }
+    }
     AEL.compMarker(main, 61.4, "INSERT: Dropbox x ChatGPT segment");
     AEL.result.failedClips = failed;
     if (failed.length) { AEL.warn("Clips that did not build: " + failed.join(" | ")); }

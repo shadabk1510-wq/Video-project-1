@@ -97,11 +97,10 @@ function C06_steps(g) {
 }
 // A still frame of motion2_bag.mp4 (the web clips' sunrise/030.jpg = 1.5 s into the video), held with Time Remap.
 function C06_frame(ctx, o) {
-    var l = N3.image(ctx, "motion2_bag.mp4", o), tr;
-    l.timeRemapEnabled = true;
+    var l = N3.image(ctx, "motion2_bag.mp4", o), tr, k;
+    l.timeRemapEnabled = true;                         // AE adds keys at the in and out points
     tr = l.property("ADBE Time Remapping");
-    while (tr.numKeys > 0) { tr.removeKey(1); }
-    tr.setValue(o.at);
+    for (k = tr.numKeys; k >= 1; k--) { tr.setValueAtTime(tr.keyTime(k), o.at); }   // hold one frame (keys can't all be removed)
     try { l.outPoint = ctx.comp.duration; } catch (e) {}
     return l;
 }

@@ -99,21 +99,35 @@ let UID = 0;
 const ALL_EXPR = [];
 // arrays coming from the script live in the ES3-trimmed context: copy them into this realm before using methods on them
 const arr = (x) => (Array.isArray(x) ? Array.from(x, arr) : x);
+// AE hands out property references that go stale: after addProperty() on a group, references the script already holds
+// to properties inside that group throw "Object is invalid". Model it with a handle per lookup and an epoch per Prop.
+const H = (p) => {
+  if (!p) return p;
+  const ep = p._epoch, chk = () => { if (p._epoch !== ep) throw new Error(`ReferenceError: Object is invalid ("${p._name}" ${p.matchName} was re-indexed by an addProperty() on its group; fetch it again)`); };
+  return new Proxy(p, {
+    get(t, k) { if (k === "__raw") return t; chk(); const v = Reflect.get(t, k, t); return typeof v === "function" ? (...a) => v.apply(t, a) : v; },
+    set(t, k, v) { chk(); return Reflect.set(t, k, v, t); },
+  });
+};
+const raw = (p) => (p && p.__raw ? p.__raw : p);
+const EXPR_WARN = [];
 class Prop {
   constructor(spec, parent, layer) {
     this.uid = ++UID; this.spec = spec; this.matchName = spec.mn; this._name = spec.name; this.parentProperty = parent; this.layer = layer;
-    this.isGroup = !!spec.kids; this.children = []; this.keys = []; this._expr = ""; this.expressionEnabled = true;
+    this.isGroup = !!spec.kids; this.children = []; this.keys = []; this._expr = ""; this._en = true;
     this.propertyValueType = spec.type === undefined ? (spec.marker ? PVT.MARKER : PVT.NO_VALUE) : spec.type;
     this._value = spec.def === undefined ? null : JSON.parse(JSON.stringify(spec.def));
     if (spec.type === PVT.TEXT_DOCUMENT) this._value = new TextDocument("");
     if (Array.isArray(spec.kids)) for (const c of spec.kids) this.children.push(new Prop(c, this, layer));
     this.indexed = typeof spec.kids === "string" ? spec.kids.split(":")[1] : null;
-    this.isEffect = !!spec.effect; this.isMask = !!spec.mask; this.maskMode = 6813 /* new masks are Add in AE */; this.inverted = false;
+    this.isEffect = !!spec.effect; this.isMask = !!spec.mask; this.maskMode = 6813 /* new masks are Add in AE */; this.inverted = false; this._epoch = 0; this._exprErr = "";
   }
+  get propertyType() { return this.isGroup ? (this.indexed ? 6213 : 6214) : 6212; }
   get name() { return this._name; }
   set name(v) { this._name = String(v); }
   get numProperties() { return this.children.length; }
   get propertyIndex() { return this.parentProperty ? this.parentProperty.children.indexOf(this) + 1 : 0; }
+  propertyGroup(n = 1) { let p = this; for (let i = 0; i < n; i++) { p = p.parentProperty; if (!p) return null; if (p.matchName === "root") return p.layer; } return H(p); }
   get propertyDepth() { let d = 0, p = this.parentProperty; while (p) { d++; p = p.parentProperty; } return d; }
   get canSetExpression() { return !this.isGroup; }
   get isSpatial() { return this.propertyValueType === PVT.TwoD_SPATIAL || this.propertyValueType === PVT.ThreeD_SPATIAL; }
@@ -121,18 +135,19 @@ class Prop {
   get numKeys() { if (this.isGroup && !this.spec.marker) throw new Error(`${this.matchName} is a group`); return this.keys.length; }
   property(k) {
     if (!this.isGroup) throw new Error(`property(${k}) on non-group ${this.matchName}`);
-    if (typeof k === "number") { const c = this.children[k - 1]; return c || null; }
-    return this.children.find((p) => p.matchName === k || p.name === k) || null;
+    if (typeof k === "number") { const c = this.children[k - 1]; return H(c) || null; }
+    return H(this.children.find((p) => p.matchName === k || p.name === k)) || null;
   }
   addProperty(mn) {
     if (!this.indexed) throw new Error(`addProperty("${mn}") not allowed on ${this.matchName}`);
     const spec = ADDABLE[this.indexed](mn);
     if (!spec) throw new Error(`After Effects: "${mn}" can't be added to ${this.matchName}`);
+    const stale = (q) => { for (const d of q.children) { d._epoch++; stale(d); } }; stale(this);
     const c = new Prop(spec, this, this.layer); this.children.push(c);
     if (spec.kids) { // numbered display names like AE
       const same = this.children.filter((x) => x.spec.mn === mn).length; c._name = spec.name.replace(/ 1$/, " " + same);
     }
-    return c;
+    return H(c);
   }
   canAddProperty(mn) { return !!(this.indexed && ADDABLE[this.indexed](mn)); }
   remove() { const a = this.parentProperty.children; a.splice(a.indexOf(this), 1); }
@@ -155,9 +170,11 @@ class Prop {
   }
   get value() { return this._value instanceof TextDocument ? this._value.clone() : Array.isArray(this._value) ? this._value.slice() : this._value; }
   valueAtTime(t) { if (!this.keys.length) return this.value; let v = this.keys[0].v; for (const k of this.keys) if (k.t <= t + 1e-9) v = k.v; return v; }
-  setValue(v) { if (this.keys.length) throw new Error(`After Effects: can't setValue() on "${this._name}" (${this.matchName}) - it has keyframes`); this._value = this._check(v); }
+  _tr() { if (this.matchName === "ADBE Time Remapping" && this.layer && (!this.layer._timeRemap || !this.keys.length)) throw new Error("After Effects error: Can not \u201cset value\u201d with this property, because the property or a parent property is hidden."); }
+  setValue(v) { if (this.matchName === "ADBE Time Remapping" && this.layer && (!this.layer._timeRemap || !this.keys.length)) this._tr(); if (this.keys.length) throw new Error(`After Effects: can't setValue() on "${this._name}" (${this.matchName}) - it has keyframes`); this._value = this._check(v); }
   setValueAtTime(t, v) {
     if (typeof t !== "number" || isNaN(t)) throw new Error("bad time " + t);
+    if (this.matchName === "ADBE Time Remapping" && this.layer && !this.layer._timeRemap) this._tr();
     if (this.spec.marker) { this.keys.push({ t, v, comment: v.comment, dur: v.duration || 0 }); this.keys.sort((a, b) => a.t - b.t); return; }
     v = this._check(v);
     const ex = this.keys.find((k) => Math.abs(k.t - t) < 1e-7);
@@ -189,8 +206,32 @@ class Prop {
   setSpatialContinuousAtKey(i) { this._spatial(); this._k(i); }
   setRovingAtKey(i) { this._spatial(); this._k(i); }
   get expression() { return this._expr; }
-  set expression(e) { if (this.isGroup) throw new Error("expression on group " + this.matchName); this._expr = String(e || ""); if (e) ALL_EXPR.push([this.layer ? this.layer.name : "?", this.matchName, e]); }
-  get expressionError() { return ""; }
+  set expression(e) {
+    if (this.isGroup) throw new Error("expression on group " + this.matchName);
+    this._expr = String(e || ""); if (e) ALL_EXPR.push([this.layer ? this.layer.name : "?", this.matchName, e]);
+    this.expressionEnabled = true;   // AE re-validates on set; a missing layer/effect reference disables it on the spot
+  }
+  get expressionEnabled() { return this._en !== false; }
+  set expressionEnabled(v) {
+    this._en = !!v; this._exprErr = "";
+    if (v && this._expr) { const r = this._refCheck(); if (r) { this._en = false; this._exprErr = "Expression disabled. " + r; EXPR_WARN.push(`${this.layer.containingComp.name} / ${this.layer.name} / ${this._name}: ${r}`); } }
+  }
+  _refCheck() {
+    if (!this._expr || !this.layer) return "";
+    const e = this._expr.replace(/\/\/.*$/gm, ""), comp = this.layer.containingComp;
+    const find = (c, n) => c._layers.find((l) => l.name === n);
+    let m; const re = /(?:comp\("((?:[^"\\]|\\.)*)"\)|thisComp)\.layer\("((?:[^"\\]|\\.)*)"\)/g;
+    while ((m = re.exec(e))) {
+      const cn = m[1] !== undefined ? JSON.parse('"' + m[1] + '"') : null, ln = JSON.parse('"' + m[2] + '"');
+      const c = cn === null ? comp : items.find((it) => it instanceof CompItem && it.name === cn);
+      if (!c) return `comp("${cn}") is missing`;
+      if (!find(c, ln)) return `layer named '${ln}' is missing or does not exist (comp '${c.name}')`;
+    }
+    const own = /(^|[^.\w])effect\("((?:[^"\\]|\\.)*)"\)/g;
+    while ((m = own.exec(e))) { const fx = this.layer.root.children.find((g) => g.matchName === "ADBE Effect Parade"); if (!fx.children.find((f) => f._name === m[2])) return `effect named '${m[2]}' is missing on '${this.layer.name}'`; }
+    return "";
+  }
+  get expressionError() { return this._exprErr || ""; }
   get selected() { return false; }
   dump() {
     const o = { mn: this.matchName, name: this._name };
@@ -282,13 +323,24 @@ class Layer {
     this.collapseTransformation = false; this.blendingMode = BLEND.NORMAL; this.trackMatteType = 5012; this._matte = null; this._parent = null; this.nullLayer = false; this.source = null;
     this.root = new Prop(layerSchema(kind), null, this);
     if (kind === "text" || kind === "shape") { this.property("ADBE Transform Group").property("ADBE Position")._value = [comp.width / 2, comp.height / 2, 0]; }
-    this.timeRemapEnabled = false;
+    this._timeRemap = false;
   }
   _setAnchorDefault() { this.property("ADBE Transform Group").property("ADBE Anchor Point")._value = [this._src.w / 2, this._src.h / 2, 0]; this.property("ADBE Transform Group").property("ADBE Position")._value = [this.containingComp.width / 2, this.containingComp.height / 2, 0]; }
   _ins() { this.containingComp._layers.unshift(this); return this; }
   get index() { return this.containingComp._layers.indexOf(this) + 1; }
   get hasVideo() { return this.kind !== "audio"; }
   property(k) { return this.root.property(k); }
+  get numProperties() { return this.root.children.length; }
+  get timeRemapEnabled() { return this._timeRemap; }
+  set timeRemapEnabled(v) {   // AE: enabling adds keys at the in and out points (source time); stills can't be remapped
+    v = !!v; if (v === this._timeRemap) return;
+    if (v && (this.kind !== "footage" && this.kind !== "precomp")) throw new Error("After Effects: time remapping is not available on this layer");
+    if (v && this.source && this.source.mainSource && this.source.mainSource.isStill) throw new Error("After Effects: time remapping can't be enabled on a still");
+    const tr = this.root.children.find((c) => c.matchName === "ADBE Time Remapping");
+    this._timeRemap = v;
+    if (v) { tr.keys = []; tr.setValueAtTime(this.inPoint, this.inPoint - this.startTime); tr.setValueAtTime(this.outPoint, this.outPoint - this.startTime); }
+    else tr.keys = [];
+  }
   get transform() { return this.property("ADBE Transform Group"); }
   get Effects() { return this.property("ADBE Effect Parade"); }
   get parent() { return this._parent; }
@@ -308,7 +360,7 @@ class Layer {
     return { uid: this.uid, name: this.name, kind: this.kind, enabled: this.enabled, guide: this.guideLayer, start: this.startTime, in: this.inPoint, out: this.outPoint,
       collapse: this.collapseTransformation, blend: this.blendingMode, parent: this._parent ? this._parent.uid : null, matte: this._matte ? { uid: this._matte.uid, type: this.trackMatteType } : null,
       source: this.source ? (this.source instanceof CompItem ? { comp: this.source.name } : { footage: this.source.id }) : null, solid: this._solid || null, src: this._src || null,
-      timeRemap: this.timeRemapEnabled, props: this.root.dump().kids };
+      timeRemap: this._timeRemap, props: this.root.dump().kids };
   }
 }
 // ------------------------------------------------------------------ files
@@ -374,5 +426,9 @@ const footage = {}; for (const it of items) if (it instanceof FootageItem) foota
 const model = { version: 1, script: path.resolve(scriptPath), result: res, saved, comps: items.filter((i) => i instanceof CompItem).map((c) => c.dump()), footage, expressions: ALL_EXPR.length };
 fs.mkdirSync(path.dirname(path.resolve(outPath)), { recursive: true });
 fs.writeFileSync(outPath, JSON.stringify(model));
+const stillOff = []; const walkP = (p, L) => { if (p._expr && p._en === false) stillOff.push(`${L.containingComp.name} / ${L.name} / ${p._name}: ${p._exprErr}`); for (const c of p.children) walkP(c, L); };
+for (const it of items) if (it instanceof CompItem) for (const L of it._layers) walkP(L.root, L);
+if (EXPR_WARN.length) console.log(`expressions disabled when set (missing layer at that moment): ${EXPR_WARN.length}; still disabled at the end: ${stillOff.length}`);
+for (const w of stillOff.slice(0, 30)) console.log("  STILL DISABLED " + w);
 console.log(JSON.stringify({ ok: res.ok, error: res.error, warnings: res.warnings, comps: model.comps.map((c) => `${c.name} (${c.layers.length} layers)`), expressions: ALL_EXPR.length, saved }, null, 1));
 process.exit(res.ok ? 0 : 1);
