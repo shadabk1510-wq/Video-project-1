@@ -5,7 +5,7 @@
 // A small precomp placed in the main comp (world or over slot) at world point [x, y]. Returns {layer, ctx}; ctx coords
 // are relative to (ox, oy) inside the precomp (default: its centre).
 function C10_pre(S, slot, name, w, h, x, y, ox, oy) {
-    var pc = app.project.items.addComp(S.id + " · " + name, w, h, 1, S.T, N3.FPS), l;
+    var pc = app.project.items.addComp(S.id + " \u00b7 " + name, w, h, 1, S.T, N3.FPS), l;
     if (N3.folders) { pc.parentFolder = N3.folders.precomps; }
     AEL.created("precomp", pc.name);
     l = S.comp.layers.add(pc);
@@ -32,12 +32,12 @@ function C10_notesPage(g) {
         ["Alex believes the launch needs much more colour and immediate energy", 276], ["to stop people scrolling.", 310],
         ["Jo is concerned that an overly abstract campaign could make the product", 358],
         ["category unclear, especially if customers first see the work at a distance.", 392],
-        ["Sam: “The answer may not be choosing calm or loud. The system could hold calm", 462],
-        ["information and one unmistakable moment of energy.”", 496]],
-        WHO = [[1, 228, "MAYA · FOUNDER"], [2, 276, "ALEX · MARKETING"], [4, 358, "JO · SALES"], [6, 462, "SAM · CREATIVE"]],
+        ["Sam: \u201cThe answer may not be choosing calm or loud. The system could hold calm", 462],
+        ["information and one unmistakable moment of energy.\u201d", 496]],
+        WHO = [[1, 228, "MAYA \u00b7 FOUNDER"], [2, 276, "ALEX \u00b7 MARKETING"], [4, 358, "JO \u00b7 SALES"], [6, 462, "SAM \u00b7 CREATIVE"]],
         SK = [820, 760, 640, 800, 520], i, hl = [], tx;
     N3.text(g, "NOON Discovery Meeting Notes", { name: "Doc title", x: -430, top: 54, fs: 34, wt: 600, ls: -0.025 });
-    N3.text(g, "8 September 2026 · Brand and launch discovery · Working notes", { name: "Doc date", x: -430, top: 104, fs: 17, color: N3.COL.soft });
+    N3.text(g, "8 September 2026 \u00b7 Brand and launch discovery \u00b7 Working notes", { name: "Doc date", x: -430, top: 104, fs: 17, color: N3.COL.soft });
     N3.box(g, { name: "Doc rule", x: -430, y: 142, w: 860, h: 1.5, fill: "#F2E2E1" });
     for (i = 0; i < LN.length; i++) {
         hl.push(C10_highlight(g, "Highlight " + (i + 1), "Notes line " + (i + 1), -436, LN[i][1] - 1, i >= 6 ? "#EA6262" : "#F7A6A4", i >= 6 ? 42 : 62));

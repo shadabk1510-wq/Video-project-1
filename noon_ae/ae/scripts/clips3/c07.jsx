@@ -116,7 +116,7 @@ N3CLIPS["07"] = { tin: 52.30, build: function () {
     //    as in the approved render: the web show() replaced its translateX(-50%))
     g = N3.group(S, "Tag team", { tin: tTeam, tout: tPower });
     C07_slot(g, "Slot 1", -180, N3.wt(196, T0));
-    N3.text(g, "×", { name: "Times", x: -24, top: -36, fs: 62, wt: 300, color: "#C9A9AA" });
+    N3.text(g, "\u00d7", { name: "Times", x: -24, top: -36, fs: 62, wt: 300, color: "#C9A9AA" });
     C07_slot(g, "Slot 2", 180, N3.wt(197, T0));
     t = N3.text(g, "Two tools, one powerhouse", { name: "Two tools", x: 0, top: 104, fs: 24, wt: 600, color: N3.COL.soft });
     N3.show(t, N3.wt(200, T0), null, 10, { din: 0, lin: 0.4 });

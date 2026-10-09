@@ -4,7 +4,7 @@
 
 // A small precomp placed in the main comp (world or over slot) at world point [x, y]; ctx origin = (ox, oy) in the precomp.
 function C11_pre(S, slot, name, w, h, x, y, ox, oy) {
-    var pc = app.project.items.addComp(S.id + " · " + name, w, h, 1, S.T, N3.FPS), l;
+    var pc = app.project.items.addComp(S.id + " \u00b7 " + name, w, h, 1, S.T, N3.FPS), l;
     if (N3.folders) { pc.parentFolder = N3.folders.precomps; }
     AEL.created("precomp", pc.name);
     l = S.comp.layers.add(pc);
@@ -84,7 +84,7 @@ N3CLIPS["11"] = { tin: 112.90, build: function () {
     }
 
     // intro line, word by word on the VO (markers), out before PROFESSIONAL lands
-    t = N3.text(g, "Here’s a part of this workflow that will separate", { name: "Intro line", x: 0, top: -36, fs: 54, wt: 700, ls: -0.03, color: "#FFFFFF", align: "center" });
+    t = N3.text(g, "Here\u2019s a part of this workflow that will separate", { name: "Intro line", x: 0, top: -36, fs: 54, wt: 700, ls: -0.03, color: "#FFFFFF", align: "center" });
     for (i = 344; i <= 352; i++) { sepT.push(N3.wt(i, T0) - 0.06); }
     N3.unitReveal(t, { times: sepT, based: "words", dy: 26, blur: 8, lin: 0.35 });
     N3.show(t, null, tWord - 0.28, 0, { lout: 0.25, blur: 8 });

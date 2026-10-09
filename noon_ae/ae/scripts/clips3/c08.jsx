@@ -44,7 +44,7 @@ function C08_logo(ctx, x, y, w, hex) {
 // f = [image|null|'NEW', name as displayed (CSS ellipsis baked in), meta]
 function C08_tile(S, g, i, f, left) {
     var PAD = 30, pc, ctx, l, bg, t, k, bars = [110, 128, 96, 120, 70];
-    pc = app.project.items.addComp(S.id + " · Tile " + (i + 1), 176 + 2 * PAD, 300 + 2 * PAD, 1, S.T, N3.FPS);
+    pc = app.project.items.addComp(S.id + " \u00b7 Tile " + (i + 1), 176 + 2 * PAD, 300 + 2 * PAD, 1, S.T, N3.FPS);
     if (N3.folders) { pc.parentFolder = N3.folders.precomps; }
     AEL.created("precomp", pc.name);
     ctx = { comp: pc, ox: PAD, oy: PAD, parent: null, slot: "pre", S: S };
@@ -62,7 +62,7 @@ function C08_tile(S, g, i, f, left) {
     N3.text(ctx, f[1], { name: "File name", x: 88, top: 236, fs: 16, wt: 600, align: "center" });
     N3.text(ctx, f[2], { name: "File meta", x: 88, top: 260, fs: 14, color: N3.COL.soft, align: "center" });
     l = g.comp.layers.add(pc);
-    l.name = "Tile " + (i + 1) + " · " + f[1];
+    l.name = "Tile " + (i + 1) + " \u00b7 " + f[1];
     N3.xf(l, "ADBE Anchor Point").setValue([PAD + 88, PAD + 150]);           // tile centre (CSS transform-origin)
     N3.pos(l).setValue(N3.P(g, left + 88, 96 + 150));
     return l;
@@ -92,9 +92,9 @@ N3CLIPS["08"] = { tin: 63.30, build: function () {
     var T0 = 63.30, S, g, t, l, i, k, tl, ctx, toast, pill, disc, txt, nul, badge, sh, x0, tiles = [],
         tFiles = 0.12, tDrop0 = N3.wt(213, T0) - 0.55, tDrop = N3.wt(214, T0) + 0.1, tSaved = N3.wt(215, T0), tStage = N3.wt(219, T0) - 0.12,
         tDone = N3.wt(223, T0), tChecked = N3.wt(224, T0), tComplete = N3.wt(225, T0), tKnow = N3.wt(226, T0), tNext = N3.wt(237, T0),
-        TL = [[null, "Package Designs", "Folder · 3 items"], ["doc_brief", "NOON_Client_Brief.p…", "PDF · 75 KB"],
-            ["doc_research", "NOON_Audience_Re…", "PDF · 77 KB"], ["doc_notes", "NOON_Discovery_N…", "DOCX · 40 KB"],
-            ["NEW", "NOON_Creative_Brie…", "PDF · just now"]];
+        TL = [[null, "Package Designs", "Folder \u00b7 3 items"], ["doc_brief", "NOON_Client_Brief.p\u2026", "PDF \u00b7 75 KB"],
+            ["doc_research", "NOON_Audience_Re\u2026", "PDF \u00b7 77 KB"], ["doc_notes", "NOON_Discovery_N\u2026", "DOCX \u00b7 40 KB"],
+            ["NEW", "NOON_Creative_Brie\u2026", "PDF \u00b7 just now"]];
     S = N3.scene({ id: "08", title: "Brief saved", T: 16.7, intro: null,
         SH: { power: { w: 1560, h: 560, r: 64, bg: "#EA6262", cam: 1.13 }, files: { w: 1100, h: 440, r: 26, bg: "#FFFFFF", cam: 1.3 },
             stage: { w: 1190, h: 156, r: 78, bg: "#FFFFFF", cam: 1.42 } },
@@ -112,7 +112,7 @@ N3CLIPS["08"] = { tin: 63.30, build: function () {
     N3.ellipse(g, { name: "Dot red", cx: -519, cy: 29, d: 14, fill: "#F57F7A" });
     N3.ellipse(g, { name: "Dot yellow", cx: -496, cy: 29, d: 14, fill: "#F6C25B" });
     N3.ellipse(g, { name: "Dot green", cx: -473, cy: 29, d: 14, fill: "#6CCB7E" });
-    N3.text(g, "NOON › High Sun", { name: "Window title", x: 0, top: 18, fs: 18, wt: 600, color: N3.COL.soft, align: "center" });
+    N3.text(g, "NOON \u203a High Sun", { name: "Window title", x: 0, top: 18, fs: 18, wt: 600, color: N3.COL.soft, align: "center" });
     N3.box(g, { name: "Title rule", x: -550, y: 58, w: 1100, h: 1.5, fill: "#F2E2E1" });
     for (i = 0; i < TL.length; i++) { tiles.push(C08_tile(S, g, i, TL[i], -510 + i * 208)); }
     for (i = 0; i < 4; i++) { N3.show(tiles[i], tFiles + 0.1 + i * 0.07, null, 22, { din: 0, lin: 0.4 }); }
@@ -143,7 +143,7 @@ N3CLIPS["08"] = { tin: 63.30, build: function () {
     ctx = { comp: S.comp, ox: 0, oy: 0, parent: nul, slot: "world", S: S };
     pill = N3.box(ctx, { name: "Toast pill", cx: 0, cy: 0, w: 373, h: 62, r: 31, fill: "#FFFFFF", shadow: { color: "#96323A", opacity: 0.32, dist: 16, soft: 36 } });
     disc = C08_checkDisc(ctx, "Toast check", -169.5, 0, 34, 0, 20, 3);
-    txt = N3.text(ctx, "Saved to NOON › High Sun", { name: "Toast text", x: -122.5, cy: 0, fs: 22, wt: 600 });
+    txt = N3.text(ctx, "Saved to NOON \u203a High Sun", { name: "Toast text", x: -122.5, cy: 0, fs: 22, wt: 600 });
     AEL.expr(N3.pos(txt), "// centred in the pill: 16 pad + 34 check + 14 gap | text | 26 pad\nvar r = sourceRectAtTime(time, false);\n[-(r.width + 90) / 2 + 64 - r.left, value[1]]");
     AEL.expr(N3.root(pill).property(1).property("ADBE Vectors Group").property(1).property("ADBE Vector Rect Size"),
         "var r = thisComp.layer(\"Toast text\").sourceRectAtTime(time, false);\n[r.width + 90, 62]");

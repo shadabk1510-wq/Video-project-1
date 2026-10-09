@@ -46,7 +46,7 @@ function C06_zeros(n) { var z = [], i; for (i = 0; i < n; i++) { z.push([0, 0]);
 // A nested precomp inside a content group (one unit that moves/fades/blurs as a whole, like a web <div>).
 // w,h = canvas; (cx,cy) = where its centre sits in the group; (ox,oy) = canvas position of the unit's own origin.
 function C06_sub(g, name, w, h, cx, cy, ox, oy) {
-    var S = g.S, pc = app.project.items.addComp(S.id + " · " + name, w, h, 1, S.T, N3.FPS), l;
+    var S = g.S, pc = app.project.items.addComp(S.id + " \u00b7 " + name, w, h, 1, S.T, N3.FPS), l;
     if (N3.folders) { pc.parentFolder = N3.folders.precomps; }
     AEL.created("precomp", pc.name);
     l = g.comp.layers.add(pc);
@@ -72,14 +72,14 @@ var C06_STEPS = [
     ["brief", "Turn project files into direction", "Brief, research and meeting notes"],
     ["target", "Give every design a clear purpose", "Before we start anything"],
     ["rules", "Create design rules", "That change the whole workflow"],
-    ["devices", "Carry it across every format", "Packaging · digital · motion"],
+    ["devices", "Carry it across every format", "Packaging \u00b7 digital \u00b7 motion"],
     ["checklist", "Check against the original goals", "Review the work with the brief"],
     ["handover", "Hand over a system", "So anyone can build on it"]
 ];
 function C06_stepTop(i) { return 160 + i * 94; }
 function C06_steps(g) {
     var i, top, x0 = -370, l, th = 451;
-    N3.text(g, "The workflow · 2027", { name: "Workflow cap", x: x0, top: 42, fs: 15, wt: 600, ls: 0.14, caps: true, color: N3.COL.capRed });
+    N3.text(g, "The workflow \u00b7 2027", { name: "Workflow cap", x: x0, top: 42, fs: 15, wt: 600, ls: 0.14, caps: true, color: N3.COL.capRed });
     N3.text(g, "What we're going to do", { name: "List title", x: x0, top: 70, fs: 40, wt: 600, ls: -0.025 });
     for (i = 0; i < C06_STEPS.length; i++) {
         top = C06_stepTop(i);
@@ -144,9 +144,9 @@ function C06_brief(g, o) {
 
 N3CLIPS["06"] = { tin: 39.00, build: function () {
     var T0 = 39.00, S, g, i, r, l, nl, f, rowTop, tIn = [],
-        FILES = [["doc_brief.png", "NOON_Client_Brief.pdf", "Client brief · PDF · 75 KB", "pdf", 141],
-                 ["doc_research.png", "NOON_Audience_Research.pdf", "Audience research · PDF · 77 KB", "pdf", 147],
-                 ["doc_notes.png", "NOON_Discovery_Meeting_Notes.docx", "Discovery meeting · DOCX · 40 KB", "docx", 153]],
+        FILES = [["doc_brief.png", "NOON_Client_Brief.pdf", "Client brief \u00b7 PDF \u00b7 75 KB", "pdf", 141],
+                 ["doc_research.png", "NOON_Audience_Research.pdf", "Audience research \u00b7 PDF \u00b7 77 KB", "pdf", 147],
+                 ["doc_notes.png", "NOON_Discovery_Meeting_Notes.docx", "Discovery meeting \u00b7 DOCX \u00b7 40 KB", "docx", 153]],
         tFolder = 0.12, tBring = N3.wt(161, T0) - 0.1, tBrief = tBring + 0.55, tWork = N3.wt(166, T0);
     for (i = 0; i < FILES.length; i++) { tIn.push(N3.wt(FILES[i][4], T0) - 0.12); }
     rowTop = function (k) { return 144 + k * 124; };
@@ -164,7 +164,7 @@ N3CLIPS["06"] = { tin: 39.00, build: function () {
     g = N3.group(S, "Folder", { anchor: "t", tin: tFolder, tout: tBrief, din: 0.06, lin: 0.3, lout: 0.16 });
     N3.box(g, { name: "Folder tile", x: -400, y: 36, w: 54, h: 54, r: 15, fill: N3.COL.coral });
     N3.icon(g, "folder", { name: "Folder icon", cx: -373, cy: 63, size: 30, color: "#FFFFFF", sw: 2 });
-    N3.text(g, "NOON · High Sun", { name: "Folder title", x: -330, top: 42, fs: 34, wt: 600, ls: -0.025 });
+    N3.text(g, "NOON \u00b7 High Sun", { name: "Folder title", x: -330, top: 42, fs: 34, wt: 600, ls: -0.025 });
     C06_chipRight(g, "Project files", { name: "Project files", right: 400, top: 44, bg: "#FCECEB", color: N3.COL.capRed });
     N3.box(g, { name: "Header rule", x: -400, y: 116, w: 800, h: 1.5, fill: "#F2E2E1" });
     // merge control: one spring (drag its key to retime); every row reads it - moves onto the middle row, shrinks, fades, softens

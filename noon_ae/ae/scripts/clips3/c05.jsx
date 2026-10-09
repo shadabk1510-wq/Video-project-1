@@ -7,7 +7,7 @@ var C05_STEPS = [
     ["brief", "Turn project files into direction", "Brief, research and meeting notes", 17.04],
     ["target", "Give every design a clear purpose", "Before we start anything", 20.24],
     ["rules", "Create design rules", "That change the whole workflow", 23.92],
-    ["devices", "Carry it across every format", "Packaging · digital · motion", 27.60],
+    ["devices", "Carry it across every format", "Packaging \u00b7 digital \u00b7 motion", 27.60],
     ["checklist", "Check against the original goals", "Review the work with the brief", 32.08],
     ["handover", "Hand over a system", "So anyone can build on it", 34.64]
 ];
@@ -40,7 +40,7 @@ function C05_logo(ctx, o) {
 // Process ring (as in clip 04): one text layer on a circular mask (Path Options), tracking 261 = web textLength 1870.
 function C05_ring(ctx, o) {
     var str = "", i, l, m, s = new Shape(), r = o.r, k = 0.5523 * o.r;
-    for (i = 0; i < 2; i++) { str += "BRIEF → PURPOSE → DIRECTION → RULES → REVIEW → HANDOVER → "; }
+    for (i = 0; i < 2; i++) { str += "BRIEF \u2192 PURPOSE \u2192 DIRECTION \u2192 RULES \u2192 REVIEW \u2192 HANDOVER \u2192 "; }
     str = str.replace(/\s+$/, "");
     l = N3.text(ctx, str, { name: "Process ring", x: 0, top: 0, fs: 19, wt: 700, ls: 0.261, color: "#B54A50" });
     N3.pos(l).setValue([ctx.ox + o.cx, ctx.oy + o.cy]);
@@ -55,11 +55,11 @@ function C05_ring(ctx, o) {
     return l;
 }
 
-// One list row as its own collapsed precomp ("05 · Row n"), so the row rises/scales/blurs in as one piece like the web
+// One list row as its own collapsed precomp ("05 \u00b7 Row n"), so the row rises/scales/blurs in as one piece like the web
 // row div. Returns a ctx whose origin is the row's top-left (web: left -370, top STEP_TOP(i) inside the list group).
 function C05_rowComp(S, g, name, top) {
     var ox = 20, oy = 20, pc, l;
-    pc = app.project.items.addComp(S.id + " · " + name, 780, 110, 1, S.T, N3.FPS);
+    pc = app.project.items.addComp(S.id + " \u00b7 " + name, 780, 110, 1, S.T, N3.FPS);
     if (N3.folders) { pc.parentFolder = N3.folders.precomps; }
     AEL.created("precomp", pc.name);
     l = g.comp.layers.add(pc);
@@ -103,7 +103,7 @@ N3CLIPS["05"] = { tin: 15.30, build: function () {
     N3.lin(N3.xf(ring, "ADBE Rotate Z"), [0, 23.7], [-5.32 * 9, -(23.7 + 5.32) * 9]);
     N3.eo(N3.xf(ring, "ADBE Opacity"), 0, 0.35, 100, 0);
     N3.eo(N3.xf(ring, "ADBE Scale"), 0, 0.35, [100, 100, 100], [115, 115, 100]);
-    tag = N3.text(S.worldCtx, "The whole process · one project", { name: "Tag", x: -0.07 * 19, top: 372, fs: 19, wt: 600, ls: 0.14,
+    tag = N3.text(S.worldCtx, "The whole process \u00b7 one project", { name: "Tag", x: -0.07 * 19, top: 372, fs: 19, wt: 600, ls: 0.14,
         caps: true, color: N3.COL.capRed, align: "center" });
     N3.eo(N3.xf(tag, "ADBE Opacity"), 0, 0.35, 100, 0);
     logo = C05_logo(S.overCtx, { name: "NOON logo", pos: [0, 109.6 - 470], scale: 160 * 0.38 });
@@ -121,7 +121,7 @@ N3CLIPS["05"] = { tin: 15.30, build: function () {
     for (i = 1; i < ST.length; i++) { keys.push([ST[i], N3.P(g, 0, C05_TOP(i) - 8 + 43), N3.SP.MORPH]); }
     N3.spring(N3.pos(l), N3.P(g, 0, C05_TOP(0) - 8 + 43), keys, N3.SP.MORPH);              // springs to each new row
     N3.lin(N3.xf(l, "ADBE Opacity"), [ST[0], ST[0] + 0.3, tCheck, tCheck + 0.4], [0, 100, 100, 0]);
-    N3.text(g, "The workflow · 2027", { name: "Eyebrow", x: -370, top: 42, fs: 15, wt: 600, ls: 0.14, caps: true, color: N3.COL.capRed });
+    N3.text(g, "The workflow \u00b7 2027", { name: "Eyebrow", x: -370, top: 42, fs: 15, wt: 600, ls: 0.14, caps: true, color: N3.COL.capRed });
     N3.text(g, "What we're going to do", { name: "Heading", x: -370, top: 70, fs: 40, wt: 600, ls: -0.025, color: N3.COL.ink });
 
     for (i = 0; i < C05_STEPS.length; i++) {

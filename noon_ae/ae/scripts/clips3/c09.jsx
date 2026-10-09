@@ -23,13 +23,13 @@ N3CLIPS["09"] = { tin: 80.00, build: function () {
     var T0 = 80.00, tDoc = 0.2, DOC_TOP = -420, S, g, i, k, t, c, l, pen, tip, lift, sh, fxp, ln, s, e, y, d, n, A = 0.08,
         // [text, top, highlight start, end (absolute s), chip, measured line width + 12 (web, Inter) for the pen's stroke end]
         LN = [[null, 176, 83.04, 83.90, "", 295],
-            ["Maya wants the brand to feel quiet, premium and controlled.", 228, 84.64, 87.90, "MAYA · FOUNDER", 605],
-            ["Alex believes the launch needs much more colour and immediate energy", 276, 88.32, 90.20, "ALEX · MARKETING", 729],
+            ["Maya wants the brand to feel quiet, premium and controlled.", 228, 84.64, 87.90, "MAYA \u00b7 FOUNDER", 605],
+            ["Alex believes the launch needs much more colour and immediate energy", 276, 88.32, 90.20, "ALEX \u00b7 MARKETING", 729],
             ["to stop people scrolling.", 310, 90.22, 90.90, "", 249],
-            ["Jo is concerned that an overly abstract campaign could make the product", 358, 91.36, 93.40, "JO · SALES", 741],
+            ["Jo is concerned that an overly abstract campaign could make the product", 358, 91.36, 93.40, "JO \u00b7 SALES", 741],
             ["category unclear, especially if customers first see the work at a distance.", 392, 93.42, 94.90, "", 734],
-            ["Sam: “The answer may not be choosing calm or loud. The system could hold calm", 462, 97.44, 99.60, "SAM · CREATIVE", 821],
-            ["information and one unmistakable moment of energy.”", 496, 99.62, 101.60, "", 550]],
+            ["Sam: \u201cThe answer may not be choosing calm or loud. The system could hold calm", 462, 97.44, 99.60, "SAM \u00b7 CREATIVE", 821],
+            ["information and one unmistakable moment of energy.\u201d", 496, 99.62, 101.60, "", 550]],
         K = [], travel = [], liftK = [];
     S = N3.scene({ id: "09", title: "Discovery notes", T: 22.15, intro: null,
         SH: { stage: { w: 1190, h: 156, r: 78, bg: "#FFFFFF", cam: 1.42 }, doc: { w: 1000, h: 840, r: 22, bg: "#FFFFFF", cam: 1.18 } },
@@ -51,7 +51,7 @@ N3CLIPS["09"] = { tin: 80.00, build: function () {
     // ---- the notes document (hangs from the card top)
     g = N3.group(S, "Notes", { anchor: "t", tin: tDoc, din: 0.06, lin: 0.35 });
     N3.text(g, "NOON Discovery Meeting Notes", { name: "Title", x: -430, top: 54, fs: 34, wt: 600, ls: -0.025 });
-    N3.text(g, "8 September 2026 · Brand and launch discovery · Working notes", { name: "Subtitle", x: -430, top: 104, fs: 17, color: N3.COL.soft });
+    N3.text(g, "8 September 2026 \u00b7 Brand and launch discovery \u00b7 Working notes", { name: "Subtitle", x: -430, top: 104, fs: 17, color: N3.COL.soft });
     N3.box(g, { name: "Rule", x: -430, y: 142, w: 860, h: 1.5, fill: "#F2E2E1" });
     for (i = 0; i < LN.length; i++) {         // highlight bars first (under the text), multiply like the web clip
         C09_highlight(g, "Highlight " + i, i ? "Line " + i : "Heading", -436, LN[i][1] - 1, i >= 6 ? "#EA6262" : "#F7A6A4", i >= 6 ? 42 : 62,

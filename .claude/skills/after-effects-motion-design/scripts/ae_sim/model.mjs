@@ -97,6 +97,8 @@ const layerSchema = (kind) => {
 // ------------------------------------------------------------------ property objects
 let UID = 0;
 const ALL_EXPR = [];
+// arrays coming from the script live in the ES3-trimmed context: copy them into this realm before using methods on them
+const arr = (x) => (Array.isArray(x) ? Array.from(x, arr) : x);
 class Prop {
   constructor(spec, parent, layer) {
     this.uid = ++UID; this.spec = spec; this.matchName = spec.mn; this._name = spec.name; this.parentProperty = parent; this.layer = layer;
@@ -136,6 +138,7 @@ class Prop {
   remove() { const a = this.parentProperty.children; a.splice(a.indexOf(this), 1); }
   // values
   _check(v) {
+    v = arr(v);
     const t = this.propertyValueType;
     const need = { [PVT.ThreeD_SPATIAL]: [2, 3], [PVT.ThreeD]: [2, 3], [PVT.TwoD_SPATIAL]: [2], [PVT.TwoD]: [2], [PVT.COLOR]: [3, 4], [PVT.OneD]: [0] }[t];
     if (this.isGroup) throw new Error(`setValue on group ${this.matchName}`);
@@ -172,6 +175,7 @@ class Prop {
   keyOutInterpolationType(i) { return this._k(i).outI; }
   _easeDims() { if (this.isSpatial) return 1; const t = this.propertyValueType; return t === PVT.TwoD ? 2 : t === PVT.ThreeD ? 3 : 1; }
   setTemporalEaseAtKey(i, a, b) {
+    a = arr(a); b = b ? arr(b) : b;
     const k = this._k(i), n = this._easeDims();
     if (!Array.isArray(a) || a.length !== n || (b && b.length !== n)) throw new Error(`After Effects: ${this.matchName} needs ${n} KeyframeEase objects per side`);
     for (const e of [...a, ...(b || a)]) { if (!(e instanceof KeyframeEase)) throw new Error("ease must be KeyframeEase"); if (e.influence < 0.1 || e.influence > 100) throw new Error("influence out of range " + e.influence); }
@@ -208,10 +212,14 @@ class TextDocument {
 }
 class Shape {
   constructor() { this.vertices = []; this.inTangents = []; this.outTangents = []; this.closed = true; }
-  clone() { const s = new Shape(); s.vertices = this.vertices.map((v) => v.slice()); s.inTangents = (this.inTangents || []).map((v) => v.slice()); s.outTangents = (this.outTangents || []).map((v) => v.slice()); s.closed = this.closed; return s; }
+  clone() { const s = new Shape(); s.vertices = arr(this.vertices); s.inTangents = arr(this.inTangents || []); s.outTangents = arr(this.outTangents || []); s.closed = this.closed; return s; }
   json() { const n = this.vertices.length, z = (a) => (a && a.length === n ? a : Array(n).fill([0, 0])); return { v: this.vertices, i: z(this.inTangents), o: z(this.outTangents), c: !!this.closed }; }
 }
-class KeyframeEase { constructor(s, i) { this.speed = s; this.influence = i; } }
+class KeyframeEase { constructor(s, i) {
+  // AE rejects non-numbers here ("Unable to call KeyframeEase because of parameter 1")
+  if (typeof s !== "number" || !isFinite(s)) throw new Error(`After Effects: KeyframeEase speed must be a number, got ${s}`);
+  if (typeof i !== "number" || !isFinite(i)) throw new Error(`After Effects: KeyframeEase influence must be a number, got ${i}`);
+  this.speed = s; this.influence = i; } }
 class MarkerValue { constructor(c) { this.comment = String(c || ""); this.duration = 0; } }
 
 // ------------------------------------------------------------------ project items
@@ -346,6 +354,16 @@ const ctx = {
 ctx.Folder.temp = new FolderMock(path.dirname(path.resolve(outPath)));
 ctx.Folder.current = new FolderMock(path.dirname(path.resolve(scriptPath)));
 vm.createContext(ctx);
+// ExtendScript is ES3: remove the later built-ins Node has, so a build that relies on them fails here as it would in AE
+vm.runInContext(`(function () {
+  var A = Array.prototype, S = String.prototype, k, i, del = function (o, names) { for (i = 0; i < names.length; i++) { delete o[names[i]]; } };
+  del(S, ["trim","trimStart","trimEnd","padStart","padEnd","repeat","includes","startsWith","endsWith","codePointAt","normalize"]);
+  del(Object, ["keys","values","entries","assign","create","defineProperty","defineProperties","getPrototypeOf","freeze"]);
+  del(Math, ["hypot","sign","trunc","log2","log10","cbrt","fround","clz32","imul","expm1","log1p","sinh","cosh","tanh","asinh","acosh","atanh"]);
+  del(Number, ["isFinite","isNaN","isInteger"]); del(Array, ["isArray","from","of"]); delete Date.now; delete Function.prototype.bind;
+  this.JSON = undefined; this.Promise = undefined; this.Map = undefined; this.Set = undefined; this.Symbol = undefined;
+  del(A, ["map","forEach","filter","reduce","reduceRight","some","every","indexOf","lastIndexOf","find","findIndex","includes","fill","flat","flatMap","keys","values","entries"]);
+})();`, ctx);
 let crashed = null;
 try { vm.runInContext(code, ctx, { filename: scriptPath }); } catch (e) { crashed = e; }
 

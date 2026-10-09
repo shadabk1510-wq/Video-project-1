@@ -37,7 +37,7 @@ function C04_logo(ctx, o) {
 // o: {cx, cy (world centre), r}
 function C04_ring(ctx, o) {
     var str = "", i, l, m, s = new Shape(), r = o.r, k = 0.5523 * o.r;
-    for (i = 0; i < 2; i++) { str += "BRIEF → PURPOSE → DIRECTION → RULES → REVIEW → HANDOVER → "; }
+    for (i = 0; i < 2; i++) { str += "BRIEF \u2192 PURPOSE \u2192 DIRECTION \u2192 RULES \u2192 REVIEW \u2192 HANDOVER \u2192 "; }
     str = str.replace(/\s+$/, "");
     l = N3.text(ctx, str, { name: "Process ring", x: 0, top: 0, fs: 19, wt: 700, ls: 0.261, color: "#B54A50" });
     N3.pos(l).setValue([ctx.ox + o.cx, ctx.oy + o.cy]);
@@ -149,7 +149,7 @@ N3CLIPS["04"] = { tin: 9.98, build: function () {
     N3.lin(N3.xf(ring, "ADBE Rotate Z"), [0, 5.32], [0, -5.32 * 9]);               // -9 deg/s, continues in clip 05
     N3.eo(N3.xf(ring, "ADBE Opacity"), tRing, tRing + 0.6, 0, 100);
     N3.eo(N3.xf(ring, "ADBE Scale"), tRing, tRing + 0.6, [90, 90, 100], [100, 100, 100]);
-    tag = N3.text(S.worldCtx, "The whole process · one project", { name: "Tag", x: -0.07 * 19, top: 372, fs: 19, wt: 600, ls: 0.14,
+    tag = N3.text(S.worldCtx, "The whole process \u00b7 one project", { name: "Tag", x: -0.07 * 19, top: 372, fs: 19, wt: 600, ls: 0.14,
         caps: true, color: N3.COL.capRed, align: "center" });
     N3.show(tag, tTag, null, 12, { din: 0, lin: 0.4 });
 

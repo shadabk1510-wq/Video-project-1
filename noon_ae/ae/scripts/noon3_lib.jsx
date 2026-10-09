@@ -5,7 +5,7 @@
 //   SHAPE   shape - the morphing card. Effect controls: W, H, Radius, CX, CY, Fill, Pop, Press.
 //   SHAPE MATTE   - invisible copy of SHAPE (expression-linked) used as the alpha matte for the card's contents.
 //   ANCHOR C/T/L  - nulls on the card (centre, top edge, left edge) that card contents hang from.
-//   <id> · <name> - one collapsed precomp per content group, revealed with plain keyframes (opacity/scale/blur).
+//   <id> \u00b7 <name> - one collapsed precomp per content group, revealed with plain keyframes (opacity/scale/blur).
 //
 // Motion = springs. A sprung property holds HOLD keyframes at its targets plus a short expression that springs
 // from key to key, so retiming a move means dragging a keyframe. Fades/rises are ordinary eased keyframes.
@@ -93,7 +93,7 @@ N3._speeds = function (prop, v0, v1, dur, factor) {
     d = N3.sub(v1, v0);
     if (typeof d === "number") { return [factor * d / dur]; }
     if (N3.dims(prop) === 1) { return [0]; }              // colour etc: keep default speed
-    for (i = 0; i < N3.dims(prop); i++) { o.push(factor * d[i] / dur); }
+    for (i = 0; i < N3.dims(prop); i++) { o.push(factor * (d[i] || 0) / dur); }   // e.g. Scale keyed with 2 values on a 3D property
     return o;
 };
 N3._zero = function (prop) { var o = [], i, n = N3.isSpatial(prop) ? 1 : N3.dims(prop); for (i = 0; i < n; i++) { o.push(0); } return o; };
@@ -607,7 +607,7 @@ N3.scene = function (cfg) {
 N3.group = function (S, name, o) {
     var pc, l, ctx, din, lin, lout, bl, sc, op, b;
     o = o || {};
-    pc = app.project.items.addComp(S.id + " · " + name, N3.PRE_W, N3.PRE_H, 1, S.T, N3.FPS);
+    pc = app.project.items.addComp(S.id + " \u00b7 " + name, N3.PRE_W, N3.PRE_H, 1, S.T, N3.FPS);
     if (N3.folders) { pc.parentFolder = N3.folders.precomps; }
     AEL.created("precomp", pc.name);
     l = S.comp.layers.add(pc);
@@ -707,7 +707,7 @@ N3.background = function (comp) {
     return [grain, light, bg];
 };
 
-// Motion blur on (180° default shutter) for a clip comp, every precomp nested in it, and every visible layer -
+// Motion blur on (180\u00b0 default shutter) for a clip comp, every precomp nested in it, and every visible layer -
 // the reference renders were made with motion blur. Turn a layer's switch off in the timeline to opt out.
 N3.motionBlur = function (comp, seen) {
     var j, l;

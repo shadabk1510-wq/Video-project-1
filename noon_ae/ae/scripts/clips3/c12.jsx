@@ -6,7 +6,7 @@
 // A small precomp placed into ctx (S.worldCtx / S.overCtx / a card group) at ctx point [x, y]; its anchor is its centre.
 // Returns {layer, ctx}; the inner ctx origin is (ox, oy) in the precomp (default: its centre).
 function C12_pre(ctx, name, w, h, x, y, ox, oy) {
-    var S = ctx.S, pc = app.project.items.addComp(S.id + " · " + name, w, h, 1, S.T, N3.FPS), l;
+    var S = ctx.S, pc = app.project.items.addComp(S.id + " \u00b7 " + name, w, h, 1, S.T, N3.FPS), l;
     if (N3.folders) { pc.parentFolder = N3.folders.precomps; }
     AEL.created("precomp", pc.name);
     l = ctx.comp.layers.add(pc);
@@ -116,7 +116,7 @@ N3CLIPS["12"] = { tin: 119.05, build: function () {
     N3.ellipse(c, { name: "Dot amber", cx: 41.5, cy: 21.5, d: 11, fill: "#F6C25B" });
     N3.ellipse(c, { name: "Dot green", cx: 59.5, cy: 21.5, d: 11, fill: "#6CCB7E" });
     N3.box(c, { name: "URL pill", cx: 360, cy: 22, w: 331.2, h: 26, r: 13, fill: "#F3E2E1" });
-    N3.text(c, "noon › high-sun", { name: "URL", x: 360, cy: 22, fs: 13, color: N3.COL.soft, align: "center" });
+    N3.text(c, "noon \u203a high-sun", { name: "URL", x: 360, cy: 22, fs: 13, color: N3.COL.soft, align: "center" });
     N3.mask(P.layer, N3.rrShape(0, 0, 720, 480, 22));
     N3.shadow(P.layer, shadowWin);
     C12_join(P.layer, tB[1] - 0.25);
