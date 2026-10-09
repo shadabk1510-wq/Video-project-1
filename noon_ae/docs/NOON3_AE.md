@@ -1,5 +1,7 @@
 # NOON v3: the After Effects build
 
+**Chunk 2 update:** the build now runs to 5:31 with `vo_chunk2.m4a` (same recording as the 2-min test, plus the continuation). Clip 12 runs on into the working document; new clips 13-18 cover the three jobs, PURPOSE, the content plan, the stage pill, the main-pack build-up and DESIGN RULES. Every clip has a slow camera drift (WORLD layer, Effect Controls > Drift %, set 0 to turn it off).
+
 `noon_ae/ae/scripts/build_noon3.jsx` rebuilds the whole v3 video as **native, editable After Effects layers**, using the
 same JSX workflow as v1 and v2. Nothing in it is pre-rendered video, except your own footage (the sunrise clip) and the
 optional reference guide.

@@ -1,4 +1,4 @@
-// Clip 12 (119.05 s): "before designing the assets ... I'm going to map three different points where somebody will encounter
+// Clip 12 (119.05 s, runs to 145.40 with chunk 2): "before designing the assets ... I'm going to map three different points where somebody will encounter
 // the coffee brand noon" - the PROFESSIONAL card becomes a phone screen (real frame on top) with a blurred scrolling feed and
 // a "REVEALED SOON" chip; then the phone moves left and the product-page window and the pack join, with numbered badges,
 // labels and a dotted journey line drawn through the three touchpoints.
@@ -33,22 +33,25 @@ function C12_grid(ctx) {
 }
 
 // "In" spring (0 -> 1) on a precomp layer: rises 120 px, scales 0.92 -> 1, fades in at 1.3x (the web windows' entrance).
-function C12_join(l, t) {
+function C12_join(l, t, tOut) {
     N3.spring(N3.slider(l, "In", 0), 0, [[t, 1, N3.SP.MORPH]]);
+    N3.eo(N3.slider(l, "Out", 1), tOut, tOut + 0.3, 1, 0);
     AEL.expr(N3.pos(l), "// rises into place with the In spring\nvar w = effect(\"In\")(1);\n[value[0], value[1] + (1 - w) * 120]");
-    AEL.expr(N3.xf(l, "ADBE Scale"), "var s = (0.92 + 0.08 * effect(\"In\")(1)) * 100;\n[s, s]");
-    AEL.expr(N3.xf(l, "ADBE Opacity"), "Math.min(1, Math.max(0, effect(\"In\")(1) * 1.3)) * 100");
+    AEL.expr(N3.xf(l, "ADBE Scale"), "var s = (0.92 + 0.08 * effect(\"In\")(1)) * (0.97 + 0.03 * effect(\"Out\")(1)) * 100;\n[s, s]");
+    AEL.expr(N3.xf(l, "ADBE Opacity"), "Math.min(1, Math.max(0, effect(\"In\")(1) * 1.3)) * effect(\"Out\")(1) * 100");
 }
 
 N3CLIPS["12"] = { tin: 119.05, build: function () {
     var T0 = 119.05, tPhone = 0.15, tSoon = N3.wt(367, T0), tMap = N3.wt(371, T0) - 0.45,
         tB = [N3.wt(371, T0), N3.wt(372, T0) + 0.25, N3.wt(374, T0)], tPath = N3.wt(374, T0) + 0.15,
         WEB = [80, -10], PACK = [700, -10], BP, LP, S, g, i, t, P, c, l, feed, fp, frame, path, st, dash, ICONS = ["mobile", "browser", "package"],
-        LABELS = ["Social post", "Product page", "Packaging"], SHX = "thisComp.layer(\"SHAPE\").effect(\"CX\")(1)", shadowWin = { color: "#96323A", opacity: 0.36, dist: 22, soft: 46 };
-    S = N3.scene({ id: "12", title: "Three touchpoints", T: 10.95, intro: null,
+        LABELS = ["Social post", "Product page", "Packaging"], tBoard = 140.28 - T0, tOut = tBoard - 0.1, tN = [129.48 - T0, 131.24 - T0, 133.64 - T0], SHX = "thisComp.layer(\"SHAPE\").effect(\"CX\")(1)", shadowWin = { color: "#96323A", opacity: 0.36, dist: 22, soft: 46 };
+    // chunk 2: the clip runs on to 145.40 - each touchpoint pulses as it is named, then everything settles into the
+    // working document (the phone morphs into the board) on "place them beside each other in the working document".
+    S = N3.scene({ id: "12", title: "Three touchpoints", T: 26.35, intro: null, drift: 3,
         SH: { pro: { w: 1760, h: 940, r: 56, bg: "#EA6262", cam: 1.06 }, screen: { w: 420, h: 858, r: 54, bg: "#FFFFFF", cam: 1.0 },
-            screen2: { w: 420, h: 858, r: 54, bg: "#FFFFFF", cam: 0.84 } },
-        start: "pro", SEQ: [[tPhone, "screen"], [tMap, "screen2"]], cx: [[tMap, -600, N3.SP.MORPH]] });
+            screen2: { w: 420, h: 858, r: 54, bg: "#FFFFFF", cam: 0.84 }, board: { w: 1720, h: 900, r: 40, bg: "#FFFFFF", cam: 1.0 } },
+        start: "pro", SEQ: [[tPhone, "screen"], [tMap, "screen2"], [tBoard, "board"]], cx: [[tMap, -600, N3.SP.MORPH], [tBoard, 0, N3.SP.MORPH]] });
     // badge / label anchor points once mapped (badge 1 and label 1 follow the phone: x from SHAPE CX)
     BP = [[-600 - 210, -430], [WEB[0] - 360, -250], [PACK[0] - 190, -250]];
     LP = [[-600, 480], [WEB[0], 290], [PACK[0], 290]];
@@ -64,7 +67,7 @@ N3CLIPS["12"] = { tin: 119.05, build: function () {
     N3.text(g, "designers from everybody else.", { name: "Rest", x: 0, top: 395, fs: 40, wt: 600, color: "#FFFFFF", align: "center" });
 
     // ---- card: the phone screen - blurred feed of the real designs scrolling up, "REVEALED SOON" chip
-    g = N3.group(S, "Phone screen", { tin: tPhone, din: 0.05, lin: 0.35 });
+    g = N3.group(S, "Phone screen", { tin: tPhone, din: 0.05, lin: 0.35, tout: tBoard - 0.05, lout: 0.2 });
     P = C12_pre(g, "Feed", 420, 2033, 0, -429 + 2033 / 2);
     c = P.ctx; c.ox = 0; c.oy = 0;
     t = 0;
@@ -86,7 +89,7 @@ N3CLIPS["12"] = { tin: 119.05, build: function () {
     N3.xf(frame, "ADBE Anchor Point").setValue([600 + 12.8 / 0.8, 600 - 2.8 / 0.8]);
     AEL.expr(N3.pos(frame), "// sits exactly over the screen (SHAPE), follows the camera through WORLD\nthisComp.layer(\"SHAPE\").transform.position");
     AEL.expr(N3.xf(frame, "ADBE Scale"), "var s = thisComp.layer(\"SHAPE\").transform.scale[0] * 0.8;\n[s, s]");
-    N3.lin(N3.xf(frame, "ADBE Opacity"), [tPhone + 0.1, tPhone + 0.45], [0, 100]);
+    N3.lin(N3.xf(frame, "ADBE Opacity"), [tPhone + 0.1, tPhone + 0.45, tOut - 0.25, tOut], [0, 100, 100, 0]);   // fades just before the screen morphs into the board
     N3.shadow(frame, { color: "#6E1E26", opacity: 0.35, dist: 40, soft: 50 });
 
     // ---- world: dotted journey line through the three badges (solid while it draws on, dotted once done)
@@ -101,6 +104,7 @@ N3CLIPS["12"] = { tin: 119.05, build: function () {
     N3.hold(st.property("ADBE Vector Stroke Dashes").property("ADBE Vector Stroke Dash 1"), [0, tPath + 0.9], [1800, 2]);
     st.property("ADBE Vector Stroke Dashes").property("ADBE Vector Stroke Gap 1").setValue(16);
     N3.hold(N3.xf(path, "ADBE Opacity"), [0, tPath], [0, 100]);
+    N3.eo(N3.xf(path, "ADBE Opacity"), tOut, tOut + 0.25, 100, 0);
 
     // ---- world: product page window (blurred page scrolling slowly under a browser bar)
     P = C12_pre(S.worldCtx, "Product page window", 720, 480, WEB[0], WEB[1], 0, 0);
@@ -119,7 +123,7 @@ N3CLIPS["12"] = { tin: 119.05, build: function () {
     N3.text(c, "noon \u203a high-sun", { name: "URL", x: 360, cy: 22, fs: 13, color: N3.COL.soft, align: "center" });
     N3.mask(P.layer, N3.rrShape(0, 0, 720, 480, 22));
     N3.shadow(P.layer, shadowWin);
-    C12_join(P.layer, tB[1] - 0.25);
+    C12_join(P.layer, tB[1] - 0.25, tOut);
 
     // ---- world: the pack (blurred bag)
     P = C12_pre(S.worldCtx, "Pack window", 380, 480, PACK[0], PACK[1], 0, 0);
@@ -129,7 +133,7 @@ N3CLIPS["12"] = { tin: 119.05, build: function () {
     N3.blur(l).setValue(8);   // CSS px; N3.blur converts footage blur to screen size
     N3.mask(P.layer, N3.rrShape(0, 0, 380, 480, 22));
     N3.shadow(P.layer, shadowWin);
-    C12_join(P.layer, tB[2] - 0.25);
+    C12_join(P.layer, tB[2] - 0.25, tOut);
 
     // ---- world: numbered badges 1-2-3 (spring pop) and labels with icons
     for (i = 0; i < 3; i++) {
@@ -138,7 +142,8 @@ N3CLIPS["12"] = { tin: 119.05, build: function () {
         N3.shadow(l, { color: "#96323A", opacity: 0.4, dist: 10, soft: 24 });
         N3.ellipse(P.ctx, { name: "Badge", cx: 0, cy: 0, d: 62, fill: N3.COL.coral });
         N3.text(P.ctx, String(i + 1), { name: "Number", x: 0, cy: 0, fs: 28, wt: 800, color: "#FFFFFF", align: "center" });
-        N3.spring(N3.slider(P.layer, "Pop", 0), 0, [[tB[i], 1, [13, 0.75]]]);
+        N3.spring(N3.slider(P.layer, "Pop", 0), 0, [[tB[i], 1, [13, 0.75]]].concat(K.bump(tN[i])));   // pulses again when it is named
+        N3.eo(N3.xf(P.layer, "ADBE Opacity"), tOut, tOut + 0.25, 100, 0);
         AEL.expr(N3.xf(P.layer, "ADBE Scale"), "// springs in (13, 0.75) at the Pop key\nvar s = Math.max(0, effect(\"Pop\")(1)) * 100;\n[s, s]");
         if (i === 0) { AEL.expr(N3.pos(P.layer), "// top-left corner of the phone screen\n[" + SHX + " - 210, value[1]]"); }
     }
@@ -148,7 +153,11 @@ N3CLIPS["12"] = { tin: 119.05, build: function () {
         l = N3.icon(P.ctx, ICONS[i], { name: "Icon", cx: -100, cy: 0, size: 42, color: N3.COL.coral, sw: 2 });
         AEL.expr(N3.pos(l), "// icon 42 px + gap 12 left of the label\nvar L = thisComp.layer(\"Label\"), r = L.sourceRectAtTime(time, false);\n[L.transform.position[0] + r.left - 33, value[1]]");
         if (i === 0) { AEL.expr(N3.pos(P.layer), "// centred under the phone\n[" + SHX + ", value[1]]"); }
-        N3.show(P.layer, tB[i] + 0.1, null, 16, { din: 0, lin: 0.4 });
+        N3.show(P.layer, tB[i] + 0.1, tOut, 16, { din: 0, lin: 0.4 });
     }
+
+    // ---- card: the working document - the three touchpoints side by side, each with an empty job area
+    g = N3.group(S, "Working doc", { tin: tBoard + 0.1, din: 0.05, lin: 0.35 });
+    K.board(g, { tin: tBoard + 0.1 });
     return S;
 } };

@@ -3,12 +3,15 @@
 #include "../../noon3_words.jsx"
 #include "../../noon3_icons.jsx"
 #include "../../noon3_lib.jsx"
+#include "../../noon3_kit.jsx"
 var N3CLIPS = {};
 #include "../c07.jsx"
 function main() {
     var here = AEL.scriptDir($.fileName);
     N3.ASSET_DIR = (new Folder(here + "/../../../../assets/_ae")).fsName;
     N3.folders = AEL.standardFolders();
+    AEL.pendingExpr = [];
     N3CLIPS["07"].build();
+    AEL.retryExpressions();
 }
 AEL.run($.fileName, "test clip 07", main);

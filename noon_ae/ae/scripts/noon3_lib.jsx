@@ -27,6 +27,8 @@ N3.folders = null;         // set by the build script (AEL.standardFolders())
 N3.files = {};
 
 N3.wt = function (i, T0) { return N3_WORDS[i][1] - T0; };
+// camera drift factor (expression text); pre = "" on WORLD itself, "W." where W is the WORLD layer
+N3.DRIFT = function (pre) { return "(1 + " + pre + "effect(\"Drift %\")(1) / 100 * Math.pow(Math.sin(Math.PI * time / thisComp.duration), 2))"; };
 N3.r3 = function (x) { return Math.round(x * 1000) / 1000; };
 N3.hex = function (h) { return [parseInt(h.substr(1, 2), 16) / 255, parseInt(h.substr(3, 2), 16) / 255, parseInt(h.substr(5, 2), 16) / 255]; };
 N3.rgba = function (h) { var c = N3.hex(h); c.push(1); return c; };
@@ -525,11 +527,12 @@ N3.scene = function (cfg) {
     N3.xf(w, "ADBE Anchor Point").setValue([0, 0]);
     N3.spring(N3.slider(w, "Cam", P0.cam), P0.cam, keysOf(function (s) { return s.cam; }), cfg.camSpring || N3.SP.CAM);
     N3.spring(N3.slider(w, "Cam Mul", 1), 1, cfg.camMul || [], N3.SP.CAM);
+    N3.slider(w, "Drift %", cfg.drift || 0);   // slow breathing push-in: 0 at the clip's first and last frame, peak mid-clip
     N3.spring(N3.slider(w, "Focus X", 0), 0, cfg.fx || [], N3.SP.CAM);
     N3.spring(N3.slider(w, "Focus Y", 0), 0, cfg.fy || [], N3.SP.CAM);
-    AEL.expr(N3.pos(w), "// camera: zoom Cam x Cam Mul around Focus X/Y\nvar s = effect(\"Cam\")(1) * effect(\"Cam Mul\")(1);\n" +
+    AEL.expr(N3.pos(w), "// camera: zoom Cam x Cam Mul x drift around Focus X/Y\nvar s = effect(\"Cam\")(1) * effect(\"Cam Mul\")(1) * " + N3.DRIFT("") + ";\n" +
         "[" + N3.W / 2 + " - s * effect(\"Focus X\")(1), " + N3.H / 2 + " - s * effect(\"Focus Y\")(1)]");
-    AEL.expr(N3.xf(w, "ADBE Scale"), "var s = effect(\"Cam\")(1) * effect(\"Cam Mul\")(1) * 100;\n[s, s]");
+    AEL.expr(N3.xf(w, "ADBE Scale"), "var s = effect(\"Cam\")(1) * effect(\"Cam Mul\")(1) * " + N3.DRIFT("") + " * 100;\n[s, s]");
     S.world = w;
 
     // the card
@@ -678,7 +681,7 @@ N3.cursor = function (S, o) {
     for (i = 0; i < (o.drags || []).length; i++) { pr.push([o.drags[i][0] - 0.04, 1, [45, 1]], [o.drags[i][1], 0, [22, 0.72]]); }
     pr.sort(function (a, b) { return a[0] - b[0]; });
     N3.spring(N3.slider(l, "Press", 0), 0, pr, N3.SP.FAST);
-    AEL.expr(N3.pos(l), "// screen position of World Point through the camera\nvar W = thisComp.layer(\"WORLD (camera)\"), s = W.effect(\"Cam\")(1) * W.effect(\"Cam Mul\")(1), p = effect(\"World Point\")(1);\n" +
+    AEL.expr(N3.pos(l), "// screen position of World Point through the camera\nvar W = thisComp.layer(\"WORLD (camera)\"), s = W.effect(\"Cam\")(1) * W.effect(\"Cam Mul\")(1) * " + N3.DRIFT("W.") + ", p = effect(\"World Point\")(1);\n" +
         "[" + N3.W / 2 + " + s * (p[0] - W.effect(\"Focus X\")(1)), " + N3.H / 2 + " + s * (p[1] - W.effect(\"Focus Y\")(1))]");
     AEL.expr(N3.xf(l, "ADBE Scale"), "var s = (1 - 0.13 * effect(\"Press\")(1)) * 100;\n[s, s]");
     l.moveToBeginning();

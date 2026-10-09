@@ -6,6 +6,7 @@
 #include "noon3_words.jsx"
 #include "noon3_icons.jsx"
 #include "noon3_lib.jsx"
+#include "noon3_kit.jsx"
 var N3CLIPS = {};
 #include "clips3/c01.jsx"
 #include "clips3/c02.jsx"
@@ -19,21 +20,27 @@ var N3CLIPS = {};
 #include "clips3/c10.jsx"
 #include "clips3/c11.jsx"
 #include "clips3/c12.jsx"
+#include "clips3/c13.jsx"
+#include "clips3/c14.jsx"
+#include "clips3/c15.jsx"
+#include "clips3/c16.jsx"
+#include "clips3/c17.jsx"
+#include "clips3/c18.jsx"
 
 var CONFIG = {
     assets: "../../assets/_ae",                 // client assets (relative to this script)
     reference: "../../motion/out/NOON_v3_preview_small.mp4",   // optional guide layer (the approved preview)
-    vo: "vo2_full.wav", voStart: 2.0,
+    vo: "vo_chunk2.m4a", voStart: 2.0,          // chunk 2 (5:29) - starts with the same recording as the 2-min test
     only: null,                                 // e.g. ["02", "05"] to build just those clips
     save: "../NOON3.aep"
 };
-var ORDER = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12"];
+var ORDER = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18"];
 
 function main() {
     var here = AEL.scriptDir($.fileName), main, i, id, S, l, failed = [], ref, vo, ends = [];
     N3.ASSET_DIR = (new Folder(here + "/" + CONFIG.assets)).fsName;
     N3.folders = AEL.standardFolders();
-    main = AEL.comp("NOON3_MAIN", { width: N3.W, height: N3.H, duration: 130, fps: N3.FPS, folder: N3.folders.main });
+    main = AEL.comp("NOON3_MAIN", { width: N3.W, height: N3.H, duration: 331.5, fps: N3.FPS, folder: N3.folders.main });
     N3.warmFonts();
     N3.background(main);
     main.motionBlur = true;
