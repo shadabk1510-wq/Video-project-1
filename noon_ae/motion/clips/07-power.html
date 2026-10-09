@@ -1,0 +1,78 @@
+<title>07 Stage 01, a neat way, tag team, POWERHOUSE</title>
+<style>
+.seg{position:absolute;top:0;width:58px;height:12px;border-radius:6px;background:#F4E1E0;overflow:hidden}
+.seg i{position:absolute;left:0;top:0;bottom:0;background:#EA6262;border-radius:6px}
+.slot{position:absolute;top:-80px;width:160px;height:160px;border-radius:40px;background:#FCECEB;box-shadow:inset 0 0 0 2px #F6C9C8;display:flex;align-items:center;justify-content:center;font-size:76px;font-weight:700;color:#F2A3A3}
+.ghost{position:absolute;left:0;transform:translateX(-50%);font-size:200px;font-weight:800;letter-spacing:-.05em;line-height:1;color:rgba(255,255,255,.28);white-space:nowrap}
+.bl{position:absolute;left:-270px;width:540px;height:44px}
+.sk{position:absolute;height:12px;border-radius:6px;background:#F4E4E3}
+</style>
+<div data-slot="shape">
+  <div class="L" id="Lbrief">
+    <svg class="a" style="left:-270px;top:44px;width:118px;height:30px" viewBox="0 0 450 112"><g fill="#163452"><path d="M0 1H42L75 40V1H109V110H70L39 73V110H0Z"/><path fill-rule="evenodd" d="M168 0A56 56 0 1 1 168 112A56 56 0 1 1 168 0ZM194 45A12 12 0 1 0 194 69A12 12 0 1 0 194 45Z"/><path fill-rule="evenodd" d="M281.5 0A56 56 0 1 1 281.5 112A56 56 0 1 1 281.5 0ZM309.5 45A12 12 0 1 0 309.5 69A12 12 0 1 0 309.5 45Z"/><path d="M342 1H385L416 40V1H450V112H412L381 74V112H342Z"/></g></svg>
+    <div class="a k" style="left:-270px;top:96px;font-size:46px;white-space:nowrap">Creative brief</div>
+    <div class="a" style="left:-270px;top:162px;font-size:18px;color:#9C7F81;white-space:nowrap">Built from the client brief, audience research and meeting notes</div>
+    <div class="a" style="left:-270px;top:206px;width:540px;height:1.5px;background:#F2E2E1"></div>
+    <div class="a cap" style="left:-270px;top:236px">Designing towards</div>
+    <div id="bullets"></div><div id="skel"></div>
+  </div>
+  <div class="L" id="Lstage">
+    <div class="a" style="left:-540px;top:-34px"><div class="cap" style="font-size:15px">Stage</div><div class="k" style="font-size:44px;color:#EA6262;line-height:1.05">01</div></div>
+    <div class="a" style="left:-436px;top:-36px;width:1.5px;height:72px;background:#F2E2E1"></div>
+    <div class="a k" style="left:-404px;top:-20px;font-size:31px;white-space:nowrap">Bring the project together</div>
+    <div class="a" id="segs" style="left:180px;top:-6px"></div>
+  </div>
+  <div class="L" id="Lneat"><div class="row k" style="transform:translate(-50%,-50%);gap:20px;color:#fff;font-size:46px"><span id="spk"></span>A really neat way</div></div>
+  <div class="L" id="Lteam">
+    <div class="slot" id="sl0" style="left:-260px">?</div>
+    <div class="a" style="left:-24px;top:-36px;font-size:62px;font-weight:300;color:#C9A9AA">&times;</div>
+    <div class="slot" id="sl1" style="left:100px">?</div>
+    <div class="row" id="actas" style="left:0;top:104px;transform:translateX(-50%);font-size:24px;font-weight:600;color:#9C7F81">Two tools, one powerhouse</div>
+  </div>
+  <div class="L" id="Lpower">
+    <div class="ghost" id="g0" style="top:-322px">POWERHOUSE</div>
+    <div class="ghost" id="g1" style="top:122px">POWERHOUSE</div>
+    <div class="row" id="pw" style="transform:translate(-50%,-50%);font-size:200px;font-weight:800;letter-spacing:-.05em;line-height:1;color:#fff"></div>
+  </div>
+</div><!--/shape-->
+<script>
+const T0 = 52.30;
+const BUL = ['Energy without the noise', 'Creative focus, not hustle', 'Calm information, one moment of energy'];
+$('bullets').innerHTML = BUL.map((b, i) => `<div class="bl" style="top:${276 + i * 62}px"><div class="a" style="left:0;top:13px;width:14px;height:14px;border-radius:50%;background:#EA6262"></div><div class="a k" style="left:34px;top:0;font-size:28px;white-space:nowrap">${b}</div></div>`).join('');
+$('skel').innerHTML = [430, 500, 380, 470, 300].map((w, i) => `<div class="sk" style="left:-270px;top:${500 + i * 30}px;width:${w}px"></div>`).join('');
+$('segs').innerHTML = [0, 1, 2, 3, 4, 5].map(i => `<div class="seg" style="left:${i * 68}px"><i id="sf${i}"></i></div>`).join('');
+$('spk').innerHTML = M.icon('sparkles', 44, '#EA6262', 2);
+$('pw').innerHTML = 'POWERHOUSE'.split('').map((c, i) => `<span id="pc${i}" style="display:inline-block">${c}</span>`).join('');
+const tStage = 0.12, tNeat = wt(178, T0) - 0.08, tSlide = wt(192, T0), tTeam = tSlide + 0.42, tPower = wt(207, T0) - 0.06;
+const fill1 = M.track(0, [[tStage + 0.5, 0.42, M.SOFT]]);
+const spark = M.track(0, [[wt(182, T0), 1, [14, 0.6]]]);
+// the "slide": the neat pill exits left, the tag-team card enters from the right
+const cx = M.track(0, [[tSlide, -1250, [11, 0.95]], [tTeam - 0.02, 1250, M.INSTANT], [tTeam, 0, [9.5, 0.9]]]);
+M.scene({
+  W: 1920, H: 1080, bg: '#F7CFCE', T: 11.0, intro: null,
+  SH: {
+    brief: {w: 720, h: 720, r: 30, bg: '#FFFFFF', cam: 1.36},
+    stage: {w: 1190, h: 156, r: 78, bg: '#FFFFFF', cam: 1.42},
+    neat:  {w: 720, h: 156, r: 78, bg: '#2B1C1E', cam: 1.42},
+    team:  {w: 760, h: 300, r: 56, bg: '#FFFFFF', cam: 1.4},
+    power: {w: 1560, h: 560, r: 64, bg: '#EA6262', cam: 1.13}
+  },
+  start: 'brief', SEQ: [[tStage, 'stage'], [tNeat, 'neat'], [tTeam, 'team'], [tPower, 'power']],
+  layers: [
+    {el: 'Lbrief', tin: null, tout: tStage, anchor: 't', o: {lout: 0.14}},
+    {el: 'Lstage', tin: tStage, tout: tNeat, o: {din: 0.06, lin: 0.3}, update: (t) => {
+      for (let i = 0; i < 6; i++) $('sf' + i).style.width = (i === 0 ? 58 * fill1(t) : 0) + 'px';
+    }},
+    {el: 'Lneat', tin: tNeat, tout: tTeam - 0.05, update: (t) => { const s = spark(t); $('spk').style.transform = `rotate(${(s * 90).toFixed(2)}deg) scale(${(1 + 0.25 * Math.sin(Math.PI * M.clamp(s))).toFixed(4)})`; }},
+    {el: 'Lteam', tin: tTeam, tout: tPower, update: (t) => {
+      [wt(196, T0), wt(197, T0)].forEach((tt, i) => { const a = M.S(t - tt, 13, 0.8); const e = $('sl' + i).style; e.transform = `scale(${(0.6 + 0.4 * Math.max(0, a)).toFixed(4)})`; e.opacity = M.clamp(a * 1.5); });
+      show($('actas'), t, wt(200, T0), null, 10, {din: 0, lin: 0.4});
+    }},
+    {el: 'Lpower', tin: tPower, tout: null, o: {din: 0.04, lin: 0.15}, update: (t) => {
+      for (let i = 0; i < 10; i++) show($('pc' + i), t, tPower + 0.05 + i * 0.03, null, 60, {din: 0, lin: 0.45, blur: 16});
+      [0, 1].forEach(i => { const a = M.eo((t - tPower - 0.25) / 0.9); const e = $('g' + i).style; e.opacity = a; e.transform = `translateX(-50%) translateY(${((1 - a) * (i ? 70 : -70)).toFixed(2)}px)`; });
+    }}
+  ],
+  geom: (t, g) => { g.cx = cx(t); return g; }
+});
+</script>

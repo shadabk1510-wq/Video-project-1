@@ -1,0 +1,81 @@
+<title>01 Hook: brief to bag to deliverables</title>
+<style>
+.page{position:absolute;width:300px;height:424px;border-radius:10px;overflow:hidden;box-shadow:0 2px 4px rgba(110,30,35,.08),0 30px 60px -20px rgba(140,40,48,.35);transform-origin:50% 50%}
+.page img{width:100%;height:100%;object-fit:cover}
+.hl{position:absolute;left:30px;top:22px;height:22px;border-radius:5px;background:rgba(234,98,98,.42);mix-blend-mode:multiply}
+.fill{position:absolute;transform:translate(-50%,-50%)}
+.fill img{width:100%;height:100%;object-fit:cover}
+</style>
+<div data-slot="world">
+  <div class="page" id="p0"><img src="../assets/doc_brief.png"></div>
+  <div class="page" id="p1"><img src="../assets/doc_research.png"></div>
+  <div class="page" id="p2"><img src="../assets/doc_notes.png"><div class="hl" id="hl"></div></div>
+</div><!--/world-->
+<div data-slot="shape">
+  <div class="L" id="Lpack">
+    <div class="a" id="panel" style="left:-111px;top:-270px;width:282px;height:501px;border-radius:6px;background:#F6F2EA;box-shadow:0 20px 40px -20px rgba(60,40,40,.35)"></div>
+    <div class="a" id="sun" style="border-radius:50%;background:#F4512B"></div>
+    <div class="fill" id="bagImg" style="left:0;top:0;width:600px;height:600px"><img src="../assets/bag.png"></div>
+  </div>
+  <div class="L" id="Lpost"><div class="fill" style="width:600px;height:600px"><img src="../assets/social1.png"></div></div>
+  <div class="L" id="Lpage"><div class="a" id="pageScroll" style="left:-260px;width:520px;height:957px"><img src="../assets/product_page.png" style="width:520px"></div></div>
+  <div class="L" id="Lsun"><div class="fill" id="sunFrames" style="width:600px;height:600px"></div></div>
+  <div class="L" id="Lpost2"><div class="fill" style="width:600px;height:600px"><img src="../assets/social2.png"></div></div>
+</div><!--/shape-->
+<script>
+const T0 = 0;
+// pages: fly in fanned, then collapse into the pack (the shape) at 0.95
+const PG = [[-360, 30, -9, 0.05], [360, 30, 9, 0.12], [0, 0, 0, 0.19]];
+const pgIn = PG.map(p => M.track(0, [[p[3], 1, M.MORPH]]));
+const pgOut = M.track(0, [[0.92, 1, [11, 0.95]]]);
+const hl = M.track(0, [[0.5, 1, M.SOFT]]);
+const sunR = M.track(0, [[1.28, 1, [13, 0.86]]]);
+const scroll = M.track(0, [[2.95, 1, M.SOFT]]);
+const N_SUN = 38;
+// preload every sun-rise frame as its own <img> (no src swapping during render)
+const SUNI = [];
+for (let k = 1; k <= N_SUN; k++) { const im = document.createElement('img'); im.src = '../assets/sunrise/' + String(k).padStart(3, '0') + '.jpg';
+  Object.assign(im.style, {position: 'absolute', inset: '0', width: '100%', height: '100%', objectFit: 'cover', display: 'none'}); $('sunFrames').appendChild(im); SUNI.push(im); }
+M.scene({
+  W: 1920, H: 1080, bg: '#F7CFCE', T: 4.24, intro: 0.95,
+  SH: {
+    pack: {w: 600, h: 600, r: 44, bg: '#C6C5C4', cam: 1.42},
+    post: {w: 600, h: 600, r: 36, bg: '#FFFFFF', cam: 1.42},
+    page: {w: 520, h: 680, r: 30, bg: '#FFFFFF', cam: 1.25},
+    sun:  {w: 600, h: 600, r: 36, bg: '#FFFFFF', cam: 1.42},
+    post2:{w: 600, h: 600, r: 36, bg: '#FFFFFF', cam: 1.42}
+  },
+  start: 'pack', SEQ: [[2.42, 'post'], [2.9, 'page'], [3.36, 'sun'], [3.9, 'post2']],
+  layers: [
+    {el: 'Lpack', tin: 0.95, tout: 2.42, o: {din: 0.02, lin: 0.2}, update: (t) => {
+      const p = M.clamp((t - 1.0) / 0.25);                 // ivory panel settles in
+      $('panel').style.opacity = 1;
+      const r = 106 * Math.max(0, sunR(t));                // sun grows on the panel, exactly where the photo's sun is
+      Object.assign($('sun').style, {width: 2 * r + 'px', height: 2 * r + 'px', left: (24 - r) + 'px', top: (-97 - r) + 'px'});
+      $('bagImg').style.opacity = M.eo((t - 1.72) / 0.3); // real photo resolves
+    }},
+    {el: 'Lpost', tin: 2.42, tout: 2.9, o: {din: 0.03, lin: 0.18, lout: 0.1}},
+    {el: 'Lpage', tin: 2.9, tout: 3.36, o: {din: 0.03, lin: 0.18, lout: 0.1}, update: (t, g) => {
+      $('pageScroll').style.top = (-g.h / 2 - 300 * scroll(t)) + 'px';
+    }},
+    {el: 'Lsun', tin: 3.36, tout: 3.9, o: {din: 0.03, lin: 0.18, lout: 0.1}, update: (t) => {
+      const f = Math.max(0, Math.min(N_SUN - 1, Math.floor((t - 3.36) * 24000 / 1001 * 1.6)));
+      SUNI.forEach((im, k) => { im.style.display = k === f ? '' : 'none'; });
+    }},
+    {el: 'Lpost2', tin: 3.9, tout: null, o: {din: 0.03, lin: 0.18}}
+  ],
+  extra: (t, g) => {
+    PG.forEach((p, i) => {
+      const a = pgIn[i](t), b = pgOut(t), el = $('p' + i);
+      if (t < p[3] || b > 0.995) { el.style.display = 'none'; return; }
+      el.style.display = '';
+      const x = M.lerp(p[0], 0, b), y = M.lerp(p[1] + 900, p[1], a) * (1 - b) + 20 * b;
+      const rot = M.lerp(p[2] * 2.2, p[2], a) * (1 - b), sc = M.lerp(1, 1.42, b);
+      el.style.left = (x - 150) + 'px'; el.style.top = (y - 212) + 'px';
+      el.style.transform = `rotate(${rot.toFixed(3)}deg) scale(${sc.toFixed(4)})`;
+      el.style.opacity = (1 - M.clamp((b - 0.55) / 0.4)).toFixed(4);
+    });
+    $('hl').style.width = (240 * M.clamp(hl(t))) + 'px';
+  }
+});
+</script>

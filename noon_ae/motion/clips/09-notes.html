@@ -1,0 +1,96 @@
+<title>09 Discovery notes: the main disagreement, highlighted with a real pen</title>
+<style>
+.seg{position:absolute;top:0;width:58px;height:12px;border-radius:6px;background:#F4E1E0;overflow:hidden}
+.seg i{position:absolute;left:0;top:0;bottom:0;background:#EA6262;border-radius:6px}
+.ln{position:absolute;left:-430px;font-size:21px;line-height:30px;color:#3A2A2C;white-space:nowrap}
+.hlb{position:absolute;left:-436px;height:32px;border-radius:5px;mix-blend-mode:multiply}
+.who{position:absolute;left:330px}
+.sk{position:absolute;left:-430px;height:11px;border-radius:6px;background:#F5E8E7}
+#pen{position:absolute;width:270px;height:270px;left:0;top:0;transform-origin:25px 250px}
+#pen img{width:270px;height:270px}
+</style>
+<div data-slot="shape">
+  <div class="L" id="Lstage">
+    <div class="a" style="left:-540px;top:-34px"><div class="cap" style="font-size:15px">Stage</div><div class="k" style="font-size:44px;color:#EA6262;line-height:1.05">02</div></div>
+    <div class="a" style="left:-436px;top:-36px;width:1.5px;height:72px;background:#F2E2E1"></div>
+    <div class="a k" style="left:-404px;top:-20px;font-size:31px;white-space:nowrap">Plan how people encounter it</div>
+    <div class="a" style="left:180px;top:-6px" id="segs"></div>
+  </div>
+  <div class="L" id="Ldoc">
+    <div class="a k" style="left:-430px;top:54px;font-size:34px;white-space:nowrap">NOON Discovery Meeting Notes</div>
+    <div class="a" style="left:-430px;top:104px;font-size:17px;color:#9C7F81;white-space:nowrap">8 September 2026 &middot; Brand and launch discovery &middot; Working notes</div>
+    <div class="a" style="left:-430px;top:142px;width:860px;height:1.5px;background:#F2E2E1"></div>
+    <div id="hls"></div>
+    <div class="ln k" id="L0" style="top:176px;font-size:26px">The main disagreement</div>
+    <div id="lines"></div>
+    <div id="skel"></div>
+  </div>
+</div><!--/shape-->
+<div data-slot="over"><div id="pen"><img src="../assets/pen.png"></div></div><!--/over-->
+<script>
+const T0 = 80.00;
+$('segs').innerHTML = [0, 1, 2, 3, 4, 5].map(i => `<div class="seg" style="left:${i * 68}px"><i style="width:${i === 0 ? 58 : (i === 1 ? 20 : 0)}px"></i></div>`).join('');
+// [text, top, highlight start, end (absolute s), chip]
+const LN = [
+  [null, 176, 83.04, 83.90, ''],
+  ['Maya wants the brand to feel quiet, premium and controlled.', 228, 84.64, 87.90, 'MAYA · FOUNDER'],
+  ['Alex believes the launch needs much more colour and immediate energy', 276, 88.32, 90.20, 'ALEX · MARKETING'],
+  ['to stop people scrolling.', 310, 90.22, 90.90, ''],
+  ['Jo is concerned that an overly abstract campaign could make the product', 358, 91.36, 93.40, 'JO · SALES'],
+  ['category unclear, especially if customers first see the work at a distance.', 392, 93.42, 94.90, ''],
+  ['Sam: “The answer may not be choosing calm or loud. The system could hold calm', 462, 97.44, 99.60, 'SAM · CREATIVE'],
+  ['information and one unmistakable moment of energy.”', 496, 99.62, 101.60, '']
+];
+$('lines').innerHTML = LN.map((l, i) => l[0] ? `<div class="ln" id="L${i}" style="top:${l[1]}px">${l[0]}</div>` : '').join('') +
+  LN.map((l, i) => l[4] ? `<div class="who chip" id="c${i}" style="top:${l[1] - 4}px;background:${i >= 6 ? '#EA6262' : '#FCE3E2'};color:${i >= 6 ? '#fff' : '#C2575D'};font-size:13px">${l[4]}</div>` : '').join('');
+$('hls').innerHTML = LN.map((l, i) => `<div class="hlb" id="h${i}" style="top:${l[1] - 1}px;background:${i >= 6 ? 'rgba(234,98,98,.42)' : 'rgba(247,166,164,.62)'}"></div>`).join('');
+$('skel').innerHTML = [820, 760, 640, 800, 520].map((w, i) => `<div class="sk" style="top:${572 + i * 32}px;width:${w}px"></div>`).join('');
+let WID = null;   // measured on first frame (after fonts are ready)
+const measure = () => { WID = LN.map((l, i) => $('L' + i).offsetWidth + 12); };
+const tDoc = 0.2;
+const L = i => [LN[i][2] - T0, LN[i][3] - T0];
+// camera: push in on the paragraph, pan down to Sam's note on "just below that", pull back at the end
+const camT = M.track(1.18, [[L(1)[0] - 0.6, 1.36, M.CAM], [101.75 - T0, 1.18, M.CAM]]);
+const fyT = M.track(0, [[L(1)[0] - 0.6, -60, M.CAM], [96.3 - T0, 60, M.CAM], [101.75 - T0, 0, M.CAM]]);
+// pen tip path: draws along each stroke, lifts and arcs to the next one
+const DOC_TOP = -420;   // doc h 840 -> top edge at -420 (world)
+let penPath = null;
+const buildPen = () => {
+  const K = [[0, 640, 330], [L(0)[0] - 0.55, 640, 330]];
+  LN.forEach((l, i) => { const [s, e] = L(i), y = DOC_TOP + l[1] + 26;
+    K.push([s, -436, y], [e, -436 + WID[i], y]); });
+  K.push([101.95 - T0, 640, 330], [22.2, 640, 330]);
+  // ensure strictly increasing times
+  for (let i = 1; i < K.length; i++) if (K[i][0] <= K[i - 1][0]) K[i][0] = K[i - 1][0] + 0.02;
+  penPath = M.path(K);
+};
+const drawing = t => LN.some((l, i) => { const [s, e] = L(i); return t >= s && t <= e; });
+const lift = M.track(1, LN.flatMap((l, i) => { const [s, e] = L(i); return [[s - 0.12, 0, M.FAST], [e + 0.02, 1, M.FAST]]; }));
+M.scene({
+  W: 1920, H: 1080, bg: '#F7CFCE', T: 22.15, intro: null,
+  SH: {
+    stage: {w: 1190, h: 156, r: 78, bg: '#FFFFFF', cam: 1.42},
+    doc:   {w: 1000, h: 840, r: 22, bg: '#FFFFFF', cam: 1.18}
+  },
+  start: 'stage', SEQ: [[tDoc, 'doc']],
+  layers: [
+    {el: 'Lstage', tin: null, tout: tDoc, o: {lout: 0.14}},
+    {el: 'Ldoc', tin: tDoc, tout: null, anchor: 't', o: {din: 0.06, lin: 0.35}, update: (t) => {
+      if (!WID) { measure(); buildPen(); }
+      LN.forEach((l, i) => { const [s, e] = L(i), p = M.clamp((t - s) / (e - s));
+        $('h' + i).style.width = (WID[i] * (p < 1 ? p : 1)) + 'px';
+        if (l[4]) show($('c' + i), t, s, null, 10, {din: 0, lin: 0.35}); });
+    }}
+  ],
+  geom: (t, g) => { g.s = g.s * camT(t) / 1.18; g.fy = fyT(t); return g; },   // push-in multiplies the morph camera
+  extra: (t, g) => {
+    const pe = $('pen'), vis = M.clamp((t - (L(0)[0] - 0.7)) / 0.4) * (1 - M.clamp((t - 101.8 + T0) / 0.3));
+    if (!penPath || vis <= 0.002) { pe.style.display = 'none'; return; }
+    pe.style.display = ''; pe.style.opacity = vis;
+    const p = penPath(t), up = lift(t), wob = Math.sin(t * 17) * 0.8 * (1 - up);
+    pe.style.left = (g.cx + p.x - 25) + 'px'; pe.style.top = (g.cy + p.y - 250 - 18 * up + wob) + 'px';
+    pe.style.transform = `rotate(${(4 * up).toFixed(2)}deg) scale(${(1 + 0.05 * up).toFixed(4)})`;
+    pe.style.filter = `drop-shadow(${(-6 - 14 * up).toFixed(1)}px ${(8 + 22 * up).toFixed(1)}px ${(6 + 12 * up).toFixed(1)}px rgba(90,25,30,${(0.30 - 0.1 * up).toFixed(2)}))`;
+  }
+});
+</script>

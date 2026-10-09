@@ -1,0 +1,63 @@
+<title>10 All over the place, then sorted</title>
+<style>
+.note{position:absolute;width:330px;height:196px;border-radius:26px;background:#fff;box-shadow:0 2px 4px rgba(120,40,45,.06),0 26px 50px -20px rgba(150,50,58,.38);transform-origin:50% 50%}
+.note .chip{position:absolute;left:26px;top:24px;background:#EA6262;color:#fff;font-size:14px;letter-spacing:.1em}
+.note .nt{position:absolute;left:28px;top:76px;font-size:30px;line-height:1.15;font-weight:600;letter-spacing:-.02em;color:#2B1C1E}
+.sk{position:absolute;left:-430px;height:11px;border-radius:6px;background:#F5E8E7}
+.ln{position:absolute;left:-430px;font-size:21px;line-height:30px;color:#3A2A2C;white-space:nowrap}
+.hlb{position:absolute;left:-436px;height:32px;border-radius:5px;mix-blend-mode:multiply}
+#sorted{position:absolute;left:0;top:220px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:#fff;border-radius:999px;padding:12px 24px 12px 14px;font-size:22px;font-weight:600;white-space:nowrap;box-shadow:0 18px 40px -16px rgba(150,50,58,.45)}
+</style>
+<div data-slot="world"><div id="sorted"><span id="sic" style="width:32px;height:32px;border-radius:50%;background:#EA6262;display:flex;align-items:center;justify-content:center"></span>One clear direction</div></div><!--/world-->
+<div data-slot="shape">
+  <div class="L" id="Ldoc">
+    <div class="a k" style="left:-430px;top:54px;font-size:34px;white-space:nowrap">NOON Discovery Meeting Notes</div>
+    <div class="a" style="left:-430px;top:104px;font-size:17px;color:#9C7F81;white-space:nowrap">8 September 2026 &middot; Brand and launch discovery &middot; Working notes</div>
+    <div class="a" style="left:-430px;top:142px;width:860px;height:1.5px;background:#F2E2E1"></div>
+    <div id="docbody"></div>
+  </div>
+</div><!--/shape-->
+<div data-slot="over"><div id="notes"></div></div><!--/over-->
+<script>
+const T0 = 102.15;
+// static copy of the notes page as clip 09 ended (fully highlighted)
+const LN = [['The main disagreement', 176], ['Maya wants the brand to feel quiet, premium and controlled.', 228], ['Alex believes the launch needs much more colour and immediate energy', 276], ['to stop people scrolling.', 310],
+  ['Jo is concerned that an overly abstract campaign could make the product', 358], ['category unclear, especially if customers first see the work at a distance.', 392],
+  ['Sam: “The answer may not be choosing calm or loud. The system could hold calm', 462], ['information and one unmistakable moment of energy.”', 496]];
+$('docbody').innerHTML = LN.map((l, i) => `<div class="hlb" id="h${i}" style="top:${l[1] - 1}px;background:${i >= 6 ? 'rgba(234,98,98,.42)' : 'rgba(247,166,164,.62)'}"></div>`).join('') +
+  LN.map((l, i) => `<div class="ln${i === 0 ? ' k' : ''}" id="L${i}" style="top:${l[1]}px;${i === 0 ? 'font-size:26px' : ''}">${l[0]}</div>`).join('') +
+  [820, 760, 640, 800, 520].map((w, i) => `<div class="sk" style="top:${572 + i * 32}px;width:${w}px"></div>`).join('');
+let sized = false;
+const NOTES = [['MAYA', 'Quiet &amp;<br>premium'], ['ALEX', 'More colour<br>&amp; energy'], ['JO', 'Clearly<br>coffee'], ['SAM', 'Calm info, one<br>moment of energy']];
+$('notes').innerHTML = NOTES.map((n, i) => `<div class="note" id="n${i}"><span class="chip">${n[0]}</span><div class="nt">${n[1]}</div></div>`).join('');
+$('sic').innerHTML = M.icon('check', 18, '#FFFFFF', 3);
+const CH = [[-560, -250, -12], [430, -290, 10], [-330, 250, 8], [560, 220, -9]];   // all over the place
+const ROW = i => [-600 + i * 400, 0];
+const tDot = 0.15, tIn = 0.25, tChaos = wt(319, T0), tSnap = wt(333, T0) - 0.1, tEasy = wt(339, T0);
+const snap = NOTES.map((n, i) => M.track(0, [[tSnap + i * 0.05, 1, [9.5, 0.82]]]));
+const amp = M.track(0.25, [[tChaos, 1, M.SOFT], [tSnap, 0, M.FAST]]);
+M.scene({
+  W: 1920, H: 1080, bg: '#F7CFCE', T: 10.75, intro: null,
+  SH: {
+    doc:  {w: 1000, h: 840, r: 22, bg: '#FFFFFF', cam: 1.18},
+    dot:  {w: 130, h: 130, r: 65, bg: '#EA6262', cam: 1.0},
+    tray: {w: 1660, h: 300, r: 48, bg: '#FFF4F3', cam: 1.0}
+  },
+  start: 'doc', SEQ: [[tDot, 'dot'], [tSnap, 'tray']],
+  layers: [{el: 'Ldoc', tin: null, tout: tDot, anchor: 't', o: {lout: 0.14}, update: () => {
+    if (!sized) { LN.forEach((l, i) => { $('h' + i).style.width = ($('L' + i).offsetWidth + 12) + 'px'; }); sized = true; } }}],
+  extra: (t, g) => {
+    NOTES.forEach((n, i) => {
+      const e = $('n' + i), a = M.S(t - tIn - i * 0.18, 10, 0.85);
+      if (t < tIn + i * 0.18) { e.style.display = 'none'; return; } e.style.display = '';
+      const k = snap[i](t), A = amp(t);
+      const jx = Math.sin(t * 9.5 + i * 1.7) * 18 * A, jy = Math.cos(t * 8.3 + i * 2.3) * 14 * A, jr = Math.sin(t * 7.1 + i) * 5 * A;
+      const x = M.lerp(CH[i][0] + jx, ROW(i)[0], k), y = M.lerp(CH[i][1] + jy, ROW(i)[1], k), r = M.lerp(CH[i][2] + jr, 0, k);
+      e.style.left = (x - 165) + 'px'; e.style.top = (y - 98) + 'px';
+      e.style.opacity = M.clamp(a * 1.4); e.style.transform = `rotate(${r.toFixed(2)}deg) scale(${(0.85 + 0.15 * Math.max(0, a)).toFixed(4)})`;
+    });
+    const v = M.vis(t, tEasy - 0.05, null, {din: 0, lin: 0.4}), s = $('sorted').style;
+    if (v.o < 0.002) s.display = 'none'; else { s.display = ''; s.opacity = v.o; s.transform = `translateX(-50%) translateY(${((1 - v.a) * 20).toFixed(2)}px)`; }
+  }
+});
+</script>

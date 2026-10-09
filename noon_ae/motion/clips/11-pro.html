@@ -1,0 +1,56 @@
+<title>11 Professional designers</title>
+<style>
+.note{position:absolute;width:330px;height:196px;border-radius:26px;background:#fff;box-shadow:0 2px 4px rgba(120,40,45,.06),0 26px 50px -20px rgba(150,50,58,.38)}
+.note .chip{position:absolute;left:26px;top:24px;background:#EA6262;color:#fff;font-size:14px;letter-spacing:.1em}
+.note .nt{position:absolute;left:28px;top:76px;font-size:30px;line-height:1.15;font-weight:600;letter-spacing:-.02em;color:#2B1C1E}
+#sorted{position:absolute;left:0;top:220px;transform:translateX(-50%);display:flex;align-items:center;gap:12px;background:#fff;border-radius:999px;padding:12px 24px 12px 14px;font-size:22px;font-weight:600;white-space:nowrap;box-shadow:0 18px 40px -16px rgba(150,50,58,.45)}
+.gl{position:absolute;background:rgba(255,255,255,.55)}
+.hd{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;background:#fff}
+.ghost{position:absolute;left:0;transform:translateX(-50%);font-size:180px;font-weight:800;letter-spacing:-.05em;line-height:1;color:rgba(255,255,255,.26);white-space:nowrap}
+</style>
+<div data-slot="world"><div id="sorted"><span id="sic" style="width:32px;height:32px;border-radius:50%;background:#EA6262;display:flex;align-items:center;justify-content:center"></span>One clear direction</div></div><!--/world-->
+<div data-slot="shape">
+  <div class="L" id="Lpro">
+    <div id="grid"></div>
+    <div class="ghost" id="g0" style="top:-370px">PROFESSIONAL</div>
+    <div class="ghost" id="g1" style="top:190px">PROFESSIONAL</div>
+    <div class="row" id="sep" data-t="translateX(-50%)" style="left:0;top:-250px;transform:translateX(-50%);font-size:34px;font-weight:600;color:rgba(255,255,255,.88)">This part of the workflow separates</div>
+    <div class="row cap" id="hl" data-t="translateX(-50%)" style="left:0;top:-150px;transform:translateX(-50%);color:#fff;font-size:22px;letter-spacing:.5em">High-level</div>
+    <div class="row" id="pro" style="transform:translate(-50%,-50%);font-size:180px;font-weight:800;letter-spacing:-.05em;line-height:1;color:#fff"></div>
+    <div class="row" id="rest" data-t="translateX(-50%)" style="left:0;top:395px;transform:translateX(-50%);font-size:40px;font-weight:600;color:#fff">designers from everybody else.</div>
+  </div>
+</div><!--/shape-->
+<div data-slot="over"><div id="notes"></div></div><!--/over-->
+<script>
+const T0 = 112.90;
+const NOTES = [['MAYA', 'Quiet &amp;<br>premium'], ['ALEX', 'More colour<br>&amp; energy'], ['JO', 'Clearly<br>coffee'], ['SAM', 'Calm info, one<br>moment of energy']];
+$('notes').innerHTML = NOTES.map((n, i) => `<div class="note" id="n${i}" style="left:${-600 + i * 400 - 165}px;top:-98px"><span class="chip">${n[0]}</span><div class="nt">${n[1]}</div></div>`).join('');
+$('sic').innerHTML = M.icon('check', 18, '#FFFFFF', 3);
+$('pro').innerHTML = 'PROFESSIONAL'.split('').map((c, i) => `<span id="p${i}" style="display:inline-block">${c}</span>`).join('');
+// layout grid with square handles, like the reference frame
+const GX = [-560, 560], GY = [-170, 150];
+$('grid').innerHTML = GX.map(x => `<div class="gl" style="left:${x}px;top:-460px;width:1.5px;height:920px"></div>`).join('') + GY.map(y => `<div class="gl" style="left:-860px;top:${y}px;width:1720px;height:1.5px"></div>`).join('') +
+  GX.flatMap(x => GY.map(y => `<div class="hd" style="left:${x}px;top:${y}px"></div>`)).join('');
+const tPro = 0.12, tSep = wt(352, T0) - 0.35, tHL = wt(353, T0), tWord = wt(354, T0) - 0.04, tRest = wt(355, T0);
+M.scene({
+  W: 1920, H: 1080, bg: '#F7CFCE', T: 6.15, intro: null,
+  SH: {
+    tray: {w: 1660, h: 300, r: 48, bg: '#FFF4F3', cam: 1.0},
+    pro:  {w: 1760, h: 940, r: 56, bg: '#EA6262', cam: 1.06}
+  },
+  start: 'tray', SEQ: [[tPro, 'pro']],
+  layers: [{el: 'Lpro', tin: tPro, tout: null, o: {din: 0.1, lin: 0.3}, update: (t) => {
+    $('grid').style.opacity = M.eo((t - tPro - 0.2) / 0.8);
+    show($('sep'), t, tSep, tWord - 0.1, 14, {din: 0, lin: 0.4});
+    show($('hl'), t, tHL - 0.05, null, 12, {din: 0, lin: 0.35});
+    for (let i = 0; i < 12; i++) show($('p' + i), t, tWord + i * 0.025, null, 60, {din: 0, lin: 0.45, blur: 16});
+    [0, 1].forEach(i => { const a = M.eo((t - tWord - 0.25) / 0.9), e = $('g' + i).style; e.opacity = a; e.transform = `translateX(-50%) translateY(${((1 - a) * (i ? 70 : -70)).toFixed(2)}px)`; });
+    show($('rest'), t, tRest, null, 14, {din: 0, lin: 0.4});
+  }}],
+  extra: (t, g) => {
+    const out = M.eo(t / 0.3);
+    for (let i = 0; i < 4; i++) { const e = $('n' + i).style; e.opacity = 1 - out; e.filter = `blur(${(10 * out).toFixed(2)}px)`; e.display = out > 0.999 ? 'none' : ''; }
+    const s = $('sorted').style; s.opacity = 1 - out; s.display = out > 0.999 ? 'none' : '';
+  }
+});
+</script>

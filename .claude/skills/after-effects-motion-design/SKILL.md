@@ -92,6 +92,17 @@ bash scripts/run_jsx.sh ae/scripts/build_main.jsx                             # 
 - Render a preview (`aerender`, see `references/render-and-troubleshoot.md`), then check it with
   `media_tools.py probe` and `frames --sheet` and look at the contact sheet before reporting.
 
+## 3b. When AE isn't on this machine: render here, verify, then hand over
+
+Blind JSX can't be judged until the user renders it. For motion-heavy pieces, prefer building the
+visuals with the browser motion engine (MIT, from Barty-Bart/motion-graphics `motion-broll`; vendored in a
+project as `motion/engine/`): one continuous morphing shape, closed-form springs, cursor-driven UI, frames
+rendered in headless Chromium with 4-subframe motion blur (`render.js`), stills via `beats.js`.
+- Look at contact sheets of every clip (key words + mid-morphs) and fix before rendering in full.
+- Make each clip's last state identical to the next clip's first state, so joined clips play as one shot.
+- Deliver the rendered preview **and** an AE import script that places the clips, VO and SFX cue markers.
+- Banned in this style: bouncy easing, slideshow cuts, template look, invented data.
+
 ## 4. Safety
 
 - Don't close, overwrite, or clean up the user's open project, delete items you didn't create,

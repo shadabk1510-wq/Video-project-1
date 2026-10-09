@@ -1,0 +1,74 @@
+<title>06 Three inputs become one clear brief</title>
+<style>
+.th2{position:absolute;top:9px;width:52px;height:52px;border-radius:13px;overflow:hidden;box-shadow:0 6px 14px -6px rgba(120,40,45,.45)}
+.th2 img{width:100%;height:100%;object-fit:cover}
+.th{position:absolute;width:66px;height:92px;border-radius:8px;overflow:hidden;box-shadow:0 8px 18px -8px rgba(120,40,45,.45)}
+.th img{width:100%;height:100%;object-fit:cover}
+.ty{position:absolute;right:0;top:30px}
+.bl{position:absolute;left:-270px;width:540px;height:44px}
+.sk{position:absolute;height:12px;border-radius:6px;background:#F4E4E3}
+</style>
+<div data-slot="shape">
+  <div class="L" id="Llist"><div id="list"></div>
+    <div class="a" id="thumbs" style="left:110px;top:0px"><div class="th2" style="left:0"><img src="../assets/bag.png"></div><div class="th2" style="left:62px"><img src="../assets/social1.png"></div><div class="th2" style="left:124px"><img src="../assets/sunrise/030.jpg"></div></div></div>
+  <div class="L" id="Lfolder">
+    <div class="a" style="left:-400px;top:36px;width:54px;height:54px;border-radius:15px;background:#EA6262;display:flex;align-items:center;justify-content:center" id="fic"></div>
+    <div class="a k" style="left:-330px;top:42px;font-size:34px;white-space:nowrap">NOON &middot; High Sun</div>
+    <div class="a chip" style="right:-400px;top:44px;background:#FCECEB;color:#C2575D" id="cnt">Project files</div>
+    <div class="a" style="left:-400px;top:116px;width:800px;height:1.5px;background:#F2E2E1"></div>
+    <div id="rows"></div>
+  </div>
+  <div class="L" id="Lbrief">
+    <svg class="a" style="left:-270px;top:44px;width:118px;height:30px" viewBox="0 0 450 112"><g fill="#163452"><path d="M0 1H42L75 40V1H109V110H70L39 73V110H0Z"/><path fill-rule="evenodd" d="M168 0A56 56 0 1 1 168 112A56 56 0 1 1 168 0ZM194 45A12 12 0 1 0 194 69A12 12 0 1 0 194 45Z"/><path fill-rule="evenodd" d="M281.5 0A56 56 0 1 1 281.5 112A56 56 0 1 1 281.5 0ZM309.5 45A12 12 0 1 0 309.5 69A12 12 0 1 0 309.5 45Z"/><path d="M342 1H385L416 40V1H450V112H412L381 74V112H342Z"/></g></svg>
+    <div class="a k" style="left:-270px;top:96px;font-size:46px;white-space:nowrap">Creative brief</div>
+    <div class="a" id="from" style="left:-270px;top:162px;font-size:18px;color:#9C7F81;white-space:nowrap">Built from the client brief, audience research and meeting notes</div>
+    <div class="a" style="left:-270px;top:206px;width:540px;height:1.5px;background:#F2E2E1"></div>
+    <div class="a cap" id="tw" style="left:-270px;top:236px">Designing towards</div>
+    <div id="bullets"></div>
+    <div id="skel"></div>
+  </div>
+</div><!--/shape-->
+<script>
+const T0 = 39.00;
+$('list').innerHTML = stepsHTML(); stepsIcons(-1); $('thumbs').style.top = STEP_TOP(3) + 'px'; $('act').style.display = 'none';
+$('fic').innerHTML = M.icon('folder', 30, '#FFFFFF', 2);
+const FILES = [['doc_brief', 'NOON_Client_Brief.pdf', 'Client brief · PDF · 75 KB', 'pdf', 141],
+               ['doc_research', 'NOON_Audience_Research.pdf', 'Audience research · PDF · 77 KB', 'pdf', 147],
+               ['doc_notes', 'NOON_Discovery_Meeting_Notes.docx', 'Discovery meeting · DOCX · 40 KB', 'docx', 153]];
+const ROW_TOP = i => 144 + i * 124;
+$('rows').innerHTML = FILES.map((f, i) => `<div class="a" id="fr${i}" style="left:-400px;top:${ROW_TOP(i)}px;width:800px;height:100px">
+  <div class="th" style="left:0;top:4px"><img src="../assets/${f[0]}.png"></div>
+  <div class="a k" style="left:94px;top:18px;font-size:26px;white-space:nowrap">${f[1]}</div>
+  <div class="a" style="left:94px;top:56px;font-size:18px;color:#9C7F81;white-space:nowrap">${f[2]}</div>
+  <div class="a chip" style="left:690px;top:30px;background:${f[3] === 'pdf' ? '#FCE3E2' : '#E1EEF6'};color:${f[3] === 'pdf' ? '#C2575D' : '#3D6E8E'}">${f[3].toUpperCase()}</div></div>`).join('');
+const BUL = ['Energy without the noise', 'Creative focus, not hustle', 'Calm information, one moment of energy'];
+$('bullets').innerHTML = BUL.map((b, i) => `<div class="bl" id="b${i}" style="top:${276 + i * 62}px"><div class="a" style="left:0;top:13px;width:14px;height:14px;border-radius:50%;background:#EA6262"></div><div class="a k" id="bt${i}" style="left:34px;top:0;font-size:28px;white-space:nowrap"></div></div>`).join('');
+$('skel').innerHTML = [430, 500, 380, 470, 300].map((w, i) => `<div class="sk" id="s${i}" style="left:-270px;top:${500 + i * 30}px"></div>`).join('');
+const tFolder = 0.12, tIn = FILES.map(f => wt(f[4], T0) - 0.12), tBring = wt(161, T0) - 0.1, tBrief = tBring + 0.55, tWork = wt(166, T0);
+const merge = M.track(0, [[tBring, 1, M.MORPH]]);
+M.scene({
+  W: 1920, H: 1080, bg: '#F7CFCE', T: 13.3, intro: null,
+  SH: {
+    list:   {w: 840, h: 760, r: 40, bg: '#FFFFFF', cam: 1.32},
+    folder: {w: 900, h: 540, r: 34, bg: '#FFFFFF', cam: 1.38},
+    brief:  {w: 720, h: 720, r: 30, bg: '#FFFFFF', cam: 1.36}
+  },
+  start: 'list', SEQ: [[tFolder, 'folder'], [tBrief, 'brief']],
+  layers: [
+    {el: 'Llist', tin: null, tout: tFolder, anchor: 't', o: {lout: 0.14}},
+    {el: 'Lfolder', tin: tFolder, tout: tBrief, anchor: 't', o: {din: 0.06, lin: 0.3, lout: 0.16}, update: (t) => {
+      FILES.forEach((f, i) => {
+        const el = $('fr' + i), v = show(el, t, tIn[i], null, 26, {din: 0, lin: 0.45, blur: 10}), m = merge(t);
+        if (m > 0.001) { el.style.transform = `translateY(${((ROW_TOP(1) - ROW_TOP(i)) * m).toFixed(2)}px) scale(${(1 - 0.12 * m).toFixed(4)})`; el.style.filter = `blur(${(6 * m).toFixed(2)}px)`; el.style.opacity = (1 - 0.6 * m).toFixed(3); }
+      });
+    }},
+    {el: 'Lbrief', tin: tBrief, tout: null, anchor: 't', o: {din: 0.05, lin: 0.3}, update: (t) => {
+      show($('from'), t, tBrief + 0.15, null, 10, {din: 0, lin: 0.4});
+      show($('tw'), t, tWork - 0.05, null, 10, {din: 0, lin: 0.35});
+      BUL.forEach((b, i) => { const t1 = tWork + 0.45 + i * 0.6; show($('b' + i), t, t1, null, 12, {din: 0, lin: 0.3});
+        const n = Math.round(M.clamp((t - t1) / 0.55) * b.length); M.setText($('bt' + i), b.slice(0, n)); });
+      [430, 500, 380, 470, 300].forEach((w, i) => { $('s' + i).style.width = (w * M.eio((t - tWork - 2.2 - 0.08 * i) / 0.5)) + 'px'; });
+    }}
+  ]
+});
+</script>

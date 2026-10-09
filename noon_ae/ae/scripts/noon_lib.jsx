@@ -287,12 +287,37 @@ NL.iconAuto = function (comp, item, kind, name, size) {
     return NL.icon(comp, kind, name, NL.COL.white);
 };
 
+// Native icon from NOON_ICONS (Tabler, MIT): stroked paths, round caps. Returns the layer; .trim = Trim Paths group.
+NL.svgIcon = function (comp, name, key, size, hex, pos, strokeW) {
+    var l = NL.shape(comp, name, pos || [0, 0]), gi = NL.group(l, key), data = NOON_ICONS[key], k = size / 24, i, j, sp, v, it, ot;
+    if (!data) { AEL.warn("Unknown icon " + key); return l; }
+    for (i = 0; i < data.length; i++) {
+        sp = data[i]; v = []; it = []; ot = [];
+        for (j = 0; j < sp[1].length; j++) {
+            v.push([sp[1][j][0] * k, sp[1][j][1] * k]);
+            it.push([sp[2][j][0] * k, sp[2][j][1] * k]);
+            ot.push([sp[3][j][0] * k, sp[3][j][1] * k]);
+        }
+        NL.path(l, gi, v, sp[0], it, ot);
+    }
+    NL.stroke(l, gi, hex || NL.COL.white, (strokeW || 2) * k);
+    return l;
+};
+// Draw an icon on with Trim Paths (end 0 -> 100) at t.
+NL.drawOn = function (iconLayer, t, dur) {
+    var tr = NL.trim(iconLayer, 1);
+    AEL.key(tr.property("ADBE Vector Trim End"), [t, t + (dur || 0.8)], [0, 100], NL.EASE_IN);
+    return tr;
+};
+
 // Coral step card: white icon + white number + 2-line white label. Returns the controlling null.
-NL.card = function (comp, num, label, kind, pos, iconItem) {
+NL.card = function (comp, num, label, kind, pos, iconItem, iconKey) {
     var name = "Card " + num, ctrl = NL.ctrl(comp, name, pos), bg, ic, nt, lt, r;
     bg = NL.box(comp, name + " BG", 296, 124, 28, NL.COL.coral, [0, 0]);
-    NL.shadow(bg, 70, 16, 50);
-    ic = NL.iconAuto(comp, iconItem, kind, name + " Icon", 48);
+    NL.shadow(bg, 55, 22, 70);
+    var sheen = NL.box(comp, name + " Sheen", 280, 52, 22, NL.COL.white, [0, 0], 9);
+    sheen.parent = ctrl; AEL.xf(sheen, "ADBE Position").setValue([0, -30]);
+    ic = (iconKey && typeof NOON_ICONS !== "undefined") ? NL.svgIcon(comp, name + " Icon", iconKey, 44, NL.COL.white, [0, 0], 2) : NL.iconAuto(comp, iconItem, kind, name + " Icon", 48);
     nt = AEL.text(comp, num, { font: NL.FONT.bold, size: 17, color: "#FFE3E3", tracking: 60, justify: "left", name: name + " No." });
     lt = AEL.text(comp, label, { font: NL.FONT.cap, size: 25, color: NL.COL.white, justify: "left", leading: 29, name: name + " Label" });
     bg.parent = ctrl; ic.parent = ctrl; nt.parent = ctrl; lt.parent = ctrl;
@@ -311,18 +336,28 @@ NL.card = function (comp, num, label, kind, pos, iconItem) {
 
 NL.scaleOf = function (layer) { var v = AEL.xf(layer, "ADBE Scale").value; return [v[0], v[1]]; };
 NL.posOf = function (layer) { var v = AEL.xf(layer, "ADBE Position").value; return [v[0], v[1]]; };
+// Motion language (v3): one long, smooth settle - no overshoot, no bounce.
+NL.EASE_IN = [88, 10];    // entrances: quick start, long soft landing (Apple-like)
+NL.EASE_OUT = [10, 70];   // exits: gentle start, clean finish
 NL.pop = function (layer, t, dur, from) {
-    var s = NL.scaleOf(layer), d = dur || 0.45, f = from === undefined ? 0.6 : from;
-    AEL.key(AEL.xf(layer, "ADBE Scale"), [t, t + d * 0.65, t + d], [[s[0] * f, s[1] * f], [s[0] * 1.05, s[1] * 1.05], s], AEL.EASE.smooth);
-    AEL.key(AEL.xf(layer, "ADBE Opacity"), [t, t + d * 0.4], [0, 100], AEL.EASE.expoOut);
+    var s = NL.scaleOf(layer), d = (dur || 0.45) * 1.5, f = from === undefined ? 0.9 : Math.max(from, 0.82);
+    AEL.key(AEL.xf(layer, "ADBE Scale"), [t, t + d], [[s[0] * f, s[1] * f], s], NL.EASE_IN);
+    AEL.key(AEL.xf(layer, "ADBE Opacity"), [t, t + d * 0.5], [0, 100], NL.EASE_IN);
+};
+// Rise in: opacity + small upward travel (+ optional scale). Use on layers without other position keys.
+NL.rise = function (layer, t, dur, dy, fromScale) {
+    var p = NL.posOf(layer), s = NL.scaleOf(layer), d = dur || 0.7, f = fromScale || 0.97;
+    AEL.key(AEL.xf(layer, "ADBE Position"), [t, t + d], [[p[0], p[1] + (dy === undefined ? 40 : dy)], p], NL.EASE_IN);
+    AEL.key(AEL.xf(layer, "ADBE Scale"), [t, t + d], [[s[0] * f, s[1] * f], s], NL.EASE_IN);
+    AEL.key(AEL.xf(layer, "ADBE Opacity"), [t, t + d * 0.5], [0, 100], NL.EASE_IN);
 };
 NL.slideIn = function (layer, t, dur, dx, dy) {
-    var p = NL.posOf(layer);
-    AEL.key(AEL.xf(layer, "ADBE Position"), [t, t + dur], [[p[0] + dx, p[1] + dy], p], AEL.EASE.expoOut);
-    AEL.key(AEL.xf(layer, "ADBE Opacity"), [t, t + dur * 0.5], [0, 100], AEL.EASE.expoOut);
+    var p = NL.posOf(layer), d = dur * 1.4;
+    AEL.key(AEL.xf(layer, "ADBE Position"), [t, t + d], [[p[0] + dx, p[1] + dy], p], NL.EASE_IN);
+    AEL.key(AEL.xf(layer, "ADBE Opacity"), [t, t + d * 0.5], [0, 100], NL.EASE_IN);
 };
 NL.move = function (layer, t1, t2, from, to, ease) {
-    AEL.key(AEL.xf(layer, "ADBE Position"), [t1, t2], [from || NL.posOf(layer), to], ease || AEL.EASE.expoOut);
+    AEL.key(AEL.xf(layer, "ADBE Position"), [t1, t1 + (t2 - t1) * 1.3], [from || NL.posOf(layer), to], ease || NL.EASE_IN);
 };
 NL.fadeOut = function (layer, t, dur) {
     AEL.key(AEL.xf(layer, "ADBE Opacity"), [t, t + (dur || 0.25)], [100, 0], AEL.EASE.expoIn);
@@ -333,16 +368,17 @@ NL.bigWord = function (comp, text, t, o) {
     l = AEL.text(comp, text, { font: o.font || NL.FONT.black, size: o.size || 220, color: o.color || NL.COL.white, tracking: o.tracking || -20, name: o.name || ("Big " + text) });
     b = NL.blurFx(l, 0);
     AEL.xf(l, "ADBE Position").setValue(p);
-    AEL.key(AEL.xf(l, "ADBE Scale"), [t, t + 0.3, end], [[135, 135], [100, 100], [104, 104]], AEL.EASE.expoOut);
-    AEL.key(AEL.xf(l, "ADBE Opacity"), [t, t + 0.15], [0, 100], AEL.EASE.expoOut);
-    AEL.key(b, [t, t + 0.3], [60, 0], AEL.EASE.expoOut);
+    AEL.key(AEL.xf(l, "ADBE Scale"), [t, t + 0.7], [[118, 118], [100, 100]], NL.EASE_IN);
+    AEL.expr(AEL.xf(l, "ADBE Scale"), "var s=1+Math.max(0,time-" + (t + 0.7) + ")*0.012; mul(value, s)");
+    AEL.key(AEL.xf(l, "ADBE Opacity"), [t, t + 0.3], [0, 100], NL.EASE_IN);
+    AEL.key(b, [t, t + 0.55], [40, 0], NL.EASE_IN);
     l.motionBlur = true;
     if (o.ghosts) {
         for (k = -1; k <= 1; k += 2) {
             gy = p[1] + k * (o.size || 220) * 2.15;
             g = AEL.text(comp, text, { font: o.font || NL.FONT.black, size: o.size || 220, color: o.color || NL.COL.white, tracking: o.tracking || -20, name: (o.name || ("Big " + text)) + (k < 0 ? " Ghost Up" : " Ghost Down") });
-            AEL.key(AEL.xf(g, "ADBE Position"), [t + 0.05, t + 0.55], [[p[0], gy + k * 160], [p[0], gy]], AEL.EASE.expoOut);
-            AEL.key(AEL.xf(g, "ADBE Opacity"), [t + 0.05, t + 0.3], [0, 70], AEL.EASE.expoOut);
+            AEL.key(AEL.xf(g, "ADBE Position"), [t + 0.08, t + 0.9], [[p[0], gy + k * 160], [p[0], gy]], NL.EASE_IN);
+            AEL.key(AEL.xf(g, "ADBE Opacity"), [t + 0.08, t + 0.5], [0, 55], NL.EASE_IN);
             g.motionBlur = true;
         }
     }
@@ -380,11 +416,11 @@ NL.caption = function (comp, words, cap, t0, maxChars) {
     anim = NL._animator(layer, "Reveal");
     try {
         NL._animProp(layer, anim, "ADBE Text Opacity", 0);
-        NL._animProp(layer, anim, "ADBE Text Position 3D", [0, Math.round(size * 0.45), 0]);
-        NL._animProp(layer, anim, "ADBE Text Blur", [14, 14]);
+        NL._animProp(layer, anim, "ADBE Text Position 3D", [0, Math.round(size * 0.3), 0]);
+        NL._animProp(layer, anim, "ADBE Text Blur", [10, 10]);
         sel = NL._exprSelector(layer, anim);
         sel.property("ADBE Text Expressible Amount").expression =
-            "var T=[" + T.join(",") + "];var i=Math.min(textIndex,T.length)-1;var v=ease(time,T[i],T[i]+0.32,100,0);[v,v,v]";
+            "var T=[" + T.join(",") + "];var i=Math.min(textIndex,T.length)-1;var p=Math.min(1,Math.max(0,(time-T[i])/0.45));var v=100*Math.pow(1-p,3);[v,v,v]";
     } catch (e) {
         ok = false;
         AEL.warn("Expression selector unavailable (" + e + "); using keyed range reveal on " + layer.name);
@@ -404,7 +440,7 @@ NL.caption = function (comp, words, cap, t0, maxChars) {
         NL._animProp(layer, anim, "ADBE Text Blur", [16, 16]);
         sel = NL._exprSelector(layer, anim);
         sel.property("ADBE Text Expressible Amount").expression =
-            "var o=" + (Math.round(outT * 1000) / 1000) + "+textIndex*0.004;var v=ease(time,o,o+0.22,0,100);[v,v,v]";
+            "var o=" + (Math.round(outT * 1000) / 1000) + "+textIndex*0.003;var p=Math.min(1,Math.max(0,(time-o)/0.35));var v=100*p*p;[v,v,v]";
     } else {
         NL.fadeOut(layer, outT, 0.22);
     }

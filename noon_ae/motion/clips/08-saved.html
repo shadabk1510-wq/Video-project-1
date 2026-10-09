@@ -1,0 +1,86 @@
+<title>08 Brief saved with the project, stage 01 complete, stage 02</title>
+<style>
+.ghost{position:absolute;left:0;transform:translateX(-50%);font-size:200px;font-weight:800;letter-spacing:-.05em;line-height:1;color:rgba(255,255,255,.28);white-space:nowrap}
+.tile{position:absolute;top:96px;width:176px;height:300px}
+.tt{position:absolute;left:0;top:0;width:176px;height:222px;border-radius:14px;overflow:hidden;background:#FCECEB;box-shadow:0 10px 24px -12px rgba(120,40,45,.45);display:flex;align-items:center;justify-content:center}
+.tt img{width:100%;height:100%;object-fit:cover}
+.tn{position:absolute;left:0;top:236px;width:176px;text-align:center;font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tm{position:absolute;left:0;top:260px;width:176px;text-align:center;font-size:14px;color:#9C7F81}
+.seg{position:absolute;top:0;width:58px;height:12px;border-radius:6px;background:#F4E1E0;overflow:hidden}
+.seg i{position:absolute;left:0;top:0;bottom:0;background:#EA6262;border-radius:6px}
+#toast{position:absolute;left:0;top:300px;transform:translateX(-50%);display:flex;align-items:center;gap:14px;background:#fff;border-radius:999px;padding:14px 26px 14px 16px;font-size:22px;font-weight:600;white-space:nowrap;box-shadow:0 18px 40px -16px rgba(150,50,58,.45)}
+</style>
+<div data-slot="world"><div id="toast"><span id="tic" style="width:34px;height:34px;border-radius:50%;background:#EA6262;display:flex;align-items:center;justify-content:center"></span>Saved to NOON &rsaquo; High Sun</div></div><!--/world-->
+<div data-slot="shape">
+  <div class="L" id="Lpower">
+    <div class="ghost" style="top:-322px">POWERHOUSE</div><div class="ghost" style="top:122px">POWERHOUSE</div>
+    <div class="row" style="transform:translate(-50%,-50%);font-size:200px;font-weight:800;letter-spacing:-.05em;line-height:1;color:#fff">POWERHOUSE</div>
+  </div>
+  <div class="L" id="Lfiles">
+    <div class="a" style="left:-550px;top:0;width:1100px;height:58px;background:#FBF1F0"></div>
+    <div class="a" style="left:-526px;top:22px;display:flex;gap:9px"><i style="width:14px;height:14px;border-radius:50%;background:#F57F7A"></i><i style="width:14px;height:14px;border-radius:50%;background:#F6C25B"></i><i style="width:14px;height:14px;border-radius:50%;background:#6CCB7E"></i></div>
+    <div class="row" style="left:0;top:18px;transform:translateX(-50%);font-size:18px;font-weight:600;color:#9C7F81">NOON &rsaquo; High Sun</div>
+    <div class="a" style="left:-550px;top:58px;width:1100px;height:1.5px;background:#F2E2E1"></div>
+    <div id="tiles"></div>
+  </div>
+  <div class="L" id="Lstage">
+    <div class="a" style="left:-540px;top:-34px"><div class="cap" style="font-size:15px">Stage</div><div class="k" id="num" style="font-size:44px;color:#EA6262;line-height:1.05">01</div></div>
+    <div class="a" id="badge" style="left:-494px;top:-58px;width:34px;height:34px;border-radius:50%;background:#EA6262;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 4px #fff"></div>
+    <div class="a" style="left:-436px;top:-36px;width:1.5px;height:72px;background:#F2E2E1"></div>
+    <div class="a k" id="lab" style="left:-404px;top:-20px;font-size:31px;white-space:nowrap"></div>
+    <div class="a" id="segs" style="left:180px;top:-6px"></div>
+  </div>
+</div><!--/shape-->
+<script>
+const T0 = 63.30;
+$('tic').innerHTML = M.icon('check', 20, '#FFFFFF', 3); $('badge').innerHTML = M.icon('check', 20, '#FFFFFF', 3.2);
+const TL = [[null, 'Package Designs', 'Folder · 3 items'], ['doc_brief', 'NOON_Client_Brief.pdf', 'PDF · 75 KB'], ['doc_research', 'NOON_Audience_Research.pdf', 'PDF · 77 KB'],
+            ['doc_notes', 'NOON_Discovery_Notes.docx', 'DOCX · 40 KB'], ['NEW', 'NOON_Creative_Brief.pdf', 'PDF · just now']];
+const TX = i => -510 + i * 208;
+$('tiles').innerHTML = TL.map((f, i) => `<div class="tile" id="tl${i}" style="left:${TX(i)}px"><div class="tt" id="tt${i}">${f[0] && f[0] !== 'NEW' ? `<img src="../assets/${f[0]}.png">` : ''}</div><div class="tn">${f[1]}</div><div class="tm">${f[2]}</div></div>`).join('');
+$('tt0').innerHTML = M.icon('folder', 76, '#EA6262', 1.6);
+$('tt4').style.background = '#FFFFFF';
+$('tt4').innerHTML = `<div style="position:absolute;inset:0;padding:22px 20px;box-sizing:border-box"><svg style="width:60px;height:15px" viewBox="0 0 450 112"><g fill="#163452"><path d="M0 1H42L75 40V1H109V110H70L39 73V110H0Z"/><path fill-rule="evenodd" d="M168 0A56 56 0 1 1 168 112A56 56 0 1 1 168 0ZM194 45A12 12 0 1 0 194 69A12 12 0 1 0 194 45Z"/><path fill-rule="evenodd" d="M281.5 0A56 56 0 1 1 281.5 112A56 56 0 1 1 281.5 0ZM309.5 45A12 12 0 1 0 309.5 69A12 12 0 1 0 309.5 45Z"/><path d="M342 1H385L416 40V1H450V112H412L381 74V112H342Z"/></g></svg>
+  <div style="font-size:19px;font-weight:700;margin-top:14px;line-height:1.1">Creative<br>brief</div>${[110, 128, 96, 120, 70].map(w => `<div style="height:7px;width:${w}px;border-radius:4px;background:#F4E1E0;margin-top:10px"></div>`).join('')}</div>`;
+$('segs').innerHTML = [0, 1, 2, 3, 4, 5].map(i => `<div class="seg" style="left:${i * 68}px"><i id="sf${i}"></i></div>`).join('');
+const tFiles = 0.12, tDrop0 = wt(213, T0) - 0.55, tDrop = wt(214, T0) + 0.1, tSaved = wt(215, T0), tStage = wt(219, T0) - 0.12;
+const tDone = wt(223, T0), tChecked = wt(224, T0), tComplete = wt(225, T0), tKnow = wt(226, T0), tNext = wt(237, T0), tEnc = wt(246, T0);
+// the new brief is carried in by the cursor and dropped into the folder
+const dragX = M.track(560, [[tDrop0, 560, M.INSTANT], [tDrop0 + 0.02, 330, M.SOFT]]);
+const dropS = M.track(1.08, [[tDrop, 1, [16, 0.8]]]);
+const fill = [M.track(0.42, [[tDone - 0.25, 1, M.SOFT]]), M.track(0, [[tNext + 0.2, 0.35, M.SOFT]])];
+const bdg = M.track(0, [[tChecked, 1, [15, 0.75]]]);
+const LABELS = [[tStage, 'Bring the project together'], [tComplete, 'Stage 01 complete'], [tKnow, 'We know what it must communicate'], [tNext + 0.05, 'Plan how people encounter it']];
+M.scene({
+  W: 1920, H: 1080, bg: '#F7CFCE', T: 16.7, intro: null,
+  SH: {
+    power: {w: 1560, h: 560, r: 64, bg: '#EA6262', cam: 1.13},
+    files: {w: 1100, h: 440, r: 26, bg: '#FFFFFF', cam: 1.3},
+    stage: {w: 1190, h: 156, r: 78, bg: '#FFFFFF', cam: 1.42}
+  },
+  start: 'power', SEQ: [[tFiles, 'files'], [tStage, 'stage']],
+  layers: [
+    {el: 'Lpower', tin: null, tout: tFiles, o: {lout: 0.14}},
+    {el: 'Lfiles', tin: tFiles, tout: tStage, anchor: 't', o: {din: 0.05, lin: 0.3, lout: 0.16}, update: (t) => {
+      for (let i = 0; i < 4; i++) show($('tl' + i), t, tFiles + 0.1 + i * 0.07, null, 22, {din: 0, lin: 0.4});
+      const n = $('tl4'); if (t < tDrop0) { n.style.display = 'none'; return; }
+      n.style.display = ''; const held = t < tDrop;
+      const x = held ? dragX(t) : M.lerp(dragX(tDrop), TX(4), M.S(t - tDrop, 14, 0.85));
+      n.style.left = x + 'px'; n.style.transform = `rotate(${held ? 4 : 4 * (1 - M.S(t - tDrop, 14, 0.85))}deg) scale(${dropS(t).toFixed(4)})`;
+      n.style.filter = held ? 'drop-shadow(0 26px 30px rgba(120,40,45,.35))' : 'none'; n.style.opacity = M.clamp((t - tDrop0) / 0.15);
+    }},
+    {el: 'Lstage', tin: tStage, tout: null, o: {din: 0.06, lin: 0.3}, update: (t) => {
+      let lab = ''; LABELS.forEach(l => { if (t >= l[0]) lab = l[1]; }); M.setText($('lab'), lab);
+      M.setText($('num'), t >= tNext ? '02' : '01');
+      for (let i = 0; i < 6; i++) $('sf' + i).style.width = (i < 2 ? 58 * fill[i](t) : 0) + 'px';
+      const b = bdg(t) * (t < tNext ? 1 : 1 - M.clamp((t - tNext) / 0.3)); $('badge').style.transform = `scale(${Math.max(0, b).toFixed(4)})`; $('badge').style.opacity = M.clamp(b * 2);
+    }}
+  ],
+  cursor: {size: 44, drags: [[tDrop0 + 0.05, tDrop]], keys: [[0, 820, 300], [tDrop0 - 0.45, 820, 300], [tDrop0, 650, -8], [tDrop0 + 0.02, 650, -8], [tDrop, 420, -8], [tDrop + 0.7, 600, 180], [16.7, 600, 180]]},
+  extra: (t, g) => {
+    const v = M.vis(t, tSaved, tStage - 0.1, {din: 0, lin: 0.35, lout: 0.2}), s = $('toast').style;
+    if (v.o < 0.002) { s.display = 'none'; } else { s.display = ''; s.opacity = v.o; s.transform = `translateX(-50%) translateY(${((1 - v.a) * 24).toFixed(2)}px) scale(${v.s})`; }
+    $('cursor').style.opacity = t > tStage ? 0 : 1;
+  }
+});
+</script>

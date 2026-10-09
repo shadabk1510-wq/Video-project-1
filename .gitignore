@@ -4,3 +4,8 @@ noon_ae/renders/
 *.result.json
 _intake/
 NOON_*_package.zip
+noon_ae/motion/out/
+noon_ae/motion/work/
+noon_ae/motion/dist/
+noon_ae/motion/assets/
+__pycache__/

@@ -1,0 +1,75 @@
+<title>05 The six-step plan</title>
+<style>
+.fill{position:absolute;transform:translate(-50%,-50%)}
+.fill img{width:100%;height:100%;object-fit:cover}
+#logo{position:absolute;left:-360px;top:20px;width:720px;height:179px;transform-origin:50% 50%}
+#ring{position:absolute;left:-330px;top:-290px;width:660px;height:660px}
+.th{position:absolute;top:9px;width:52px;height:52px;border-radius:13px;overflow:hidden;box-shadow:0 6px 14px -6px rgba(120,40,45,.45)}
+.th img{width:100%;height:100%;object-fit:cover}
+</style>
+<div data-slot="world">
+  <svg id="ring" viewBox="-330 -330 660 660"><defs><path id="circ" d="M0,-300 a300,300 0 1,1 0,600 a300,300 0 1,1 0,-600"/></defs>
+    <text font-family="Inter" font-weight="700" font-size="19" fill="#B54A50"><textPath href="#circ" id="ringText" textLength="1870" lengthAdjust="spacing"></textPath></text></svg>
+  <div class="row cap" id="tag" style="left:0;top:372px;transform:translate(-50%,0);font-size:19px">The whole process &middot; one project</div>
+</div><!--/world-->
+<div data-slot="shape">
+  <div class="L" id="Lbag"><div class="fill" style="width:440px;height:440px"><img src="../assets/bag.png"></div></div>
+  <div class="L" id="Llist"><div id="list"></div>
+    <div class="a" id="thumbs" style="left:110px;top:0px">
+      <div class="th" id="th0" style="left:0"><img src="../assets/bag.png"></div>
+      <div class="th" id="th1" style="left:62px"><img src="../assets/social1.png"></div>
+      <div class="th" id="th2" style="left:124px"><img src="../assets/sunrise/030.jpg"></div>
+    </div>
+  </div>
+</div><!--/shape-->
+<div data-slot="over">
+  <svg id="logo" viewBox="0 0 450 112"><g fill="#163452"><path d="M0 1H42L75 40V1H109V110H70L39 73V110H0Z"/><path fill-rule="evenodd" d="M168 0A56 56 0 1 1 168 112A56 56 0 1 1 168 0ZM194 45A12 12 0 1 0 194 69A12 12 0 1 0 194 45Z"/><path fill-rule="evenodd" d="M281.5 0A56 56 0 1 1 281.5 112A56 56 0 1 1 281.5 0ZM309.5 45A12 12 0 1 0 309.5 69A12 12 0 1 0 309.5 45Z"/><path d="M342 1H385L416 40V1H450V112H412L381 74V112H342Z"/></g></svg>
+</div><!--/over-->
+<script>
+const T0 = 15.30;
+$('ringText').textContent = ('BRIEF → PURPOSE → DIRECTION → RULES → REVIEW → HANDOVER → ').repeat(2).trim();
+$('list').innerHTML = stepsHTML();
+$('thumbs').style.top = (STEP_TOP(3)) + 'px';
+const tList = 0.15;
+const ST = STEPS.map(s => s[3] - T0 - 0.12);          // row reveal times, on each spoken line
+const tCheck = wt(127, T0);                          // "really, really easily"
+const actY = M.track(STEP_TOP(0) - 8, ST.slice(1).map((t, i) => [t, STEP_TOP(i + 1) - 8, M.MORPH]));
+const bagY = M.track(40, [[tList, 0, M.MORPH]]);
+const TH = [wt(96, T0), wt(97, T0), wt(100, T0)];   // packaging, digital, motion
+M.scene({
+  W: 1920, H: 1080, bg: '#F7CFCE', T: 23.7, intro: null,
+  SH: {
+    bag:  {w: 440, h: 440, r: 36, bg: '#C6C5C4', cam: 1.15},
+    list: {w: 840, h: 760, r: 40, bg: '#FFFFFF', cam: 1.32}
+  },
+  start: 'bag', SEQ: [[tList, 'list']],
+  layers: [
+    {el: 'Lbag', tin: null, tout: tList, o: {lout: 0.14}},
+    {el: 'Llist', tin: tList, tout: null, anchor: 't', o: {din: 0.05, lin: 0.3}, update: (t) => {
+      let active = -1; ST.forEach((s, i) => { if (t >= s) active = i; });
+      if (t >= tCheck) active = -1;
+      ST.forEach((s, i) => {
+        show($('row' + i), t, s, null, 22, {din: 0, lin: 0.45, blur: 10});
+        const tile = $('tile' + i), on = i === active;
+        const k = M.clamp((t - s) / 0.35) * (on ? 1 : 0);
+        tile.style.background = on ? `rgba(234,98,98,${(0.15 + 0.85 * k).toFixed(3)})` : '#FBE3E2';
+        tile.innerHTML = M.icon(STEPS[i][0], 32, on && k > 0.5 ? '#FFFFFF' : '#EA6262', 2);
+        const c = $('chk' + i), cv = M.S(t - tCheck - i * 0.08, 16, 0.8);
+        c.innerHTML = M.icon('check', 20, '#FFFFFF', 3);
+        c.style.opacity = M.clamp(cv * 2); c.style.transform = `scale(${Math.max(0, cv).toFixed(4)})`;
+      });
+      const a = $('act').style; a.top = actY(t) + 'px';
+      a.opacity = (M.clamp((t - ST[0]) / 0.3) * (1 - M.clamp((t - tCheck) / 0.4))).toFixed(3);
+      TH.forEach((tt, i) => { const v = show($('th' + i), t, tt - 0.05, null, 10, {din: 0, lin: 0.35}); });
+    }}
+  ],
+  geom: (t, g) => { g.cy = bagY(t); return g; },
+  extra: (t, g) => {
+    const out = M.eo((t - 0.0) / 0.35);              // the NOON wordmark, ring and tag from clip 04 leave
+    const L = $('logo').style; L.opacity = 1 - out; L.transform = `translate(0px,${(-470 - 60 * out).toFixed(2)}px) scale(0.38)`;
+    const R = $('ring').style; R.opacity = 1 - out; R.transform = `rotate(${(-(t + 5.32) * 9).toFixed(2)}deg) scale(${(1 + 0.15 * out).toFixed(4)})`;
+    $('tag').style.opacity = 1 - out;
+    if (out > 0.999) { L.display = 'none'; R.display = 'none'; $('tag').style.display = 'none'; }
+  }
+});
+</script>
