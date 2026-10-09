@@ -76,7 +76,9 @@ N3CLIPS["03"] = { tin: 7.10, build: function () {
 
     // ---- card contents
     g = N3.group(S, "2027", { tin: null, tout: tSun, lout: 0.12 });
-    N3.text(g, "2027", { name: "2027", x: 7.5, cy: 0, fs: 250, wt: 600, ls: -0.06, lh: 250, color: "#FFFFFF", align: "center" });
+    // same column as clip 02's last frame ("in" above "2027", gap 6, centred on the card) so the 02 -> 03 cut is seamless
+    N3.text(g, "in", { name: "in", x: 0, top: -146.2, fs: 30, wt: 600, color: "#FFFFFF", align: "center", opacity: 85 });
+    N3.text(g, "2027", { name: "2027", x: 7.5, top: -103.9, fs: 250, wt: 600, ls: -0.06, lh: 250, color: "#FFFFFF", align: "center" });
 
     g = N3.group(S, "Radar sweep", { tin: tSun + 0.2 });
     sw = C03_sweep(g, { name: "Sweep", wedges: 17, from: 290, to: 358, edge: 359, peak: 0.55, r: 160 });

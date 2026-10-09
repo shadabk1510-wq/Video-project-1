@@ -53,9 +53,35 @@ function C04_ring(ctx, o) {
     return l;
 }
 
+// Radar sweep carried over from clip 03 (same construction as C03_sweep): AE has no conic gradient, so the sweep is a
+// stack of white wedges ending at the leading edge (359 deg, 0 = 12 o'clock, clockwise) and starting progressively later;
+// their opacities are solved so the stacked alpha ramps linearly from 0 at 290 deg to 0.55 at the edge.
+function C04_sweep(ctx, o) {
+    var l = N3.shapeLayer(ctx.comp, N3.uname(ctx.comp, o.name || "Radar sweep")), n = o.wedges, a0 = o.from, a1 = o.to, peak = o.peak,
+        R = o.r, i, j, gi, verts, start, ang, A, Aprev = 0, op, step = (a1 - a0) / n;
+    N3.place(ctx, l);
+    for (i = 0; i < n; i++) {
+        start = a0 + i * step;
+        A = peak * (i + 0.5) / n;
+        op = 1 - (1 - A) / (1 - Aprev);
+        Aprev = A;
+        verts = [[0, 0]];
+        for (j = 0; j <= 24; j++) {
+            ang = (start + (o.edge - start) * j / 24) * Math.PI / 180;
+            verts.push([N3.r3(R * Math.sin(ang)), N3.r3(-R * Math.cos(ang))]);
+        }
+        gi = N3.addGroup(l, "Wedge " + (i + 1) + " (from " + N3.r3(start) + " deg)");
+        N3.addPath(l, gi, verts, null, null, true);
+        N3.addFill(l, gi, "#FFFFFF", N3.r3(op * 100));
+    }
+    N3.pos(l).setValue(N3.P(ctx, o.cx || 0, o.cy || 0));
+    return l;
+}
+
 N3CLIPS["04"] = { tin: 9.98, build: function () {
     var T0 = 9.98, tSmall = 0.12, tLogo = N3.wt(35, T0) - 0.08, tBag = N3.wt(36, T0), tRing = tBag + 0.45, tTag = N3.wt(43, T0) - 0.1,
-        S, g, logo, ring, tag, cy, e, i, rise, gname, GN = ["N 1", "O 1", "O 2", "N 2"];
+        S, g, logo, ring, tag, cy, e, i, rise, gname, GN = ["N 1", "O 1", "O 2", "N 2"],
+        P03 = 2.88, tRadar03 = N3.wt(26, 7.10), D = [380, 560, 740, 920], l, gi, tr, ai, an, sel;
     S = N3.scene({ id: "04", title: "NOON", T: 5.32, intro: null,
         SH: { sun: { w: 300, h: 300, r: 150, bg: "#F4512B", cam: 1.15 }, sun2: { w: 200, h: 200, r: 100, bg: "#F4512B", cam: 1.15 },
             bag: { w: 440, h: 440, r: 36, bg: "#C6C5C4", cam: 1.15 } },
@@ -77,6 +103,46 @@ N3CLIPS["04"] = { tin: 9.98, build: function () {
     // the bag photo inside the card
     g = N3.group(S, "Bag", { tin: tBag + 0.05, din: 0.05, lin: 0.3 });
     N3.image(g, "bag.png", { name: "Bag", cx: 0, cy: 0, w: 440, h: 440 });
+
+    // ---- carried over from clip 03 (its clock = t + 2.88), cleared in the first beat
+    // world: radar grid fades and shrinks back over 0.4 s
+    l = N3.shapeLayer(S.comp, "Radar grid");
+    N3.place(S.worldCtx, l);
+    for (i = 0; i < D.length; i++) {
+        gi = N3.addGroup(l, "Ring " + D[i]);
+        N3.addEllipse(l, gi, D[i], D[i], [0, -110]);
+        N3.addStroke(l, gi, N3.COL.coral, 1.5, 28);
+    }
+    N3.pos(l).setValue([0, 0]);                                   // scales around the world origin like the web #grid
+    N3.eo(N3.xf(l, "ADBE Opacity"), 0, 0.4, 100, 0);
+    N3.eo(N3.xf(l, "ADBE Scale"), 0, 0.4, [100, 100], [85, 85]);
+    l.outPoint = 0.4;
+    // the three pings keep expanding on clip 03's keys (shifted by -2.88 s, so they start before this clip) and fade out
+    for (i = 0; i < 3; i++) {
+        tr = tRadar03 + i * 0.18 - P03;
+        l = N3.ellipse(S.worldCtx, { name: "Ping " + (i + 1), cx: 0, cy: -110, d: 300, stroke: "#FFFFFF", sw: 2 });
+        N3.gc(l, 1).property("ADBE Vector Graphic - Stroke").property("ADBE Vector Stroke Opacity").setValue(90);
+        N3.eo(N3.gc(l, 1).property("ADBE Vector Shape - Ellipse").property("ADBE Vector Ellipse Size"), N3.r3(tr), N3.r3(tr + 1.3), [300, 300], [1200, 1200]);
+        N3.lin(N3.xf(l, "ADBE Opacity"), [N3.r3(tr), N3.r3(tr + 1.3)], [90, 0]);
+        l.outPoint = N3.r3(tr + 1.3);
+    }
+    // the phrase (fully shown at the cut) leaves as one piece
+    l = N3.text(S.worldCtx, "On everybody's radar.", { name: "Phrase", x: -0.13 * 56, top: 150, fs: 56, wt: 600, ls: -0.025, color: N3.COL.ink, align: "center" });
+    ai = l.property("ADBE Text Properties").property("ADBE Text Animators").addProperty("ADBE Text Animator").propertyIndex;
+    an = l.property("ADBE Text Properties").property("ADBE Text Animators").property(ai);
+    an.name = "Coral word";
+    an.property("ADBE Text Animator Properties").addProperty("ADBE Text Fill Color");
+    an.property("ADBE Text Animator Properties").property("ADBE Text Fill Color").setValue(N3.rgba(N3.COL.coral));
+    an.property("ADBE Text Selectors").addProperty("ADBE Text Expressible Selector");
+    sel = an.property("ADBE Text Selectors").property(1);
+    sel.property("ADBE Text Range Type2").setValue(3);
+    AEL.expr(sel.property("ADBE Text Expressible Amount"), "// word 3 in coral\nvar v = (textIndex == 3) ? 100 : 0;\n[v, v, v]");
+    N3.show(l, null, 0.04, 18, { lout: 0.25, blur: 10 });
+    l.outPoint = 0.3;
+    // card: the radar sweep keeps turning (150 deg/s on clip 03's clock) while the sun shrinks, then blurs out
+    g = N3.group(S, "Radar sweep", { tin: null, tout: tSmall, lout: 0.22 });
+    l = C04_sweep(g, { name: "Sweep", wedges: 17, from: 290, to: 358, edge: 359, peak: 0.55, r: 160 });
+    N3.lin(N3.xf(l, "ADBE Rotate Z"), [0, 5.32], [150 * P03, 150 * (P03 + 5.32)]);
 
     // world (behind the card): the process ring and the tag line
     ring = C04_ring(S.worldCtx, { cx: 0, cy: 40, r: 300 });
