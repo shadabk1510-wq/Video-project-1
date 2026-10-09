@@ -4,7 +4,7 @@
   probe FILE...                                  streams, fps, VFR, duration + AE import warnings (JSON)
   scenes VIDEO [--threshold 0.3]                 cut times of a reference video (JSON)
   frames VIDEO --out DIR [--every S | --at T,T] [--sheet]   stills (+ contact_sheet.png)
-  speech AUDIO [--noise -35dB] [--min-silence 0.35]          speech segments for VO sync (JSON)
+  speech AUDIO [--noise=-35dB] [--min-silence 0.35]          speech segments for VO sync (JSON)
   palette IMAGE_OR_VIDEO [--colors 6] [--at T]    dominant colours as hex (JSON, needs Pillow)
   to-ae IN OUT [--force]                         AE-safe transcode: video -> ProRes 422 .mov CFR, audio -> 48k WAV
 """
@@ -188,7 +188,7 @@ def main():
     s = sub.add_parser("scenes"); s.add_argument("video"); s.add_argument("--threshold", type=float, default=0.3); s.set_defaults(fn=cmd_scenes)
     s = sub.add_parser("frames"); s.add_argument("video"); s.add_argument("--out", required=True)
     s.add_argument("--every", type=float, default=1.0); s.add_argument("--at"); s.add_argument("--sheet", action="store_true"); s.set_defaults(fn=cmd_frames)
-    s = sub.add_parser("speech"); s.add_argument("audio"); s.add_argument("--noise", default="-35dB")
+    s = sub.add_parser("speech"); s.add_argument("audio"); s.add_argument("--noise", default="-35dB", help="silence threshold; pass as --noise=-40dB (the = is required for negative values)")
     s.add_argument("--min-silence", type=float, default=0.35); s.set_defaults(fn=cmd_speech)
     s = sub.add_parser("palette"); s.add_argument("file"); s.add_argument("--colors", type=int, default=6)
     s.add_argument("--at", type=float); s.set_defaults(fn=cmd_palette)

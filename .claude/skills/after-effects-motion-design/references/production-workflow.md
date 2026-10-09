@@ -38,8 +38,8 @@ For side-by-side checks, import the reference as a 50% guide layer (`CONFIG.refe
 
 ## 3. Sync to voice-over and script sections
 
-1. Get speech segments: `$MT speech assets/_ae/vo.wav --noise -35dB --min-silence 0.35`
-   (lower `--noise` like `-40dB` for quiet VO; raise `--min-silence` to merge phrases).
+1. Get speech segments: `$MT speech assets/_ae/vo.wav --noise=-35dB --min-silence 0.35`
+   (lower the threshold like `--noise=-40dB` for quiet VO; raise `--min-silence` to merge phrases).
 2. Align script lines to segments in order (segment count ≈ sentence/phrase count; merge or split
    by adjusting `--min-silence`). If a transcript with timestamps exists (SRT/VTT), prefer it.
 3. Write `docs/timing.json`:
