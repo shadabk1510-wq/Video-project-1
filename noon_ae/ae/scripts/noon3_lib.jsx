@@ -19,6 +19,7 @@ N3.COL = { canvas: "#F9DCDB", ink: "#2B1C1E", soft: "#9C7F81", line: "#EFD9D8", 
 N3.FONT = { 300: "Inter-Light", 400: "Inter-Regular", 500: "Inter-Medium", 600: "Inter-SemiBold", 700: "Inter-Bold", 800: "Inter-ExtraBold" };
 N3.FONT_ALT = { "Inter-ExtraBold": "Inter-Black", "Inter-Light": "Inter-Regular" };
 N3.SP = { MORPH: [15, 0.84], FAST: [27, 0.86], SLOW: [12.5, 0.9], SOFT: [10, 0.95], CAM: [7.5, 1], INSTANT: [1000000, 1], COLOR: [20, 1] };
+N3.BLUR_K = 2.5;         // CSS blur px -> AE Blurriness
 N3.ASC = 0.96875;          // Inter ascender / em
 N3.LHN = 1.2109375;        // Inter "normal" line height / em
 N3.ASSET_DIR = "";         // set by the build script (folder holding the client assets)
@@ -178,6 +179,8 @@ N3.blur = function (layer) {
     if (!f) {
         f = N3.fx(layer, "ADBE Gaussian Blur 2", "Blur");
         try { f.property("ADBE Gaussian Blur 2-0003").setValue(1); } catch (e) {}   // repeat edge pixels off
+        // keys are in CSS blur px (a standard deviation); AE Blurriness is ~2.5x that
+        AEL.expr(layer.property("ADBE Effect Parade").property("Blur").property("ADBE Gaussian Blur 2-0001"), "value * " + N3.BLUR_K);
     }
     return p.property("Blur").property("ADBE Gaussian Blur 2-0001");
 };
@@ -469,7 +472,7 @@ N3.unitReveal = function (layer, o) {
     props = function () { return an().property("ADBE Text Animator Properties"); };
     props().addProperty("ADBE Text Opacity"); props().property("ADBE Text Opacity").setValue(0);
     if (o.dy) { props().addProperty("ADBE Text Position 3D"); props().property("ADBE Text Position 3D").setValue([0, o.dy, 0]); }
-    if (o.blur) { props().addProperty("ADBE Text Blur"); props().property("ADBE Text Blur").setValue([o.blur, o.blur]); }
+    if (o.blur) { props().addProperty("ADBE Text Blur"); props().property("ADBE Text Blur").setValue([o.blur * N3.BLUR_K, o.blur * N3.BLUR_K]); }
     if (o.scale !== false) { props().addProperty("ADBE Text Scale 3D"); props().property("ADBE Text Scale 3D").setValue([94, 94, 100]); }
     an().property("ADBE Text Selectors").addProperty("ADBE Text Expressible Selector");
     sel = an().property("ADBE Text Selectors").property(1);
@@ -695,4 +698,20 @@ N3.background = function (comp) {
     N3.xf(grain, "ADBE Opacity").setValue(5);
     grain.moveToBeginning(); light.moveAfter(grain); bg.moveAfter(light);
     return [grain, light, bg];
+};
+
+// Motion blur on (180° default shutter) for a clip comp, every precomp nested in it, and every visible layer -
+// the reference renders were made with motion blur. Turn a layer's switch off in the timeline to opt out.
+N3.motionBlur = function (comp, seen) {
+    var j, l;
+    seen = seen || {};
+    if (seen[comp.id]) { return; }
+    seen[comp.id] = true;
+    comp.motionBlur = true;
+    for (j = 1; j <= comp.numLayers; j++) {
+        l = comp.layer(j);
+        if (l.nullLayer || !l.hasVideo) { continue; }
+        try { l.motionBlur = true; } catch (e) {}
+        if (l.source && l.source instanceof CompItem) { N3.motionBlur(l.source, seen); }
+    }
 };

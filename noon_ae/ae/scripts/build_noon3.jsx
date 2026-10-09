@@ -35,13 +35,16 @@ function main() {
     N3.folders = AEL.standardFolders();
     main = AEL.comp("NOON3_MAIN", { width: N3.W, height: N3.H, duration: 130, fps: N3.FPS, folder: N3.folders.main });
     N3.background(main);
+    main.motionBlur = true;
     for (i = 0; i < ORDER.length; i++) {
         id = ORDER[i];
         if (!N3CLIPS[id]) { failed.push(id + " (missing)"); continue; }
         if (CONFIG.only && !AEL.contains(CONFIG.only, id)) { continue; }
         try {
             S = N3CLIPS[id].build();
+            N3.motionBlur(S.comp);
             l = main.layers.add(S.comp);
+            l.motionBlur = true;
             l.startTime = N3CLIPS[id].tin;
             l.moveToBeginning();
             AEL.created("clip", S.comp.name);

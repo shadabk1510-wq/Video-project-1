@@ -39,7 +39,8 @@ const VECTOR_ITEMS = {
     L("ADBE Vector Fill Rule", "Fill Rule", T.OneD, 1), L("ADBE Vector Fill Color", "Color", T.COLOR, [1, 0, 0, 1]), L("ADBE Vector Fill Opacity", "Opacity", T.OneD, 100)]),
   "ADBE Vector Graphic - Stroke": () => G("ADBE Vector Graphic - Stroke", "Stroke 1", [L("ADBE Vector Blend Mode", "Blend Mode", T.OneD, 1), L("ADBE Vector Composite Order", "Composite", T.OneD, 1),
     L("ADBE Vector Stroke Color", "Color", T.COLOR, [1, 1, 1, 1]), L("ADBE Vector Stroke Opacity", "Opacity", T.OneD, 100), L("ADBE Vector Stroke Width", "Stroke Width", T.OneD, 2),
-    L("ADBE Vector Stroke Line Cap", "Line Cap", T.OneD, 1), L("ADBE Vector Stroke Line Join", "Line Join", T.OneD, 1), L("ADBE Vector Stroke Miter Limit", "Miter Limit", T.OneD, 4)]),
+    L("ADBE Vector Stroke Line Cap", "Line Cap", T.OneD, 1), L("ADBE Vector Stroke Line Join", "Line Join", T.OneD, 1), L("ADBE Vector Stroke Miter Limit", "Miter Limit", T.OneD, 4),
+    G("ADBE Vector Stroke Dashes", "Dashes", "indexed:dash")]),
   "ADBE Vector Filter - Trim": () => G("ADBE Vector Filter - Trim", "Trim Paths 1", [L("ADBE Vector Trim Start", "Start", T.OneD, 0), L("ADBE Vector Trim End", "End", T.OneD, 100),
     L("ADBE Vector Trim Offset", "Offset", T.OneD, 0), L("ADBE Vector Trim Type", "Trim Multiple Shapes", T.OneD, 1)]),
 };
@@ -79,11 +80,16 @@ const MASK = () => G("ADBE Mask Atom", "Mask 1", [L("ADBE Mask Shape", "Mask Pat
   L("ADBE Mask Opacity", "Mask Opacity", T.OneD, 100), L("ADBE Mask Offset", "Mask Expansion", T.OneD, 0)], { mask: true });
 const ADDABLE = { vector: (mn) => VECTOR_ITEMS[mn] && VECTOR_ITEMS[mn](), effect: (mn) => EFFECTS[mn] && G(mn, EFFECTS[mn][0], EFFECTS[mn][1], { effect: true }),
   animator: (mn) => mn === "ADBE Text Animator" && ANIMATOR(), selector: (mn) => SELECTORS[mn] && SELECTORS[mn](), animprop: (mn) => ANIM_PROPS[mn],
-  mask: (mn) => mn === "ADBE Mask Atom" && MASK() };
+  mask: (mn) => mn === "ADBE Mask Atom" && MASK(),
+  dash: (mn) => ({ "ADBE Vector Stroke Dash 1": L(mn, "Dash", T.OneD, 10), "ADBE Vector Stroke Gap 1": L(mn, "Gap", T.OneD, 10), "ADBE Vector Stroke Offset": L(mn, "Offset", T.OneD, 0) })[mn] };
 const layerSchema = (kind) => {
   const k = [G("ADBE Marker", "Marker", null, { marker: true }), TRANSFORM, G("ADBE Effect Parade", "Effects", "indexed:effect"), G("ADBE Mask Parade", "Masks", "indexed:mask")];
   if (kind === "shape") k.push(G("ADBE Root Vectors Group", "Contents", "indexed:vector"));
-  if (kind === "text") k.push(G("ADBE Text Properties", "Text", [L("ADBE Text Document", "Source Text", T.TEXT_DOCUMENT, null), G("ADBE Text Animators", "Animators", "indexed:animator")]));
+  if (kind === "text") k.push(G("ADBE Text Properties", "Text", [L("ADBE Text Document", "Source Text", T.TEXT_DOCUMENT, null),
+    G("ADBE Text Path Options", "Path Options", [L("ADBE Text Path", "Path", T.MASK_INDEX, 0), L("ADBE Text Reverse Path", "Reverse Path", T.OneD, 0),
+      L("ADBE Text Perpendicular To Path", "Perpendicular To Path", T.OneD, 1), L("ADBE Text Force Align Path", "Force Alignment", T.OneD, 0),
+      L("ADBE Text First Margin", "First Margin", T.OneD, 0), L("ADBE Text Last Margin", "Last Margin", T.OneD, 0)]),
+    G("ADBE Text Animators", "Animators", "indexed:animator")]));
   if (kind === "footage" || kind === "precomp") k.push(L("ADBE Time Remapping", "Time Remap", T.OneD, 0));
   return G("root", "root", k);
 };
@@ -100,7 +106,7 @@ class Prop {
     if (spec.type === PVT.TEXT_DOCUMENT) this._value = new TextDocument("");
     if (Array.isArray(spec.kids)) for (const c of spec.kids) this.children.push(new Prop(c, this, layer));
     this.indexed = typeof spec.kids === "string" ? spec.kids.split(":")[1] : null;
-    this.isEffect = !!spec.effect; this.isMask = !!spec.mask; this.maskMode = 6812; this.inverted = false;
+    this.isEffect = !!spec.effect; this.isMask = !!spec.mask; this.maskMode = 6813 /* new masks are Add in AE */; this.inverted = false;
   }
   get name() { return this._name; }
   set name(v) { this._name = String(v); }
@@ -138,6 +144,7 @@ class Prop {
       else if (!Array.isArray(v) || !need.includes(v.length) || v.some((x) => typeof x !== "number" || isNaN(x))) throw new Error(`${this.matchName}: bad value ${JSON.stringify(v)}`);
     }
     if (t === PVT.SHAPE && !(v instanceof Shape)) throw new Error(`${this.matchName}: needs a Shape`);
+    if (t === PVT.MASK_INDEX) { const ms = this.layer && this.layer.property("ADBE Mask Parade"); if (!Number.isInteger(v) || v < 0 || (v > 0 && (!ms || v > ms.numProperties))) throw new Error(`${this.matchName}: no mask ${v} on this layer`); }
     if (t === PVT.TEXT_DOCUMENT && !(v instanceof TextDocument)) throw new Error(`${this.matchName}: needs a TextDocument`);
     if (Array.isArray(v) && (t === PVT.ThreeD_SPATIAL || t === PVT.ThreeD) && v.length === 2) v = [v[0], v[1], this._value ? this._value[2] || 0 : 0];
     if (t === PVT.COLOR && v.length === 3) v = [v[0], v[1], v[2], 1];
@@ -187,7 +194,7 @@ class Prop {
     o.type = this.propertyValueType;
     const ser = (v) => (v instanceof Shape ? v.json() : v instanceof TextDocument ? v.json() : v);
     o.value = ser(this._value);
-    if (this.keys.length) o.keys = this.keys.map((k) => this.spec.marker ? { t: k.t, comment: k.comment, dur: k.dur } : { t: k.t, v: ser(k.v), inI: k.inI, outI: k.outI, inE: k.inE, outE: k.outE });
+    if (this.keys.length) o.keys = this.keys.map((k) => this.spec.marker ? { t: k.t, comment: k.comment, dur: k.dur } : { t: k.t, v: ser(k.v), inI: k.inI, outI: k.outI, inE: k.inE, outE: k.outE, inT: k.inT, outT: k.outT });
     if (this._expr && this.expressionEnabled) o.expr = this._expr;
     return o;
   }

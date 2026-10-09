@@ -58,6 +58,11 @@
     const u = (lo + hi) / 2;
     return (1 - u) ** 3 * v0 + 3 * (1 - u) ** 2 * u * y1 + 3 * (1 - u) * u * u * y2 + u ** 3 * v1;
   }
+  function bezPath(p0, p1, p2, p3) {   // sampled cubic with arc-length lookup
+    const P = [], L = [0], N = 48;
+    for (let j = 0; j <= N; j++) { const u = j / N, A = (1 - u) ** 3, B = 3 * (1 - u) ** 2 * u, C = 3 * (1 - u) * u * u, D = u ** 3; P.push(p0.map((_, d) => A * p0[d] + B * p1[d] + C * p2[d] + D * p3[d])); if (j) L.push(L[j - 1] + length(P[j], P[j - 1])); }
+    return { len: L[N], at: (s) => { let j = 1; while (j < N && L[j] < s) j++; const u = (s - L[j - 1]) / Math.max(1e-9, L[j] - L[j - 1]); return lerpV(P[j - 1], P[j], Math.min(1, Math.max(0, u))); } };
+  }
   function keyed(p, t) {
     const K = p.keys;
     if (!K || !K.length) return p.value;
@@ -66,8 +71,10 @@
     let i = 0; while (t >= K[i + 1].t) i++;
     const a = K[i], b = K[i + 1], dt = b.t - a.t;
     if (a.outI === KIT.HOLD || p.type === PVT.SHAPE || p.type === PVT.TEXT_DOCUMENT) return a.v;
-    if (a.outI === KIT.LINEAR && b.inI === KIT.LINEAR) return lerpV(a.v, b.v, (t - a.t) / dt);
     const spatial = p.type === PVT.ThreeD_SPATIAL || p.type === PVT.TwoD_SPATIAL;
+    // spatial bezier: keys with non-zero spatial tangents move along the curve P0, P0+outT, P1+inT, P1 (by arc length)
+    const curve = spatial && ((a.outT || []).some((x) => x) || (b.inT || []).some((x) => x)) ? bezPath(a.v, add(a.v, a.outT || [0, 0]), add(b.v, b.inT || [0, 0]), b.v) : null;
+    if (a.outI === KIT.LINEAR && b.inI === KIT.LINEAR && !curve) return lerpV(a.v, b.v, (t - a.t) / dt);
     const lin = (v0, v1) => ({ s: (v1 - v0) / dt, i: 33.333 });
     const E = (k, side, d) => { const e = side === "o" ? k.outE : k.inE; return e ? e[Math.min(d, e.length - 1)] : { s: 0, i: 16.667 }; };
     if (spatial || !isA(a.v) || p.type === PVT.COLOR) {
@@ -75,12 +82,12 @@
         const eo = a.outI === KIT.LINEAR ? lin(a.v, b.v) : E(a, "o", 0), ei = b.inI === KIT.LINEAR ? lin(a.v, b.v) : E(b, "i", 0);
         return bez1(t, a.t, b.t, a.v, b.v, eo, ei);
       }
-      const Ld = spatial ? length(a.v, b.v) : 1;
+      const Ld = curve ? curve.len : spatial ? length(a.v, b.v) : 1;
       if (Ld === 0) return a.v;
       const eo = a.outI === KIT.LINEAR ? lin(0, Ld) : E(a, "o", 0), ei = b.inI === KIT.LINEAR ? lin(0, Ld) : E(b, "i", 0);
       const sp = p.type === PVT.COLOR ? { s: 0, i: eo.i } : eo, spi = p.type === PVT.COLOR ? { s: 0, i: ei.i } : ei;
       const s = bez1(t, a.t, b.t, 0, Ld, sp, spi);
-      return lerpV(a.v, b.v, s / Ld);
+      return curve ? curve.at(s) : lerpV(a.v, b.v, s / Ld);
     }
     return a.v.map((v0, d) => {
       const v1 = b.v[d], eo = a.outI === KIT.LINEAR ? lin(v0, v1) : E(a, "o", d), ei = b.inI === KIT.LINEAR ? lin(v0, v1) : E(b, "i", d);
@@ -226,13 +233,19 @@
       if (it.mn === "ADBE Vector Graphic - Fill") {
         const c = val(kid(it, "ADBE Vector Fill Color"), t), o = val(kid(it, "ADBE Vector Fill Opacity"), t) / 100;
         x.setTransform(M); x.fillStyle = rgba(c, o * op);
-        for (const p of mine) if (p.poly.length > 1) x.fill(polyPath(p.poly, true));
+        // AE fills all paths above the Fill in one group as a single compound path (Fill Rule 1 non-zero, 2 even-odd)
+        const P = new Path2D(); for (const p of mine) if (p.poly.length > 1) P.addPath(polyPath(p.poly, true));
+        x.fill(P, val(kid(it, "ADBE Vector Fill Rule"), t) === 2 ? "evenodd" : "nonzero");
       } else if (it.mn === "ADBE Vector Graphic - Stroke") {
         const c = val(kid(it, "ADBE Vector Stroke Color"), t), o = val(kid(it, "ADBE Vector Stroke Opacity"), t) / 100, w = val(kid(it, "ADBE Vector Stroke Width"), t);
         const cap = val(kid(it, "ADBE Vector Stroke Line Cap"), t), join = val(kid(it, "ADBE Vector Stroke Line Join"), t);
         if (w <= 0) continue;
         x.setTransform(M); x.strokeStyle = rgba(c, o * op); x.lineWidth = w; x.lineCap = ["butt", "butt", "round", "square"][cap] || "butt"; x.lineJoin = ["miter", "miter", "round", "bevel"][join] || "miter";
+        // Stroke > Dashes: dash/gap pairs in layer units (+ Offset)
+        const dk = (kid(it, "ADBE Vector Stroke Dashes") || {}).kids || [], dpat = dk.filter((d) => d.mn !== "ADBE Vector Stroke Offset").map((d) => Math.max(0, val(d, t))), doff = dk.find((d) => d.mn === "ADBE Vector Stroke Offset");
+        x.setLineDash(dpat.length ? dpat : []); x.lineDashOffset = doff ? -val(doff, t) : 0;
         for (const p of mine) if (p.poly.length > 1) x.stroke(polyPath(p.poly, p.closed));
+        x.setLineDash([]); x.lineDashOffset = 0;
       }
     }
   }
@@ -311,12 +324,34 @@
     const cov = Math.max(0, Math.min(r1, u1) - Math.max(r0, u0)) / (u1 - u0);
     return cov * amt;
   }
+  // Path text: each glyph's centre sits at its arc length (First Margin + layout x) on the mask path, rotated to the tangent
+  // when Perpendicular To Path is on. Left/centre/right justification between the margins; Force Alignment spreads the glyphs.
+  function textPathAt(L, t, lay) {
+    const po = kid(L._g("ADBE Text Properties"), "ADBE Text Path Options"), pi = po ? val(kid(po, "ADBE Text Path"), t) : 0;
+    if (!pi) return null;
+    const mk = (L._g("ADBE Mask Parade").kids || [])[pi - 1]; if (!mk) return null;
+    let pts = shapePoly(val(kid(mk, "ADBE Mask Shape"), t), 32); const closed = val(kid(mk, "ADBE Mask Shape"), t).c;
+    if (val(kid(po, "ADBE Text Reverse Path"), t)) pts = pts.reverse();
+    const cum = [0]; for (let k = 1; k < pts.length; k++) cum.push(cum[k - 1] + Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]));
+    const tot = cum[cum.length - 1], first = val(kid(po, "ADBE Text First Margin"), t), last = val(kid(po, "ADBE Text Last Margin"), t);
+    const perp = val(kid(po, "ADBE Text Perpendicular To Path"), t), force = val(kid(po, "ADBE Text Force Align Path"), t), just = JUST[lay.doc.justification] || "left";
+    const n = lay.chars.length, w = n ? lay.chars[n - 1].x + lay.chars[n - 1].w - lay.chars[0].x : 0, end = tot - last;
+    const base = just === "center" ? (first + end) / 2 : just === "right" ? end : first, extra = force && n > 1 ? (end - first - w) / (n - 1) : 0;
+    return (c) => {
+      let s = force ? first + (c.x - lay.chars[0].x) + c.idx * extra + c.w / 2 : base + c.x + c.w / 2;
+      if (closed) s = ((s % tot) + tot) % tot; else s = Math.max(0, Math.min(tot, s));
+      let k = 1; while (k < cum.length - 1 && cum[k] < s) k++;
+      const a = pts[k - 1], b = pts[k], u = (s - cum[k - 1]) / Math.max(1e-9, cum[k] - cum[k - 1]);
+      return { x: a[0] + (b[0] - a[0]) * u, y: a[1] + (b[1] - a[1]) * u, a: perp ? (Math.atan2(b[1] - a[1], b[0] - a[0]) * 180) / Math.PI : 0 };
+    };
+  }
   function drawText(L, t, x, M, op) {
     const lay = textLayout(L, t), doc = lay.doc;
     if (!doc.applyFill) return;
     const anims = (kid(L._g("ADBE Text Properties"), "ADBE Text Animators").kids || []);
     const ms = mScale(M);
     x.font = fontCss(doc); x.textBaseline = "alphabetic";
+    const onPath = textPathAt(L, t, lay);   // Text > Path Options > Path (a mask): glyphs ride the mask outline
     for (const c of lay.chars) {
       if (c.space) continue;
       let o = 1, dx = 0, dy = 0, sc = [1, 1], bl = 0, col = doc.fillColor.slice(0, 3);
@@ -334,8 +369,9 @@
         }
       }
       if (o <= 0.002) continue;
-      x.setTransform(M.translate(c.x + dx + c.w / 2, c.y + dy).scale(sc[0], sc[1]).translate(-c.w / 2, 0));
-      x.globalAlpha = Math.max(0, Math.min(1, o * op)); x.filter = bl > 0.05 ? `blur(${(bl * ms) / 2}px)` : "none";
+      if (onPath) { const q = onPath(c); x.setTransform(M.translate(q.x, q.y).rotate(q.a).translate(dx, dy).scale(sc[0], sc[1]).translate(-c.w / 2, 0)); }
+      else x.setTransform(M.translate(c.x + dx + c.w / 2, c.y + dy).scale(sc[0], sc[1]).translate(-c.w / 2, 0));
+      x.globalAlpha = Math.max(0, Math.min(1, o * op)); x.filter = bl > 0.05 ? `blur(${(bl * ms) / 2.5}px)` : "none";   // AE blur units ~2.5x CSS sigma
       x.fillStyle = rgba(col);
       x.fillText(c.ch, 0, 0);
     }
@@ -383,7 +419,7 @@
       const o2 = getCv(), y = o2.getContext("2d");
       if (sh) { const c = val(kid(sh, "ADBE Drop Shadow-0001"), t), op = val(kid(sh, "ADBE Drop Shadow-0002"), t) / 255, dir = (val(kid(sh, "ADBE Drop Shadow-0003"), t) * Math.PI) / 180, dist = val(kid(sh, "ADBE Drop Shadow-0004"), t) * ms, soft = val(kid(sh, "ADBE Drop Shadow-0005"), t) * ms;
         y.shadowColor = rgba(c, op); y.shadowBlur = soft; y.shadowOffsetX = Math.sin(dir) * dist; y.shadowOffsetY = -Math.cos(dir) * dist; }
-      if (blur) y.filter = `blur(${(val(kid(blur, "ADBE Gaussian Blur 2-0001"), t) * ms) / 2}px)`;
+      if (blur) y.filter = `blur(${(val(kid(blur, "ADBE Gaussian Blur 2-0001"), t) * ms) / 2.5}px)`;
       y.drawImage(buf, 0, 0); y.shadowColor = "transparent"; y.filter = "none";
       relCv(buf); out = o2;
     }
