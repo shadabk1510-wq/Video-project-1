@@ -407,3 +407,72 @@ K.stamps = function (g, T) {
         if (T) { K.pop(c.bg, T[i]); N3.show(c.text, T[i] + 0.05, null, 8, { din: 0, lin: 0.3 }); }
     }
 };
+
+// ======================================================================== chunk 4
+// Screen recording in a window card (dark title bar). Footage plays from clip-local tPlay; it holds its last frame at the end.
+K.window = function (g, name, file, w, h, tPlay, title) {
+    var l, bar = 40, s;
+    N3.box(g, { name: name + " bar", cx: 0, cy: -h / 2 + bar / 2, w: w, h: bar, fill: "#2A2A2E" });
+    N3.ellipse(g, { name: "Dot red", cx: -w / 2 + 24, cy: -h / 2 + 20, d: 12, fill: "#F57F7A" });
+    N3.ellipse(g, { name: "Dot amber", cx: -w / 2 + 44, cy: -h / 2 + 20, d: 12, fill: "#F6C25B" });
+    N3.ellipse(g, { name: "Dot green", cx: -w / 2 + 64, cy: -h / 2 + 20, d: 12, fill: "#6CCB7E" });
+    if (title) { N3.text(g, title, { name: name + " title", x: 0, cy: -h / 2 + 20, fs: 15, wt: 500, color: "#B9B9C0", align: "center" }); }
+    l = N3.image(g, file, { name: name, x: -w / 2, y: -h / 2 + bar, w: w, h: h - bar });
+    try { l.audioEnabled = false; } catch (e) {}
+    K.play(l, tPlay, g.S.T);
+    return l;
+};
+
+// Play footage from clip-local tPlay (negative = already running), holding the first/last frame outside its length, via time remap.
+K.play = function (l, tPlay, T) {
+    var tr, d, k, at = function (t) { return Math.max(0, Math.min(d, t - tPlay)); };
+    d = l.source.duration - 1 / N3.FPS;
+    try {
+        l.timeRemapEnabled = true;                     // AE adds keys at the in and out points
+        tr = l.property("ADBE Time Remapping");
+        for (k = tr.numKeys; k >= 1; k--) { tr.setValueAtTime(tr.keyTime(k), at(tr.keyTime(k))); }
+        N3.lin(tr, [0, Math.max(0, tPlay), Math.max(0, tPlay + d)], [at(0), at(Math.max(0, tPlay)), d]);
+        l.outPoint = T;
+    } catch (e) { AEL.warn("time remap on " + l.name + ": " + e); }
+};
+// Communication goals board. T = {eye, cards:[3], ticks:[3], notes, present} or null.
+K.goals = function (g, T) {
+    var i, x, l, c, who = ["ALEX · MARKETING", "MAYA · FOUNDER", "JO · SALES"], goal = ["Energy", "Composed information", "Clearly coffee"],
+        q = ["Does the work have the\nenergy Alex wanted?", "Does the information feel\ncomposed, as Maya asked?", "Is the coffee clearly\nidentified for Jo?"];
+    K.at(N3.text(g, "Back to the brief", { name: "Goals eyebrow", x: -790, top: -400, fs: 15, wt: 600, ls: 0.14, caps: true, color: N3.COL.capRed }), K.T(T, "eye"), null, 10);
+    K.at(N3.text(g, "Communication goals", { name: "Goals title", x: -790, top: -372, fs: 44, wt: 600, ls: -0.025 }), K.T(T, "eye"), null, 12);
+    for (i = 0; i < 3; i++) {
+        x = -530 + i * 530; t = T ? T.cards[i] : null;
+        K.at(N3.box(g, { name: "Goal card " + (i + 1), cx: x, cy: 40, w: 470, h: 470, r: 28, fill: N3.COL.blush }), t, null, 30);
+        c = K.tag(g, who[i], { name: "Goal who " + (i + 1), x: x - 200, top: -160, fs: 14, bg: i === 0 ? N3.COL.coral : "#FCE3E2", color: i === 0 ? "#FFFFFF" : N3.COL.capRed }); K.showChip(c, t, null);
+        K.at(N3.text(g, goal[i], { name: "Goal " + (i + 1), x: x - 200, top: -100, fs: 40, wt: 700, ls: -0.025 }), t, null, 14);
+        K.at(N3.text(g, q[i], { name: "Goal question " + (i + 1), x: x - 200, top: -26, fs: 24, lh: 34, color: N3.COL.soft }), t === null ? null : t + 0.15, null, 10);
+        l = N3.icon(g, "circleCheck", { name: "Goal tick " + (i + 1), cx: x, cy: 180, size: 110, color: N3.COL.coral, sw: 3 }); if (T) { K.pop(l, T.ticks[i]); }
+    }
+    K.chipAt(g, "Linked to the discovery notes", { name: "Chip notes", x: -790, top: 330, fs: 16, bg: N3.COL.navy }, K.T(T, "notes"), null);
+    K.chipAt(g, "Ready to present", { name: "Chip present", x: -440, top: 330, fs: 16 }, K.T(T, "present"), null);
+};
+var t;   // shared loop temp for K.goals (ES3 has no block scope)
+
+// The six-step workflow list (recap). Card 840 x 760, contents relative to the card top (anchor 't').
+K.STEPS = [["brief", "Turn project files into direction", "Brief, research and meeting notes"], ["target", "Give every design a clear purpose", "Before we start anything"],
+    ["rules", "Create design rules", "That change the whole workflow"], ["devices", "Carry it across every format", "Packaging · digital · motion"],
+    ["checklist", "Check against the original goals", "Review the work with the brief"], ["handover", "Hand over a system", "So anyone can build on it"]];
+K.recap = function (g, tIn, tStep) {
+    var i, y, hi, l, ys = [];
+    K.at(N3.text(g, "The workflow · 2027", { name: "Recap eyebrow", x: -370, top: 42, fs: 15, wt: 600, ls: 0.14, caps: true, color: N3.COL.capRed }), tIn, null, 10);
+    K.at(N3.text(g, "The whole process, in six steps", { name: "Recap title", x: -370, top: 68, fs: 34, wt: 600, ls: -0.025 }), tIn, null, 10);
+    for (i = 0; i < 6; i++) { ys.push(160 + i * 94); }
+    hi = N3.box(g, { name: "Active row", x: -396, y: ys[0] - 8, w: 792, h: 86, r: 22, fill: N3.COL.blush });
+    (function () { var k, keys = []; for (k = 1; k < 6; k++) { keys.push([tStep[k], [g.ox, g.oy + ys[k] - 8 + 43, 0], N3.SP.MORPH]); }
+        N3.spring(N3.pos(hi), [g.ox, g.oy + ys[0] - 8 + 43, 0], keys); })();
+    K.at(hi, tStep[0], null, 0);
+    for (i = 0; i < 6; i++) {
+        y = ys[i];
+        K.at(N3.box(g, { name: "Step tile " + (i + 1), x: -370, y: y, w: 54, h: 54, r: 15, fill: N3.COL.coral }), tIn + 0.1 + i * 0.06, null, 16);
+        K.at(N3.icon(g, K.STEPS[i][0], { name: "Step icon " + (i + 1), cx: -343, cy: y + 27, size: 28, color: "#FFFFFF", sw: 2 }), tIn + 0.1 + i * 0.06, null, 16);
+        K.at(N3.text(g, K.STEPS[i][1], { name: "Step " + (i + 1), x: -296, top: y + 2, fs: 26, wt: 600, ls: -0.02 }), tIn + 0.1 + i * 0.06, null, 16);
+        K.at(N3.text(g, K.STEPS[i][2], { name: "Step sub " + (i + 1), x: -296, top: y + 36, fs: 17, color: N3.COL.soft }), tIn + 0.1 + i * 0.06, null, 16);
+        l = N3.icon(g, "circleCheck", { name: "Step tick " + (i + 1), cx: 340, cy: y + 27, size: 40, color: N3.COL.coral, sw: 2.4 }); K.pop(l, tStep[i] + 0.4);
+    }
+};

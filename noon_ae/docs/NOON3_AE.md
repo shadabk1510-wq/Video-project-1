@@ -1,3 +1,5 @@
+**Chunk 4 update (final):** runs to 11:00 with `vo_chunk4.m4a` (NOON3_MAIN is 660.5 s). Clips 26-31 add the communication goals, Stage 06 (1 week … 10 years), a ChatGPT window playing `chat_clip.mp4` (excerpts from refrence_2) with three chips, the PDF pages with ticks, a Dropbox window playing `dropbox_clip.mp4` with the file and use chips, and the recap list, Follow / Explain / Build on, and the end card (NOON + "Design your future today." + two end-screen slots). The full refrence_2 segment still goes at the 61.4 s comp marker; place it yourself.
+
 # NOON v3: the After Effects build
 
 **Chunk 3 update:** runs to 8:22 with `vo_chunk3.m4a`; clips 19-25 add rule 1-3 boards, rules beside the designs + saved rule examples, the motion rule demo, stage 05 and the review board with the "Follows the rules" stamps.
@@ -12,7 +14,7 @@ optional reference guide.
 1. Use After Effects 2023 or newer (track mattes use the 2023 scripting API; older versions fall back to duplicated mattes).
    Turn on Preferences › Scripting & Expressions › **Allow Scripts to Write Files and Access Network**.
 2. The **Inter** font must be installed with the Light, Regular, Medium, SemiBold, Bold and ExtraBold styles.
-3. Keep the folder layout: `noon_ae/ae/scripts/…` next to `noon_ae/assets/_ae/` (the client assets plus `vo2_full.wav`).
+3. Keep the folder layout: `noon_ae/ae/scripts/…` next to `noon_ae/assets/_ae/` (the client assets, `vo_chunk4.m4a`, `chat_clip.mp4`, `dropbox_clip.mp4`).
 4. In a new project, choose **File › Scripts › Run Script File…** › `noon_ae/ae/scripts/build_noon3.jsx`.
 5. The script saves `noon_ae/ae/NOON3.aep` (then `NOON3_v002.aep`, and so on; it never overwrites) and writes
    `build_noon3.result.json`. Please send that file back after the first run: it lists any font substitution or clip that failed.

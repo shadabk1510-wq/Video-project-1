@@ -33,21 +33,27 @@ var N3CLIPS = {};
 #include "clips3/c23.jsx"
 #include "clips3/c24.jsx"
 #include "clips3/c25.jsx"
+#include "clips3/c26.jsx"
+#include "clips3/c27.jsx"
+#include "clips3/c28.jsx"
+#include "clips3/c29.jsx"
+#include "clips3/c30.jsx"
+#include "clips3/c31.jsx"
 
 var CONFIG = {
     assets: "../../assets/_ae",                 // client assets (relative to this script)
     reference: "../../motion/out/NOON_v3_preview_small.mp4",   // optional guide layer (the approved preview)
-    vo: "vo_chunk3.m4a", voStart: 2.0,          // chunk 3 (8:20) - starts with the same recording as chunks 1-2
+    vo: "vo_chunk4.m4a", voStart: 2.0,          // the full voice-over (10:58)
     only: null,                                 // e.g. ["02", "05"] to build just those clips
     save: "../NOON3.aep"
 };
-var ORDER = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25"];
+var ORDER = ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31"];
 
 function main() {
     var here = AEL.scriptDir($.fileName), main, i, id, S, l, failed = [], ref, vo, ends = [];
     N3.ASSET_DIR = (new Folder(here + "/" + CONFIG.assets)).fsName;
     N3.folders = AEL.standardFolders();
-    main = AEL.comp("NOON3_MAIN", { width: N3.W, height: N3.H, duration: 502.5, fps: N3.FPS, folder: N3.folders.main });
+    main = AEL.comp("NOON3_MAIN", { width: N3.W, height: N3.H, duration: 660.5, fps: N3.FPS, folder: N3.folders.main });
     N3.warmFonts();
     N3.background(main);
     main.motionBlur = true;
