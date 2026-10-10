@@ -143,6 +143,14 @@ After picture lock, add SFX with a separate script on the user's open project, c
 animation events, files picked from the user's library by name, and timing and levels from measurements. A mix preview
 lets the user listen first. Steps, commands and level targets: `references/sfx-workflow.md`.
 
+## 3e. Copying a template's style
+
+`.aep` files can't be read without AE. Have the user run `jsx/export_template.jsx` (read-only) with the template's main
+comp open: it writes `<comp>_template.json` (comps, layers, effects and layer styles with values, text styles, shape
+contents, every keyframe with its interpolation and temporal ease, expressions, cameras, lights). Ask for a short
+720p render of the template too, for the look. Rebuild the style as presets in your own library from those exact
+values; don't copy the template's assets.
+
 ## 4. Safety
 
 - Don't close, overwrite, or clean up the user's open project, delete items you didn't create,
