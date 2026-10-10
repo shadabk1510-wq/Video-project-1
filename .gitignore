@@ -10,3 +10,5 @@ noon_ae/motion/dist/
 noon_ae/motion/assets/
 __pycache__/
 expressions.json
+NOON3_SFX_*.zip
+NOON3_SFX_preview_audio.m4a

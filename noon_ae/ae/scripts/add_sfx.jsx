@@ -17,21 +17,23 @@ var SFX = {
     folders: ["D:/AE Assets/3. sfx/NOON_SFX", "../assets/_ae/sfx"],
     main: "NOON3_MAIN",
     comp: "NOON3 SFX",
-    // For each sound: db = level, at = where the peak of the sound lands after the cue (s), label = layer colour,
-    // files = [file name, time of the peak inside the file (s), trim in dB]; files take turns so repeats vary.
-    // stack: true plays all its files together (the end card).
+    // For each sound: db = how loud its peak sits in the mix (dBFS; the voice-over peaks around -15 to -19),
+    // at = where that peak lands after the cue (s), label = layer colour,
+    // files = [file name, time of the peak inside the file (s; typing: where the typing starts), level that brings
+    // the file's own peak to 0 dB, optional extra delay (s)]. Files take turns so repeats vary.
+    // Measured from the NOON_SFX files. stack: true plays all of its files together (the end card).
     SOUNDS: {
-        whoosh: { db: -16, at: 0.15, label: 8, files: [["Soft_Whoosh_12.wav", 0, 0], ["Soft_Whoosh_22.wav", 0, 0], ["Whooshe_Modern_12.wav", 0, 0], ["Soft_Whoosh_33.wav", 0, 0], ["Whoosh Deep Light.wav", 0, 0]] },
-        swish:  { db: -18, at: 0.08, label: 14, files: [["Sharp swoosh.wav", 0, 0], ["High fast swoosh.wav", 0, 0], ["Fast swish.wav", 0, 0], ["Short whip.wav", 0, 0]] },
-        pop:    { db: -20, at: 0.03, label: 2, files: [["ui-pop-up-14-197900.mp3", 0, 0], ["floraphonic-ui-pop-up-5-197889.mp3", 0, 0], ["ui-pop-up-15-197897.mp3", 0, 0], ["bubble-pop-293342.mp3", 0, 0]] },
-        tick:   { db: -22, at: 0.02, label: 12, files: [["Digital Click - 1.mp3", 0, 0], ["Digital Click - 3.mp3", 0, 0], ["Click_02.wav", 0, 0], ["Digital Click - 7.mp3", 0, 0]] },
-        click:  { db: -16, at: 0.00, label: 9, files: [["Button_01.wav", 0, 0], ["click 0.mp3", 0, 0]] },
-        type:   { db: -22, at: 0.00, label: 10, files: [["Keyboard - 4.mp3", 0, 0], ["typing_keyboard.mp3", 0, 0], ["Digital Type Text.wav", 0, 0]] },
-        ding:   { db: -18, at: 0.02, label: 11, files: [["Right (bells).wav", 0, 0], ["notification-ping-372479.mp3", 0, 0], ["Notification.wav", 0, 0], ["new-notification-08-352461.mp3", 0, 0]] },
-        paper:  { db: -18, at: 0.05, label: 3, files: [["Just Sound Effects - Smartphone UI - Menu Navigation Swipe Short 2.wav", 0, 0]] },
-        window: { db: -16, at: 0.10, label: 5, files: [["HUD Screen - 02.wav", 0, 0], ["ES_Flash, Modern, Design 01 - Epidemic Sound.mp3", 0, 0]] },
-        // riser peaks on the cut to the end card; hit and sub land with the NOON logo 0.3 s later
-        end:    { db: -12, at: 0.00, label: 1, stack: true, files: [["swoosh-riser-reverb-390309.mp3", 0, -2, 0], ["Gleam hit.wav", 0, 0, 0.3], ["SD_Low_01.wav", 0, -4, 0.3]] }
+        whoosh: { db: -27, at: 0.15, label: 8, files: [["Soft_Whoosh_22.wav", 0.39, 9.5], ["Whooshe_Modern_12.wav", 0.67, 3.5], ["Whoosh Deep Light.wav", 0.75, 8.0]] },
+        swish:  { db: -29, at: 0.08, label: 14, files: [["Sharp swoosh.wav", 0.17, 14.0], ["Fast swish.wav", 0.21, 19.0], ["Short whip.wav", 0.32, 13.5]] },
+        pop:    { db: -28, at: 0.03, label: 2, files: [["ui-pop-up-14-197900.mp3", 0.04, 12.0], ["floraphonic-ui-pop-up-5-197889.mp3", 0.04, 12.5], ["ui-pop-up-15-197897.mp3", 0.03, 15.0], ["bubble-pop-293342.mp3", 0.13, 12.0]] },
+        tick:   { db: -31, at: 0.02, label: 12, files: [["Click_02.wav", 0.08, 12.0], ["Digital Click - 1.mp3", 0.24, 22.0], ["Digital Click - 3.mp3", 0.25, 25.5], ["Digital Click - 7.mp3", 0.08, 19.5]] },
+        click:  { db: -27, at: 0.00, label: 9, files: [["Button_01.wav", 0.02, 12.0], ["click 0.mp3", 0.35, 27.5]] },
+        type:   { db: -31, at: 0.00, label: 10, files: [["Keyboard - 4.mp3", 0.08, 29.0], ["typing_keyboard.mp3", 0.04, 38.0]] },
+        ding:   { db: -26, at: 0.02, label: 11, files: [["Right (bells).wav", 0.04, 22.5], ["notification-ping-372479.mp3", 0.10, 12.5], ["new-notification-08-352461.mp3", 0.12, 15.5], ["Notification.wav", 0.03, 8.5]] },
+        paper:  { db: -29, at: 0.05, label: 3, files: [["Just Sound Effects - Smartphone UI - Menu Navigation Swipe Short 2.wav", 0.16, 13.5]] },
+        window: { db: -26, at: 0.10, label: 5, files: [["ES_Flash, Modern, Design 01 - Epidemic Sound.mp3", 0.10, 21.5], ["HUD Screen - 02.wav", 0.43, 20.5]] },
+        accent: { db: -23, at: 0.15, label: 13, files: [["Reverse Boom 2.wav", 0.99, 5.0]] },
+        end:    { db: -22, at: 0.00, label: 1, stack: true, files: [["swoosh-riser-reverb-390309.mp3", 1.86, 13.5, 0.00], ["Gleam hit.wav", 0.75, 23.0, 0.30], ["SD_Low_01.wav", 0.04, 8.0, 0.30]] }
     },
     TYPE_TAIL: 0.25,   // typing sounds stop this long after the line finishes, with a short fade
     MASTER_NAME: "SFX (all sounds) - Audio Levels here = master volume"
