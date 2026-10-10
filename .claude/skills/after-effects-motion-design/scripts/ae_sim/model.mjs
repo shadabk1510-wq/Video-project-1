@@ -82,7 +82,10 @@ const ADDABLE = { vector: (mn) => VECTOR_ITEMS[mn] && VECTOR_ITEMS[mn](), effect
   animator: (mn) => mn === "ADBE Text Animator" && ANIMATOR(), selector: (mn) => SELECTORS[mn] && SELECTORS[mn](), animprop: (mn) => ANIM_PROPS[mn],
   mask: (mn) => mn === "ADBE Mask Atom" && MASK(),
   dash: (mn) => ({ "ADBE Vector Stroke Dash 1": L(mn, "Dash", T.OneD, 10), "ADBE Vector Stroke Gap 1": L(mn, "Gap", T.OneD, 10), "ADBE Vector Stroke Offset": L(mn, "Offset", T.OneD, 0) })[mn] };
+const AUDIO = G("ADBE Audio Group", "Audio", [L("ADBE Audio Levels", "Audio Levels", T.TwoD, [0, 0])]);
 const layerSchema = (kind) => {
+  // audio-only layers have no Transform or Masks in AE
+  if (kind === "audio") return G("root", "root", [G("ADBE Marker", "Marker", null, { marker: true }), G("ADBE Effect Parade", "Effects", "indexed:effect"), AUDIO, L("ADBE Time Remapping", "Time Remap", T.OneD, 0)]);
   const k = [G("ADBE Marker", "Marker", null, { marker: true }), TRANSFORM, G("ADBE Effect Parade", "Effects", "indexed:effect"), G("ADBE Mask Parade", "Masks", "indexed:mask")];
   if (kind === "shape") k.push(G("ADBE Root Vectors Group", "Contents", "indexed:vector"));
   if (kind === "text") k.push(G("ADBE Text Properties", "Text", [L("ADBE Text Document", "Source Text", T.TEXT_DOCUMENT, null),
@@ -90,7 +93,7 @@ const layerSchema = (kind) => {
       L("ADBE Text Perpendicular To Path", "Perpendicular To Path", T.OneD, 1), L("ADBE Text Force Align Path", "Force Alignment", T.OneD, 0),
       L("ADBE Text First Margin", "First Margin", T.OneD, 0), L("ADBE Text Last Margin", "Last Margin", T.OneD, 0)]),
     G("ADBE Text Animators", "Animators", "indexed:animator")]));
-  if (kind === "footage" || kind === "precomp") k.push(L("ADBE Time Remapping", "Time Remap", T.OneD, 0));
+  if (kind === "footage" || kind === "precomp") k.push(AUDIO, L("ADBE Time Remapping", "Time Remap", T.OneD, 0));
   return G("root", "root", k);
 };
 
@@ -301,7 +304,7 @@ class CompItem extends Item {
       addSolid: (c, n, w, h) => { const l = new Layer(self, n, "solid"); l._solid = { color: c.slice(0, 3), w: w || self.width, h: h || self.height }; l._src = { w: w || self.width, h: h || self.height }; l._setAnchorDefault(); return l._ins(); },
       add: (it) => {
         if (it instanceof CompItem) { if (it === self) throw new Error("can't nest a comp in itself"); const l = new Layer(self, it.name, "precomp"); l.source = it; l._src = { w: it.width, h: it.height }; l._setAnchorDefault(); return l._ins(); }
-        if (it instanceof FootageItem) { const l = new Layer(self, it.name, it.hasVideo ? "footage" : "audio"); l.source = it; l._src = { w: it.width, h: it.height }; l._setAnchorDefault();
+        if (it instanceof FootageItem) { const l = new Layer(self, it.name, it.hasVideo ? "footage" : "audio"); l.source = it; l._src = { w: it.width, h: it.height }; if (it.hasVideo) l._setAnchorDefault();
           if (it.duration && !it.mainSource.isStill) l.outPoint = Math.min(self.duration, it.duration); return l._ins(); }
         throw new Error("layers.add needs a CompItem or FootageItem");
       },
@@ -319,7 +322,7 @@ let LAYER_UID = 0;
 class Layer {
   constructor(comp, name, kind) {
     this.uid = ++LAYER_UID; this.containingComp = comp; this.name = name; this.kind = kind; this.enabled = true; this.audioEnabled = true; this.guideLayer = false; this.shy = false; this.locked = false;
-    this.startTime = 0; this.inPoint = 0; this.outPoint = comp.duration; this.stretch = 100; this.label = 0; this.motionBlur = false; this.threeDLayer = false;
+    this._st = 0; this.inPoint = 0; this.outPoint = comp.duration; this.stretch = 100; this.label = 0; this.motionBlur = false; this.threeDLayer = false;
     this.collapseTransformation = false; this.blendingMode = BLEND.NORMAL; this.trackMatteType = 5012; this._matte = null; this._parent = null; this.nullLayer = false; this.source = null;
     this.root = new Prop(layerSchema(kind), null, this);
     if (kind === "text" || kind === "shape") { this.property("ADBE Transform Group").property("ADBE Position")._value = [comp.width / 2, comp.height / 2, 0]; }
@@ -327,6 +330,8 @@ class Layer {
   }
   _setAnchorDefault() { this.property("ADBE Transform Group").property("ADBE Anchor Point")._value = [this._src.w / 2, this._src.h / 2, 0]; this.property("ADBE Transform Group").property("ADBE Position")._value = [this.containingComp.width / 2, this.containingComp.height / 2, 0]; }
   _ins() { this.containingComp._layers.unshift(this); return this; }
+  get startTime() { return this._st; }
+  set startTime(v) { const d = v - this._st; this._st = v; this.inPoint += d; this.outPoint += d; }   // AE moves the in/out points with the layer
   get index() { return this.containingComp._layers.indexOf(this) + 1; }
   get hasVideo() { return this.kind !== "audio"; }
   property(k) { return this.root.property(k); }
