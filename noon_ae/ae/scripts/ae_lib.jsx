@@ -96,6 +96,7 @@ AEL.run = function (fileName, undoName, fn) {
     app.beginUndoGroup(undoName);
     try {
         fn();
+        if (AEL.pendingExpr.length) { AEL.retryExpressions(); }   // builds that never call it still get their warnings
         AEL.result.ok = true;
     } catch (e) {
         AEL.result.ok = false;

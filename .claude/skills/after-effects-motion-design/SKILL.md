@@ -115,6 +115,33 @@ If the user needs it **editable in AE** (usually yes), port the approved clips t
 - AE gotchas the model encodes: `layer.parent = p` rewrites the child's transform (use `setParentWithJump`); effects on
   footage work in the image's own pixels (divide blur and shadow sizes by the layer scale); CSS `blur(px)` is a sigma, and
   AE Blurriness is about 2.5× that.
+- Gotchas found in the user's real AE runs (all now caught by the model; keep the fixes in new builds):
+  - a NaN ease speed makes AE drop every layer silently → `speed || 0` whenever speeds are computed;
+  - "Object is invalid" after `addProperty` → re-fetch the property (or hold live refs), never reuse stale handles;
+  - time remap: enabling it adds in/out keys → set values on those keys, never remove them all (the layer goes blank);
+  - an expression naming a layer that doesn't exist yet is disabled when set → collect them and re-enable after the
+    clip is built (`AEL.retryExpressions()`);
+  - the first font set in a session can fall back to a serif → set every weight once on a throwaway layer first;
+  - write non-ASCII in JSX as `\uXXXX` (check with `grep -P '[^\x00-\x7F]'` before every push);
+  - `layer.startTime` moves the in and out points with it; outPoint is not "end of comp";
+  - `saveIncremental` never overwrites, so a re-run gives `NAME_v002.aep`. Tell the user which file to open.
+- Ask the user to send `<script>.result.json` after their first run; it lists warnings and failed clips.
+
+## 3c. Long voice-overs: chunk it, keep a kit
+
+For a long VO (10+ min), work in chunks the user sends one at a time, each the same recording continued
+(timeline = file time + pre-roll). Per chunk: ASR (Parakeet, 85 s segments) → a short shot list → user "go" → build
+straight in JSX with a shared kit of reusable boards (`noon_ae/ae/scripts/noon3_kit.jsx`) → a light contact-sheet check of
+the cuts in ae_sim. No parallel agents and no full renders per chunk; it costs a fraction of the per-clip HTML route.
+Explainer stretches: about 30% slower than a hook, each clip with a slow breathing push-in (camera Drift %), cuts on
+the VO's sentence boundaries. Never invent UI recordings: ask, and if the user has a screen video, cut short excerpts
+into app windows (time-remapped, frozen on the last frame).
+
+## 3d. Sound effects
+
+After picture lock, add SFX with a separate script on the user's open project, cues taken from the build's own
+animation events, files picked from the user's library by name, and timing and levels from measurements. A mix preview
+lets the user listen first. Steps, commands and level targets: `references/sfx-workflow.md`.
 
 ## 4. Safety
 
@@ -148,3 +175,4 @@ Inside AE the starter creates: `01_Main`, `02_Sections`, `03_Precomps`, `04_Foot
 | Kinetic type, shape/mask/matte reveals, transitions, precomps, brand control rigs | `references/motion-recipes.md` |
 | Asset intake, reference-video style analysis, VO/script sync, organisation, portability | `references/production-workflow.md` |
 | Running scripts per OS, aerender/render queue, validation, error table, live MCP bridges | `references/render-and-troubleshoot.md` |
+| SFX: reading a reference's sound style, cues from build timings, picking and measuring files, levels, mix preview | `references/sfx-workflow.md` |

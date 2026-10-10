@@ -96,6 +96,7 @@ AEL.run = function (fileName, undoName, fn) {
     app.beginUndoGroup(undoName);
     try {
         fn();
+        if (AEL.pendingExpr.length) { AEL.retryExpressions(); }   // builds that never call it still get their warnings
         AEL.result.ok = true;
     } catch (e) {
         AEL.result.ok = false;
@@ -416,10 +417,34 @@ AEL.key = function (prop, times, values, ease, hold) {
 };
 
 // Set an expression and report errors AE detects immediately.
+// AE validates an expression the moment it is set: if it names a layer that doesn't exist yet, AE disables it.
+// Such expressions are remembered (layer + property index path) and re-enabled by AEL.retryExpressions() once the
+// whole comp is built; only the ones that still fail are reported.
+AEL.pendingExpr = [];
 AEL.expr = function (prop, code) {
+    var path = [], p, layer;
     prop.expression = code;
-    try { if (prop.expressionError) { AEL.warn("Expression error on " + prop.name + ": " + prop.expressionError); } } catch (e) {}
+    try {
+        if (prop.expressionError) {
+            layer = prop.propertyGroup(prop.propertyDepth);
+            for (p = prop; p.propertyDepth > 0; p = p.parentProperty) { path.unshift(p.propertyIndex); }
+            AEL.pendingExpr.push({ layer: layer, path: path, name: prop.name, first: prop.expressionError });
+        }
+    } catch (e) { AEL.warn("Expression on " + prop.name + ": " + e); }
     return prop;
+};
+AEL.retryExpressions = function () {
+    var i, j, it, p;
+    for (i = 0; i < AEL.pendingExpr.length; i++) {
+        it = AEL.pendingExpr[i];
+        try {
+            p = it.layer;
+            for (j = 0; j < it.path.length; j++) { p = p.property(it.path[j]); }
+            p.expressionEnabled = true;
+            if (p.expressionError) { AEL.warn("Expression error on " + it.layer.name + " / " + it.name + ": " + p.expressionError); }
+        } catch (e) { AEL.warn("Expression retry failed on " + it.name + ": " + e + " (first error: " + it.first + ")"); }
+    }
+    AEL.pendingExpr = [];
 };
 
 // ---------------------------------------------------------------- text animation
